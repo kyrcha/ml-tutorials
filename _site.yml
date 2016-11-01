@@ -11,5 +11,5 @@ output:
     highlight: textmate
     include:
       after_body: footer.html
-    css: styles.css
+    css: style.css
 output_dir: "docs"
