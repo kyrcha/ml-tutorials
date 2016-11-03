@@ -1,0 +1,574 @@
+---
+title: "Introduction to R"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## The basics
+
+R is an open source programming language and a free environment, mainly used for statistical computing and graphics. Information about R you can find in the [official website](https://www.r-project.org/). By searching with the keyword `R` with other topic-specific words in sites like Google, one can find additional information from sites, blog posts, tutorials, documents etc. 
+
+Even through R comes with its own environment: command line and graphical interfaces, one can use the popular [RStudio](https://www.rstudio.com/), which offers additional graphical functionalities.
+
+When in the R environment (the R prompt is `>`) one can exit by calling the `quit()` function or `q()` for short. When asked if you want to save the workspace, if you reply with a `y` for yes, all the variables that you have during the current R session will be saved into a file names .Rdata in the current working directory. If you later start R in the same directory, the variables and their names will be automatically loaded.
+
+To check which is your current working directory, your can enter:
+
+```{r eval=FALSE}
+getwd()
+```
+
+To set the working directory one can use the `setwd` function:
+
+```{r eval=FALSE}
+setwd("~/Desktop")
+```
+
+What you type at the R prompt is an expression, which R attempts to evaluate and type the result. For example `getwd()` is an expression that is evaluated by calling the function `getwd()` with no arguments. The same for `42`
+
+```{r}
+42
+```
+
+and the same for
+
+```{r}
+(100 * 2 - 12 ^ 2) / 7 * 5 + 2
+```
+
+There are also predefined constants like `pi` or `e`
+
+```{r}
+sin(pi/2)
+```
+
+To find out the documentation of a specific function you can enter `?sum` or `help(sum)`. To search for functions, there is the `help.search("sin")` function to help you with that. For certain functions on can see examples of use by using the expression `example(plot)`. Comments start with `#`, while to assign values to variables you can use `<-` or `=`. For example:
+
+
+To find out the documentation of a specific function you can enter `?sum` or `help(sum)`. To search for functions, there is the `help.search("sin")` function to help you with that. For certain functions on can see examples of use by using the expression `example(plot)`. Comments start with `#`, while to assign values to variables you can use `<-` or `=`. For example:
+
+```{r}
+a <- 42
+b <- (42 + a) / 2
+print(a)
+print(b)
+```
+
+With `ls()` one can check all the variables existing in the current R session.
+
+```{r}
+ls()
+# while to delete all the variables in the current session you can use the call: 
+rm(list=ls())
+```
+
+## Vectors
+
+Create the vector `a = (10, 5, 3, 100, -2, 5, -50)`
+
+```{r}
+a <- c(10, 5, 3, 100, -2, 5, -50)
+a
+```
+
+Select the elements of the vector with indices 1, 3, 4, and 5:
+
+
+```{r}
+a[c(1,3:4)]
+```
+
+The above expression uses the `c()` function for combining values and the `:` operator that generates sequences `from:to` with step 1. Another easy way of specifying sequences is to use the `seq` function.
+
+```{r}
+c(1, 2, 7, 10)
+1:10
+seq(1, 6, by=1)
+seq(1,6, by=2)
+seq(1,by=2, length=6)
+```
+
+Type `?seq` to get to know the function.
+
+To check the type of a variable there is the `class` function:
+
+```{r}
+class(a)
+```
+
+To check which `a` elements have a value greater than 5:
+
+```{r}
+a > 5
+which(a>5)
+# returns the indices for which the values are TRUE
+```
+
+To get the positive elements of a:
+
+```{r}
+b <- a > 0
+positives <- a[b]
+positives
+# or more succintly
+positives <- a[a>0]
+positives
+```
+
+To check the length of a vector:
+
+```{r}
+length(a)
+```
+
+One can also bind vectors by column (`cbind()`) or by row (`rbind()`)
+
+```{r}
+c <- 1:7
+rbind(a,c)
+cbind(a,c)
+```
+
+## Matrices
+
+To create matrics use the `matrix()` function
+
+```{r}
+matrix(10,3, 2)
+# or
+matrix(c(1,2,3,4,5,6), 3, 2)
+# or 
+matrix(c(1,2,3), 3, 2)
+```
+
+But let's examine how are we calling the `matrix` function:
+
+```{r}
+args(matrix)
+```
+
+So the first argument are the data, then with `nrow` or `ncol` arguments we can declare the number of rows and columns and with the argument `byrow` we declare that we want to fill in the matrix column-by-column if `byrow=FALSE` and row-by-row if `byrow=TRUE`. In the above calls we didn't use the `byrow` argument because the function `matrix` has a default value `byrow=FALSE` as we can also check from the documentation, `?matrix`.
+
+```{r}
+m = matrix(1:9, byrow = TRUE, nrow=3)
+m
+```
+
+Here we have filled in a matrix with values 1 to 9, by row, with the number of rows equal to 3. This gives us a square 3x3 matrix. R is pretty smart in knowing that the number of columns should be 3 as well!
+
+We can also call `cbind` and `rbind` and other functions like `rowSums`, `colSums`, `mean`, `t` for transpose etc.
+
+```{r}
+m2 <- rbind(m, m)
+m2
+rowSums(m2)
+colSums(m2)
+mean(m2)
+```
+
+For element wise multiplication on can use the `*` operator while for matrix multiplication you can use the `%*%` operator.
+
+```{r}
+am <- matrix(10:18, byrow = TRUE, nrow = 3)
+am
+bm <- matrix(c(3,6,7,10,8,1,2,3,2), byrow = TRUE, nrow = 3)
+bm
+am * bm
+am %*% bm
+t(am)
+```
+
+## Data frames
+
+Unlike matrices, data frames can store values of different types in their columns. They are used extensively in R for data analysis. As rows usually we have the observations (or samples) and as columns we have the characteristics (or attributes or features). When we read from a file, the result is read as a data frame. Download the zip file [r-novice-inflammation.zip](http://swcarpentry.github.io/r-novice-inflammation/files/r-novice-inflammation-data.zip) and unzip it in the Desktop. Examine the file `inflammation-01.csv` with a text editor to see what we are going to be loading. The read the file:
+
+```{r}
+data <- read.csv(file = "data/inflammation-01.csv", header = FALSE)
+# Notice the use of the path including data/ since we previously set the working directory as the Desktop
+getwd()
+dir()
+```
+
+The `dir` function return the files and directories of the file system. The argument `header=FALSE` lets the `read.csv` function know that there is no header row to give the columns names.
+
+With `head(data)` I can check if the data are loaded correctly. It return the first few rows:
+
+```{r}
+head(data)
+```
+
+Other function I can use are:
+
+```{r}
+# type of the variable
+class(data)
+# dimensions
+dim(data)
+# structure
+str(data)
+# statistical summarization of the data frame
+summary(data)
+```
+
+There are also different way I can select slices of data from the data frame
+
+```{r}
+# first value in data
+data[1, 1]
+
+# middle value in data
+data[30, 20]
+
+# first four rows and first ten columns
+data[1:4, 1:10]
+
+# doesn't have to start from the beginning
+data[5:10, 1:10]
+
+# specific rows and columns
+data[c(3, 8, 37, 56), c(10, 14, 29)]
+
+# All columns from row 5
+data[5, ]
+
+# All rows from column 16
+data[, 16]
+```
+
+A subtle point is that the last selection returned a vector instead of a data frame. This is because we selected only a single column. If you don't want this behavior do:
+
+```{r}
+# All columns from row 5
+d1 <- data[5, ]
+class(d1)
+
+# All rows from column 16
+d2 <- data[, 16]
+class(d2)
+
+d3 <- data[, 16, drop=FALSE]
+class(d3)
+```
+
+Other functions you can call are `min`, `max`, `mean`, `sd` and `median` to get statistical values of interest:
+
+```{r}
+# first row, all of the columns
+patient_1 <- data[1, ]
+
+# max inflammation for patient 1
+max(patient_1)
+
+# max inflammation for patient 2
+max(data[2, ])
+
+# minimum inflammation on day 7
+min(data[, 7])
+
+# mean inflammation on day 7
+mean(data[, 7])
+
+# median inflammation on day 7
+median(data[, 7])
+
+# standard deviation of inflammation on day 7
+sd(data[, 7])
+```
+
+To do more complex calculations like `the maximum inflammation for all patients, or the average for each day?` we need to apply the function `max` or `mean` per row or column respectivelly. Luckily there is the function `apply` that applies a function for each one of the "margins", 1 for rows and 2 for columns:
+
+```{r}
+args(apply) # args return NULL because it prints the information, but every function must return something!
+
+max_patient_inflammation <- apply(data, 1, max)
+max_patient_inflammation
+
+avg_day_inflammation <- apply(data, 2, mean)
+avg_day_inflammation
+```
+
+Now let's do some plotting
+
+```{r}
+plot(avg_day_inflammation)
+```
+
+```{r}
+max_day_inflammation <- apply(data, 2, max)
+plot(max_day_inflammation)
+```
+
+```{r}
+min_day_inflammation <- apply(data, 2, min)
+plot(min_day_inflammation)
+```
+
+`plot` is a function with many arguments so you will probably need to study a lot of examples to do what you want (change an axis, name an axis, change the plot points and/or lines, add title, add grids, add legend, color the graph, add arrows and text etc.)
+
+## R Scripts
+
+So far we have been typing directly into the R command line. What we could also do is save a sequence of commands in an R source file to run it at will. The way to do this is to have such a file with an `.R` extension and use the function `source` to run it.
+
+If the source file contains an analysis from the beginning to the end it is a good practice to always clear your session of variables using `rm(list=ls())`. On the other hand if it is used as a library, for example to load some functions you have created, then you probably should not do it. You can also include other source files inside your current source file using the function (you guessed it): `source`
+
+Because it is a good practice to have coding guidelines/conventions for standardizing the way you write your script to make it more readable, Google has some: https://google.github.io/styleguide/Rguide.xml
+
+## Functions
+
+Let's learn how to create functions by creating a fuction `fahr_to_kelvin` that converts temperatures from Fahrenheit to Kelvin:
+
+```{r}
+fahr_to_kelvin <- function(temp) {
+  kelvin <- ((temp - 32) * (5 / 9)) + 273.15
+  return(kelvin)
+}
+```
+
+To run a function:
+
+
+```{r}
+# freezing point of water
+fahr_to_kelvin(32)
+
+# boiling point of water
+fahr_to_kelvin(212)
+```
+
+Let's also create a function that converts Kelvin to Celcius:
+
+
+```{r}
+kelvin_to_celsius <- function(temp) {
+  celsius <- temp - 273.15
+  return(celsius)
+}
+
+#absolute zero in Celsius
+kelvin_to_celsius(0)
+```
+
+We can also use functions inside functions
+
+```{r}
+fahr_to_celsius <- function(temp) {
+  temp_k <- fahr_to_kelvin(temp)
+  result <- kelvin_to_celsius(temp_k)
+  return(result)
+}
+
+# freezing point of water in Celsius
+fahr_to_celsius(32.0)
+```
+
+or we can obtain this result by function chaining:
+
+```{r}
+# freezing point of water in Celsius
+kelvin_to_celsius(fahr_to_kelvin(32.0))
+```
+
+
+## For loops
+
+Like all the programming language R also has `for` loops to do recurring tasks. In general the syntax is:
+
+    for (variable in collection) {
+      do things with variable
+    }
+
+Let's do an example:
+
+
+```{r}
+best_practice <- c("Let", "the", "computer", "do", "the", "work")
+
+print_words <- function(sentence) {
+  for (word in sentence) {
+    print(word)
+  }
+}
+
+print_words(best_practice)
+```
+
+or another example:
+
+```{r}
+len <- 0
+vowels <- c("a", "e", "i", "o", "u")
+for (v in vowels) {
+  len <- len + 1
+}
+# Number of vowels
+len
+```
+
+## Making decisions (if & else)
+
+To make decisions in your R scripts, R provides you with the standard if-else conditional statements
+
+
+```{r}
+num <- 37
+if (num > 100) {
+  print("greater")
+} else {
+  print("not greater")
+}
+print("done")
+
+# or let's create a function that uses conditionals
+
+sign <- function(num) {
+  if (num > 0) {
+    return(1)
+  } else if (num == 0) {
+    return(0)
+  } else {
+    return(-1)
+  }
+}
+
+sign(-3)
+```
+
+You can make decisions using the logical operators 
+
+- equal (`==`)
+- greater than or equal to (`>=`), 
+- less than or equal to (`<=`), 
+- and not equal to (`!=`).
+
+We can also combine tests. An ampersand, `&`, symbolizes “and”. A vertical bar, `|`, symbolizes “or”.
+
+## Datasets and statistics
+
+By running the function `data()` we can see some datasets that are currently included in the R installation. To check for example the iris dataset, we can for example use the function:
+
+```{r}
+head(iris)
+```
+
+To see the structure of it:
+
+```{r}
+str(iris)
+```
+
+For a statistical summary
+
+```{r}
+summary(iris)
+```
+
+For the Species column, one can observe that the summary function did not do the standard statistical calculation like it did with the other variables. From the `str` function we can see that the Species column is a factor, which is what R uses to declare categorial or ordinal values. More on that in the next section.
+
+We can also get the full attribute of `Sepal.Length` for example by name
+
+```{r}
+iris$Sepal.Length
+```
+
+and run the standard statistics:
+
+```{r}
+print("mean")
+mean(iris$Sepal.Length)
+print("median")
+median(iris$Sepal.Length)
+print("min")
+min(iris$Sepal.Length)
+print("max")
+max(iris$Sepal.Length)
+print("sd")
+sd(iris$Sepal.Length)
+print("var")
+var(iris$Sepal.Length)
+print("range")
+range(iris$Sepal.Length)
+
+# or other functions like:
+print("sort")
+sort(iris$Sepal.Length)
+print("length")
+length(iris$Sepal.Length)
+```
+
+## Factors
+
+The factor() command is used to create and modify factors in R:
+
+```{r}
+sex <- factor(c("male", "female", "female", "male"))
+```
+
+R will assign 1 to the level `"female"` and 2 to the level `"male"` (because `f` comes before `m`, even though the first element in this vector is `"male"`). You can check this by using the function `levels()`, and check the number of levels using `nlevels()`:
+
+```{r}
+levels(sex)
+nlevels(sex)
+```
+
+Sometimes, the order of the factors does not matter, other times you might want to specify the order because it is meaningful (e.g., “low”, “medium”, “high”) or it is required by particular type of analysis. Additionally, specifying the order of the levels allows us to compare levels:
+
+```{r}
+food <- factor(c("low", "high", "medium", "high", "low", "medium", "high"))
+levels(food)
+```
+
+```{r}
+food <- factor(food, levels = c("low", "medium", "high"))
+levels(food)
+```
+
+```{r error=TRUE}
+min(food) ## doesn't work
+```
+
+```{r}
+food <- factor(food, levels = c("low", "medium", "high"), ordered=TRUE)
+levels(food)
+```
+
+```{r}
+min(food) ## works!
+```
+
+## Challenge
+
+Use the dataset `AirPassengers` that comes with R and refers to number of passengers traveled every month from 1949 to 1960 in thousands. Because the dataset is of type `Time-Series` or `ts`, you can make it a data.frame through the following commands:
+
+    dn = list(paste("Y", as.character(1949:1960), sep = ""), month.abb)
+    airmat = matrix(AirPassengers, 12, byrow = TRUE, dimnames = dn)
+    air = as.data.frame(t(airmat))
+    
+Then try to answer the next questions/problems:
+
+- Use the help functionality to try and learn about the functions used above.
+- How many passengers traveled in average for the year 1951?
+- Which is the maximum number of passengers for the months January and February?
+- Calculate the summation per year and assign the result to a vector.
+- Plot the vector nicely (names in axes, point and lines for the graph, title the graph, add grid lines)
+- Repeat the last two bullets for every month for all the years.
+
+_Tip: to transform a row of the data frame to a vector you can use `unlist` (e.g. `unlist(air["Jan",]`)_
+
+## Acknowledgements
+
+This tutorial, besides including the author's knowledge of R, is derived also from other material and more specifically: from an introductory R leaflet from the Pattern Recognition course of the Electrical and Computer Engineering Department of the Aristotle University of Thessaloniki (Fall semester 2016, author: Themistoklis Diamantopoulos, professor: Andreas L. Symeonidis), the leaflet from the course CS545 Machine Learnig (Fall 2008, author and professor: Charles W. Anderson) and the [Software Caprentry](https://software-carpentry.org/) lesson: [Programming in R](http://swcarpentry.github.io/r-novice-inflammation/) from which the inflammation data were also taken. 
+
+
+## License
+
+This work is made available under the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/).
+
+## Links
+
+- [R project](https://www.r-project.org/)
+    - [R official manuals](https://cran.r-project.org/manuals.html)
+    - [R packages](https://cran.r-project.org/web/packages/available_packages_by_name.html)
+- [R studio](https://www.rstudio.com/) Nice R IDE that works in Linux, Mac and Windows systems.

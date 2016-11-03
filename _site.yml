@@ -1,11 +1,24 @@
-name: "ml-tutorials"
+name: "Machine Learning Tutorials"
 navbar:
-  title: "Machine Learning tutorials"
+  title: "Machine Learning Tutorials using R"
   left:
     - text: "Home"
       href: index.html
-    - text: "About"
-      href: about.html
+    - text: "Introduction to R"
+      href: intro.html
+    - text: "Classification"
+      menu:
+        - text: "Decision Trees"
+          href: dt.html
+        - text: "k-Nearest Neighbors"
+          href: knn.html
+        - text: "Neural Networks"
+          href: nn.html
+        - text: "Support Vector Machines"
+          href: svm.html
+    - text: "Regression"
+    - text: "Clustering"
+    - text: "Dimensionality Reduction"
 output:
   html_document:
     highlight: textmate
