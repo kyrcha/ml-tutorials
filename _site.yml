@@ -1,24 +1,23 @@
-name: "Machine Learning Tutorials"
+name: "Machine Learning Tutorials in R"
 navbar:
-  title: "Machine Learning Tutorials using R"
-  left:
-    - text: "Home"
-      href: index.html
-    - text: "Introduction to R"
-      href: intro.html
+  title: "ML & R"
+  right:
+    - text: "R"
+      href: r.html
+    - text: "Data"
+      href: uc.html
     - text: "Classification"
-      menu:
-        - text: "Decision Trees"
-          href: dt.html
-        - text: "k-Nearest Neighbors"
-          href: knn.html
-        - text: "Neural Networks"
-          href: nn.html
-        - text: "Support Vector Machines"
-          href: svm.html
+      href: classification.html
     - text: "Regression"
-    - text: "Clustering"
+      href: uc.html
     - text: "Dimensionality Reduction"
+      href: uc.html
+    - text: "Clustering"
+      href: uc.html
+    - text: "Anomaly Detection"
+      href: uc.html
+    - text: "Association Rules"
+      href: uc.html
 output:
   html_document:
     highlight: textmate

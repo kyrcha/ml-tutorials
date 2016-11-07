@@ -1,0 +1,8 @@
+---
+title: "R"
+output: html_document
+---
+
+Notes on: 
+
+  - [Introduction to R](intro.html)
