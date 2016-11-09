@@ -18,6 +18,8 @@ navbar:
       href: uc.html
     - text: "Association Rules"
       href: uc.html
+    - text: "Finder"
+      href: finder.html
 output:
   html_document:
     highlight: textmate

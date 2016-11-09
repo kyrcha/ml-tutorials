@@ -1,0 +1,140 @@
+---
+title: "k-Nearest Neighbors"
+author: "Kyriakos Chatzidimitriou"
+date: "November 7, 2016"
+output:
+  html_document: default
+---
+
+```{r}
+fileURL <- "http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data"
+download.file(fileURL, destfile="breast-cancer-wisconsin.data", method="curl")
+# read the data
+data <- read.table("breast-cancer-wisconsin.data", na.strings = "?", sep=",")
+str(data)
+data <- data[,-1]
+names(data) <- c("ClumpThickness",
+"UniformityCellSize",
+"UniformityCellShape",
+"MarginalAdhesion",
+"SingleEpithelialCellSize",
+"BareNuclei",
+"BlandChromatin",
+"NormalNucleoli",
+"Mitoses",
+"Class")
+data$Class <- factor(data$Class, levels=c(2,4), labels=c("benign", "malignant"))
+print(summary(data))
+set.seed(2345)
+ind <- sample(2, nrow(iris), replace=TRUE, prob=c(0.7, 0.3))
+trainData <- data[ind==1,]
+validationData <- data[ind==2,]
+library(class)
+trainData <- trainData[complete.cases(trainData),]
+validationData <- validationData[complete.cases(validationData),]
+trainDataX <- trainData[,-ncol(trainData)]
+trainDataY <- trainData$Class
+validationDataX <- validationData[,-ncol(trainData)]
+validationDataY <- validationData$Class
+prediction = knn(trainDataX, validationDataX, trainDataY, k = 1)
+```
+
+```{r}
+cat("Confusion matrix:\n")
+xtab = table(prediction, validationData$Class)
+print(xtab)
+cat("\nEvaluation:\n\n")
+accuracy = sum(prediction == validationData$Class)/length(validationData$Class)
+precision = xtab[1,1]/sum(xtab[,1])
+recall = xtab[1,1]/sum(xtab[1,])
+f = 2 * (precision * recall) / (precision + recall)
+cat(paste("Accuracy:\t", format(accuracy, digits=2), "\n",sep=" "))
+cat(paste("Precision:\t", format(precision, digits=2), "\n",sep=" "))
+cat(paste("Recall:\t\t", format(recall, digits=2), "\n",sep=" "))
+cat(paste("F-measure:\t", format(f, digits=2), "\n",sep=" "))
+```
+
+## Cross Validation
+
+https://cran.r-project.org/web/packages/caret/vignettes/caret.pdf
+
+     Define sets of model
+     
+Write here the main caret stuff
+
+### Split data in two groups
+
+`createDataParitiion` does a stratified random split of the data
+
+```{r}
+library(caret)
+library(mlbench)
+data(Sonar)
+set.seed(107)
+inTrain <- createDataPartition(y = Sonar$Class, p = .75, list = FALSE)
+str(inTrain)
+training <- Sonar[ inTrain,]
+testing <- Sonar[-inTrain,]
+nrow(training)
+nrow(testing)
+
+kNNFit <- train(Class ~ ., 
+                data = training,
+                method = "knn",
+                preProc = c("center", "scale"))
+```
+
+```{r}
+kNNFit1 <- train(Class ~ ., 
+                data = training,
+                method = "knn",
+                tuneLength = 15,
+                preProc = c("center", "scale"))
+kNNFit1
+```
+
+```{r}
+ctrl <- trainControl(method = "repeatedcv", repeats = 3)
+kNNFit2 <- train(Class ~ ., 
+                data = training,
+                method = "knn",
+                tuneLength = 15,
+                trControl = ctrl,
+                preProc = c("center", "scale"))
+kNNFit2
+plot(kNNFit2)
+```
+
+http://rstudio-pubs-static.s3.amazonaws.com/16444_caf85a306d564eb490eebdbaf0072df2.html
+
+```{r}
+knnPredict <- predict(kNNFit2, newdata = testing )
+#Get the confusion matrix to see accuracy value and other parameter values
+confusionMatrix(knnPredict, testing$Class )
+```
+
+```{r}
+ctrl <- trainControl(method = "repeatedcv", repeats = 3, classProbs=TRUE, summaryFunction = twoClassSummary)
+kNNFit4 <- train(Class ~ ., 
+                data = training,
+                method = "knn",
+                tuneLength = 15,
+                trControl = ctrl,
+                preProc = c("center", "scale"))
+kNNFit4
+plot(kNNFit4)
+```
+
+
+```{r}
+knnFit5 <- train(Class ~ ., 
+                data = training,
+                 method = "knn",
+                 preProcess = c("center", "scale"),
+                 tuneLength = 10, 
+                 trControl = trainControl(method = "boot"))
+knnPredict2 <- predict(knnFit5, newdata = testing )
+#Get the confusion matrix to see accuracy value and other parameter values
+confusionMatrix(knnPredict2, testing$Class )
+```
+

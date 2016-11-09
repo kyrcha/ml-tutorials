@@ -1,0 +1,25 @@
+---
+title: "Finder"
+author: "Kyriakos Chatzidimitriou"
+date: "November 8, 2016"
+output: html_document
+---
+
+# Algorithms
+
+- Decision Trees
+- kNN
+- Naive Bayes
+
+# Model Evaluation
+
+- ROC Curves
+- Cross Validation
+
+# R
+
+- rpart
+- party
+- caret
+- e1071
+- class

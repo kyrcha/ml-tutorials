@@ -247,21 +247,21 @@ print(a)</code></pre>
 <pre><code>## [1] 42</code></pre>
 <p>With <code>ls()</code> one can check all the variables existing in the current R session.</p>
 <pre class="r"><code>ls()</code></pre>
-<pre><code>##  [1] &quot;a&quot;                        &quot;am&quot;                      
-##  [3] &quot;avg_day_inflammation&quot;     &quot;b&quot;                       
-##  [5] &quot;best_practice&quot;            &quot;bm&quot;                      
-##  [7] &quot;c&quot;                        &quot;d1&quot;                      
-##  [9] &quot;d2&quot;                       &quot;d3&quot;                      
-## [11] &quot;data&quot;                     &quot;fahr_to_celsius&quot;         
-## [13] &quot;fahr_to_kelvin&quot;           &quot;food&quot;                    
-## [15] &quot;kelvin_to_celsius&quot;        &quot;len&quot;                     
-## [17] &quot;m&quot;                        &quot;m2&quot;                      
-## [19] &quot;max_day_inflammation&quot;     &quot;max_patient_inflammation&quot;
-## [21] &quot;min_day_inflammation&quot;     &quot;num&quot;                     
-## [23] &quot;patient_1&quot;                &quot;positives&quot;               
-## [25] &quot;print_words&quot;              &quot;sex&quot;                     
-## [27] &quot;sign&quot;                     &quot;v&quot;                       
-## [29] &quot;vowels&quot;</code></pre>
+<pre><code>##  [1] &quot;a&quot;                 &quot;accuracy&quot;          &quot;b&quot;                
+##  [4] &quot;ctree&quot;             &quot;ctrl&quot;              &quot;data&quot;             
+##  [7] &quot;entTree&quot;           &quot;evaluation&quot;        &quot;f&quot;                
+## [10] &quot;fileURL&quot;           &quot;GCtorture&quot;         &quot;ind&quot;              
+## [13] &quot;inTrain&quot;           &quot;kNNFit&quot;            &quot;kNNFit1&quot;          
+## [16] &quot;kNNFit2&quot;           &quot;kNNFit4&quot;           &quot;knnPredict&quot;       
+## [19] &quot;model&quot;             &quot;model_laplace&quot;     &quot;precision&quot;        
+## [22] &quot;pred&quot;              &quot;prediction&quot;        &quot;prediction_tree&quot;  
+## [25] &quot;pred_obj&quot;          &quot;pred_obj_laplace&quot;  &quot;pred_prob&quot;        
+## [28] &quot;pred_prob_laplace&quot; &quot;recall&quot;            &quot;ROCcurve&quot;         
+## [31] &quot;ROCcurve_laplace&quot;  &quot;Sonar&quot;             &quot;testData&quot;         
+## [34] &quot;testing&quot;           &quot;trainData&quot;         &quot;trainDataX&quot;       
+## [37] &quot;trainDataY&quot;        &quot;training&quot;          &quot;tree&quot;             
+## [40] &quot;validationData&quot;    &quot;validationDataX&quot;   &quot;validationDataY&quot;  
+## [43] &quot;xtab&quot;              &quot;ytest&quot;</code></pre>
 <pre class="r"><code># while to delete all the variables in the current session you can use the call: 
 rm(list=ls())</code></pre>
 </div>
@@ -406,16 +406,21 @@ bm</code></pre>
 <pre class="r"><code>data &lt;- read.csv(file = &quot;data/inflammation-01.csv&quot;, header = FALSE)
 # Notice the use of the path including data/ since we previously set the working directory as the Desktop
 getwd()</code></pre>
-<pre><code>## [1] &quot;/Users/kyrcha/Workspaces/github/ml-tutorials&quot;</code></pre>
+<pre><code>## [1] &quot;/home/kyrcha/Workspaces/github/ml-tutorials&quot;</code></pre>
 <pre class="r"><code>dir()</code></pre>
-<pre><code>##  [1] &quot;README.html&quot;         &quot;README.md&quot;           &quot;_site.yml&quot;          
-##  [4] &quot;classification.Rmd&quot;  &quot;classification.html&quot; &quot;data&quot;               
-##  [7] &quot;docs&quot;                &quot;dt.Rmd&quot;              &quot;dt.html&quot;            
-## [10] &quot;exploration.Rmd&quot;     &quot;exploration.html&quot;    &quot;exploration_files&quot;  
-## [13] &quot;footer.html&quot;         &quot;index.Rmd&quot;           &quot;index.html&quot;         
-## [16] &quot;intro.Rmd&quot;           &quot;io.Rmd&quot;              &quot;ml-tutorials.Rproj&quot; 
-## [19] &quot;r.Rmd&quot;               &quot;site_libs&quot;           &quot;style.css&quot;          
-## [22] &quot;uc.Rmd&quot;</code></pre>
+<pre><code>##  [1] &quot;breast-cancer-wisconsin.data&quot; &quot;classification.html&quot;         
+##  [3] &quot;classification.Rmd&quot;           &quot;data&quot;                        
+##  [5] &quot;docs&quot;                         &quot;dt_files&quot;                    
+##  [7] &quot;dt.html&quot;                      &quot;dt.Rmd&quot;                      
+##  [9] &quot;exploration_files&quot;            &quot;exploration.html&quot;            
+## [11] &quot;exploration.Rmd&quot;              &quot;footer.html&quot;                 
+## [13] &quot;index.html&quot;                   &quot;index.Rmd&quot;                   
+## [15] &quot;intro.Rmd&quot;                    &quot;io.Rmd&quot;                      
+## [17] &quot;knn.Rmd&quot;                      &quot;ml-tutorials.Rproj&quot;          
+## [19] &quot;nb.Rmd&quot;                       &quot;README.md&quot;                   
+## [21] &quot;r.Rmd&quot;                        &quot;site_libs&quot;                   
+## [23] &quot;_site.yml&quot;                    &quot;style.css&quot;                   
+## [25] &quot;uc.Rmd&quot;</code></pre>
 <p>The <code>dir</code> function return the files and directories of the file system. The argument <code>header=FALSE</code> lets the <code>read.csv</code> function know that there is no header row to give the columns names.</p>
 <p>With <code>head(data)</code> I can check if the data are loaded correctly. It return the first few rows:</p>
 <pre class="r"><code>head(data)</code></pre>
@@ -784,7 +789,7 @@ sign(-3)</code></pre>
 <li>less than or equal to (<code>&lt;=</code>),</li>
 <li>and not equal to (<code>!=</code>).</li>
 </ul>
-<p>NA</p>
+<p>We can also combine tests. An ampersand, <code>&amp;</code>, symbolizes “and”. A vertical bar, <code>|</code>, symbolizes “or”.</p>
 </div>
 <div id="datasets-and-statistics" class="section level2">
 <h2>Datasets and statistics</h2>
@@ -889,7 +894,7 @@ print(&quot;sort&quot;)</code></pre>
 <pre><code>## [1] &quot;female&quot; &quot;male&quot;</code></pre>
 <pre class="r"><code>nlevels(sex)</code></pre>
 <pre><code>## [1] 2</code></pre>
-<p>NA</p>
+<p>Sometimes, the order of the factors does not matter, other times you might want to specify the order because it is meaningful (e.g., “low”, “medium”, “high”) or it is required by particular type of analysis. Additionally, specifying the order of the levels allows us to compare levels:</p>
 <pre class="r"><code>food &lt;- factor(c(&quot;low&quot;, &quot;high&quot;, &quot;medium&quot;, &quot;high&quot;, &quot;low&quot;, &quot;medium&quot;, &quot;high&quot;))
 levels(food)</code></pre>
 <pre><code>## [1] &quot;high&quot;   &quot;low&quot;    &quot;medium&quot;</code></pre>

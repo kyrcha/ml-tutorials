@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Kyriakos Chatzidimitriou" />
+
+
+<title>k-Nearest Neighbors</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">ML & R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="r.html">R</a>
+</li>
+<li>
+  <a href="uc.html">Data</a>
+</li>
+<li>
+  <a href="classification.html">Classification</a>
+</li>
+<li>
+  <a href="uc.html">Regression</a>
+</li>
+<li>
+  <a href="uc.html">Dimensionality Reduction</a>
+</li>
+<li>
+  <a href="uc.html">Clustering</a>
+</li>
+<li>
+  <a href="uc.html">Anomaly Detection</a>
+</li>
+<li>
+  <a href="uc.html">Association Rules</a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">k-Nearest Neighbors</h1>
+<h4 class="author"><em>Kyriakos Chatzidimitriou</em></h4>
+<h4 class="date"><em>November 7, 2016</em></h4>
+
+</div>
+
+
+<pre class="r"><code>fileURL &lt;- &quot;http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data&quot;
+download.file(fileURL, destfile=&quot;breast-cancer-wisconsin.data&quot;, method=&quot;curl&quot;)
+# read the data
+data &lt;- read.table(&quot;breast-cancer-wisconsin.data&quot;, na.strings = &quot;?&quot;, sep=&quot;,&quot;)
+str(data)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    699 obs. of  11 variables:
+##  $ V1 : int  1000025 1002945 1015425 1016277 1017023 1017122 1018099 1018561 1033078 1033078 ...
+##  $ V2 : int  5 5 3 6 4 8 1 2 2 4 ...
+##  $ V3 : int  1 4 1 8 1 10 1 1 1 2 ...
+##  $ V4 : int  1 4 1 8 1 10 1 2 1 1 ...
+##  $ V5 : int  1 5 1 1 3 8 1 1 1 1 ...
+##  $ V6 : int  2 7 2 3 2 7 2 2 2 2 ...
+##  $ V7 : int  1 10 2 4 1 10 10 1 1 1 ...
+##  $ V8 : int  3 3 3 3 3 9 3 3 1 2 ...
+##  $ V9 : int  1 2 1 7 1 7 1 1 1 1 ...
+##  $ V10: int  1 1 1 1 1 1 1 1 5 1 ...
+##  $ V11: int  2 2 2 2 2 4 2 2 2 2 ...</code></pre>
+<pre class="r"><code>data &lt;- data[,-1]
+names(data) &lt;- c(&quot;ClumpThickness&quot;,
+&quot;UniformityCellSize&quot;,
+&quot;UniformityCellShape&quot;,
+&quot;MarginalAdhesion&quot;,
+&quot;SingleEpithelialCellSize&quot;,
+&quot;BareNuclei&quot;,
+&quot;BlandChromatin&quot;,
+&quot;NormalNucleoli&quot;,
+&quot;Mitoses&quot;,
+&quot;Class&quot;)
+data$Class &lt;- factor(data$Class, levels=c(2,4), labels=c(&quot;benign&quot;, &quot;malignant&quot;))
+print(summary(data))</code></pre>
+<pre><code>##  ClumpThickness   UniformityCellSize UniformityCellShape MarginalAdhesion
+##  Min.   : 1.000   Min.   : 1.000     Min.   : 1.000      Min.   : 1.000  
+##  1st Qu.: 2.000   1st Qu.: 1.000     1st Qu.: 1.000      1st Qu.: 1.000  
+##  Median : 4.000   Median : 1.000     Median : 1.000      Median : 1.000  
+##  Mean   : 4.418   Mean   : 3.134     Mean   : 3.207      Mean   : 2.807  
+##  3rd Qu.: 6.000   3rd Qu.: 5.000     3rd Qu.: 5.000      3rd Qu.: 4.000  
+##  Max.   :10.000   Max.   :10.000     Max.   :10.000      Max.   :10.000  
+##                                                                          
+##  SingleEpithelialCellSize   BareNuclei     BlandChromatin  
+##  Min.   : 1.000           Min.   : 1.000   Min.   : 1.000  
+##  1st Qu.: 2.000           1st Qu.: 1.000   1st Qu.: 2.000  
+##  Median : 2.000           Median : 1.000   Median : 3.000  
+##  Mean   : 3.216           Mean   : 3.545   Mean   : 3.438  
+##  3rd Qu.: 4.000           3rd Qu.: 6.000   3rd Qu.: 5.000  
+##  Max.   :10.000           Max.   :10.000   Max.   :10.000  
+##                           NA&#39;s   :16                       
+##  NormalNucleoli      Mitoses             Class    
+##  Min.   : 1.000   Min.   : 1.000   benign   :458  
+##  1st Qu.: 1.000   1st Qu.: 1.000   malignant:241  
+##  Median : 1.000   Median : 1.000                  
+##  Mean   : 2.867   Mean   : 1.589                  
+##  3rd Qu.: 4.000   3rd Qu.: 1.000                  
+##  Max.   :10.000   Max.   :10.000                  
+## </code></pre>
+<pre class="r"><code>set.seed(2345)
+ind &lt;- sample(2, nrow(iris), replace=TRUE, prob=c(0.7, 0.3))
+trainData &lt;- data[ind==1,]
+validationData &lt;- data[ind==2,]
+library(class)
+trainData &lt;- trainData[complete.cases(trainData),]
+validationData &lt;- validationData[complete.cases(validationData),]
+trainDataX &lt;- trainData[,-ncol(trainData)]
+trainDataY &lt;- trainData$Class
+validationDataX &lt;- validationData[,-ncol(trainData)]
+validationDataY &lt;- validationData$Class
+prediction = knn(trainDataX, validationDataX, trainDataY, k = 1)</code></pre>
+<pre class="r"><code>cat(&quot;Confusion matrix:\n&quot;)</code></pre>
+<pre><code>## Confusion matrix:</code></pre>
+<pre class="r"><code>xtab = table(prediction, validationData$Class)
+print(xtab)</code></pre>
+<pre><code>##            
+## prediction  benign malignant
+##   benign       129         5
+##   malignant      3        57</code></pre>
+<pre class="r"><code>cat(&quot;\nEvaluation:\n\n&quot;)</code></pre>
+<pre><code>## 
+## Evaluation:</code></pre>
+<pre class="r"><code>accuracy = sum(prediction == validationData$Class)/length(validationData$Class)
+precision = xtab[1,1]/sum(xtab[,1])
+recall = xtab[1,1]/sum(xtab[1,])
+f = 2 * (precision * recall) / (precision + recall)
+cat(paste(&quot;Accuracy:\t&quot;, format(accuracy, digits=2), &quot;\n&quot;,sep=&quot; &quot;))</code></pre>
+<pre><code>## Accuracy:     0.96</code></pre>
+<pre class="r"><code>cat(paste(&quot;Precision:\t&quot;, format(precision, digits=2), &quot;\n&quot;,sep=&quot; &quot;))</code></pre>
+<pre><code>## Precision:    0.98</code></pre>
+<pre class="r"><code>cat(paste(&quot;Recall:\t\t&quot;, format(recall, digits=2), &quot;\n&quot;,sep=&quot; &quot;))</code></pre>
+<pre><code>## Recall:       0.96</code></pre>
+<pre class="r"><code>cat(paste(&quot;F-measure:\t&quot;, format(f, digits=2), &quot;\n&quot;,sep=&quot; &quot;))</code></pre>
+<pre><code>## F-measure:    0.97</code></pre>
+<div id="cross-validation" class="section level2">
+<h2>Cross Validation</h2>
+<p><a href="https://cran.r-project.org/web/packages/caret/vignettes/caret.pdf" class="uri">https://cran.r-project.org/web/packages/caret/vignettes/caret.pdf</a></p>
+<pre><code> Define sets of model
+ </code></pre>
+<p>Write here the main caret stuff</p>
+<div id="split-data-in-two-groups" class="section level3">
+<h3>Split data in two groups</h3>
+<p><code>createDataParitiion</code> does a stratified random split of the data</p>
+<pre class="r"><code>library(caret)
+library(mlbench)
+data(Sonar)
+set.seed(107)
+inTrain &lt;- createDataPartition(y = Sonar$Class, p = .75, list = FALSE)
+str(inTrain)</code></pre>
+<pre><code>##  int [1:157, 1] 1 2 3 6 7 9 10 11 12 13 ...
+##  - attr(*, &quot;dimnames&quot;)=List of 2
+##   ..$ : NULL
+##   ..$ : chr &quot;Resample1&quot;</code></pre>
+<pre class="r"><code>training &lt;- Sonar[ inTrain,]
+testing &lt;- Sonar[-inTrain,]
+nrow(training)</code></pre>
+<pre><code>## [1] 157</code></pre>
+<pre class="r"><code>nrow(testing)</code></pre>
+<pre><code>## [1] 51</code></pre>
+<pre class="r"><code>kNNFit &lt;- train(Class ~ ., 
+                data = training,
+                method = &quot;knn&quot;,
+                preProc = c(&quot;center&quot;, &quot;scale&quot;))</code></pre>
+<pre class="r"><code>kNNFit1 &lt;- train(Class ~ ., 
+                data = training,
+                method = &quot;knn&quot;,
+                tuneLength = 15,
+                preProc = c(&quot;center&quot;, &quot;scale&quot;))
+kNNFit1</code></pre>
+<pre><code>## k-Nearest Neighbors 
+## 
+## 157 samples
+##  60 predictors
+##   2 classes: &#39;M&#39;, &#39;R&#39; 
+## 
+## Pre-processing: centered (60), scaled (60) 
+## Resampling: Bootstrapped (25 reps) 
+## Summary of sample sizes: 157, 157, 157, 157, 157, 157, ... 
+## Resampling results across tuning parameters:
+## 
+##   k   Accuracy   Kappa    
+##    5  0.7519389  0.4939164
+##    7  0.7322399  0.4542330
+##    9  0.7319090  0.4535786
+##   11  0.7194588  0.4291185
+##   13  0.7122780  0.4179368
+##   15  0.7023943  0.3983259
+##   17  0.6944156  0.3790000
+##   19  0.6906744  0.3745708
+##   21  0.6853736  0.3624348
+##   23  0.6858047  0.3634749
+##   25  0.6857580  0.3637183
+##   27  0.6766956  0.3468449
+##   29  0.6673992  0.3300591
+##   31  0.6747242  0.3454882
+##   33  0.6760502  0.3493651
+## 
+## Accuracy was used to select the optimal model using  the largest value.
+## The final value used for the model was k = 5.</code></pre>
+<pre class="r"><code>ctrl &lt;- trainControl(method = &quot;repeatedcv&quot;, repeats = 3)
+kNNFit2 &lt;- train(Class ~ ., 
+                data = training,
+                method = &quot;knn&quot;,
+                tuneLength = 15,
+                trControl = ctrl,
+                preProc = c(&quot;center&quot;, &quot;scale&quot;))
+kNNFit2</code></pre>
+<pre><code>## k-Nearest Neighbors 
+## 
+## 157 samples
+##  60 predictors
+##   2 classes: &#39;M&#39;, &#39;R&#39; 
+## 
+## Pre-processing: centered (60), scaled (60) 
+## Resampling: Cross-Validated (10 fold, repeated 3 times) 
+## Summary of sample sizes: 141, 141, 140, 141, 142, 142, ... 
+## Resampling results across tuning parameters:
+## 
+##   k   Accuracy   Kappa    
+##    5  0.7878758  0.5687596
+##    7  0.7792647  0.5498864
+##    9  0.7725817  0.5355201
+##   11  0.7598203  0.5104632
+##   13  0.7289379  0.4461774
+##   15  0.6903268  0.3671681
+##   17  0.6878105  0.3605085
+##   19  0.6956373  0.3761905
+##   21  0.6977533  0.3821736
+##   23  0.6920098  0.3717322
+##   25  0.7082925  0.4060242
+##   27  0.7039869  0.3964805
+##   29  0.7295425  0.4482189
+##   31  0.7170261  0.4242971
+##   33  0.7294036  0.4494976
+## 
+## Accuracy was used to select the optimal model using  the largest value.
+## The final value used for the model was k = 5.</code></pre>
+<pre class="r"><code>plot(kNNFit2)</code></pre>
+<p><img src="knn_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><a href="http://rstudio-pubs-static.s3.amazonaws.com/16444_caf85a306d564eb490eebdbaf0072df2.html" class="uri">http://rstudio-pubs-static.s3.amazonaws.com/16444_caf85a306d564eb490eebdbaf0072df2.html</a></p>
+<pre class="r"><code>knnPredict &lt;- predict(kNNFit2, newdata = testing )
+#Get the confusion matrix to see accuracy value and other parameter values
+confusionMatrix(knnPredict, testing$Class )</code></pre>
+<pre><code>## $positive
+## [1] &quot;M&quot;
+## 
+## $table
+##           Reference
+## Prediction  M  R
+##          M 25  9
+##          R  2 15
+## 
+## $overall
+##       Accuracy          Kappa  AccuracyLower  AccuracyUpper   AccuracyNull 
+##   0.7843137255   0.5600000000   0.6467859365   0.8871094003   0.5294117647 
+## AccuracyPValue  McnemarPValue 
+##   0.0001502273   0.0704404293 
+## 
+## $byClass
+##          Sensitivity          Specificity       Pos Pred Value 
+##            0.9259259            0.6250000            0.7352941 
+##       Neg Pred Value            Precision               Recall 
+##            0.8823529            0.7352941            0.9259259 
+##                   F1           Prevalence       Detection Rate 
+##            0.8196721            0.5294118            0.4901961 
+## Detection Prevalence    Balanced Accuracy 
+##            0.6666667            0.7754630 
+## 
+## $mode
+## [1] &quot;sens_spec&quot;
+## 
+## $dots
+## list()
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;confusionMatrix&quot;</code></pre>
+<pre class="r"><code>ctrl &lt;- trainControl(method = &quot;repeatedcv&quot;, repeats = 3, classProbs=TRUE, summaryFunction = twoClassSummary)
+kNNFit4 &lt;- train(Class ~ ., 
+                data = training,
+                method = &quot;knn&quot;,
+                tuneLength = 15,
+                trControl = ctrl,
+                preProc = c(&quot;center&quot;, &quot;scale&quot;))</code></pre>
+<pre><code>## Warning in train.default(x, y, weights = w, ...): The metric &quot;Accuracy&quot; was
+## not in the result set. ROC will be used instead.</code></pre>
+<pre class="r"><code>kNNFit4</code></pre>
+<pre><code>## k-Nearest Neighbors 
+## 
+## 157 samples
+##  60 predictors
+##   2 classes: &#39;M&#39;, &#39;R&#39; 
+## 
+## Pre-processing: centered (60), scaled (60) 
+## Resampling: Cross-Validated (10 fold, repeated 3 times) 
+## Summary of sample sizes: 142, 140, 141, 142, 142, 142, ... 
+## Resampling results across tuning parameters:
+## 
+##   k   ROC        Sens       Spec     
+##    5  0.8953208  0.8722222  0.7011905
+##    7  0.8816014  0.8722222  0.6767857
+##    9  0.8748388  0.8638889  0.6535714
+##   11  0.8678902  0.8564815  0.6321429
+##   13  0.8588004  0.8324074  0.6196429
+##   15  0.8485656  0.8162037  0.5821429
+##   17  0.8406250  0.8162037  0.5779762
+##   19  0.8310475  0.8166667  0.5910714
+##   21  0.8233838  0.8166667  0.5904762
+##   23  0.8290179  0.7833333  0.6053571
+##   25  0.8253886  0.7990741  0.6375000
+##   27  0.8177125  0.7930556  0.6369048
+##   29  0.8109210  0.7958333  0.6458333
+##   31  0.8064856  0.7768519  0.6553571
+##   33  0.8054687  0.7611111  0.6714286
+## 
+## ROC was used to select the optimal model using  the largest value.
+## The final value used for the model was k = 5.</code></pre>
+<pre class="r"><code>plot(kNNFit4)</code></pre>
+<p><img src="knn_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>knnFit5 &lt;- train(Class ~ ., 
+                data = training,
+                 method = &quot;knn&quot;,
+                 preProcess = c(&quot;center&quot;, &quot;scale&quot;),
+                 tuneLength = 10, 
+                 trControl = trainControl(method = &quot;boot&quot;))
+knnPredict2 &lt;- predict(knnFit5, newdata = testing )
+#Get the confusion matrix to see accuracy value and other parameter values
+confusionMatrix(knnPredict2, testing$Class )</code></pre>
+<pre><code>## $positive
+## [1] &quot;M&quot;
+## 
+## $table
+##           Reference
+## Prediction  M  R
+##          M 25  9
+##          R  2 15
+## 
+## $overall
+##       Accuracy          Kappa  AccuracyLower  AccuracyUpper   AccuracyNull 
+##   0.7843137255   0.5600000000   0.6467859365   0.8871094003   0.5294117647 
+## AccuracyPValue  McnemarPValue 
+##   0.0001502273   0.0704404293 
+## 
+## $byClass
+##          Sensitivity          Specificity       Pos Pred Value 
+##            0.9259259            0.6250000            0.7352941 
+##       Neg Pred Value            Precision               Recall 
+##            0.8823529            0.7352941            0.9259259 
+##                   F1           Prevalence       Detection Rate 
+##            0.8196721            0.5294118            0.4901961 
+## Detection Prevalence    Balanced Accuracy 
+##            0.6666667            0.7754630 
+## 
+## $mode
+## [1] &quot;sens_spec&quot;
+## 
+## $dots
+## list()
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;confusionMatrix&quot;</code></pre>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

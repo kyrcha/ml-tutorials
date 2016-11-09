@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Kyriakos Chatzidimitriou" />
+
+
+<title>Naive Bayes</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/textmate.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">ML & R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="r.html">R</a>
+</li>
+<li>
+  <a href="uc.html">Data</a>
+</li>
+<li>
+  <a href="classification.html">Classification</a>
+</li>
+<li>
+  <a href="uc.html">Regression</a>
+</li>
+<li>
+  <a href="uc.html">Dimensionality Reduction</a>
+</li>
+<li>
+  <a href="uc.html">Clustering</a>
+</li>
+<li>
+  <a href="uc.html">Anomaly Detection</a>
+</li>
+<li>
+  <a href="uc.html">Association Rules</a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Naive Bayes</h1>
+<h4 class="author"><em>Kyriakos Chatzidimitriou</em></h4>
+<h4 class="date"><em>November 7, 2016</em></h4>
+
+</div>
+
+
+<p><span class="math display">\[ P(x) = \frac{x}{y}\]</span></p>
+<pre class="r"><code>library(e1071)
+library(MLmetrics)
+library(ROCR)</code></pre>
+<p><code>model &lt;- naiveBayes(Target ~ ., data = ..., laplace = ...)</code></p>
+<pre class="r"><code>fileURL &lt;- &quot;http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data&quot;
+download.file(fileURL, destfile=&quot;breast-cancer-wisconsin.data&quot;, method=&quot;curl&quot;)
+# read the data
+data &lt;- read.table(&quot;breast-cancer-wisconsin.data&quot;, na.strings = &quot;?&quot;, sep=&quot;,&quot;)
+str(data)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    699 obs. of  11 variables:
+##  $ V1 : int  1000025 1002945 1015425 1016277 1017023 1017122 1018099 1018561 1033078 1033078 ...
+##  $ V2 : int  5 5 3 6 4 8 1 2 2 4 ...
+##  $ V3 : int  1 4 1 8 1 10 1 1 1 2 ...
+##  $ V4 : int  1 4 1 8 1 10 1 2 1 1 ...
+##  $ V5 : int  1 5 1 1 3 8 1 1 1 1 ...
+##  $ V6 : int  2 7 2 3 2 7 2 2 2 2 ...
+##  $ V7 : int  1 10 2 4 1 10 10 1 1 1 ...
+##  $ V8 : int  3 3 3 3 3 9 3 3 1 2 ...
+##  $ V9 : int  1 2 1 7 1 7 1 1 1 1 ...
+##  $ V10: int  1 1 1 1 1 1 1 1 5 1 ...
+##  $ V11: int  2 2 2 2 2 4 2 2 2 2 ...</code></pre>
+<pre class="r"><code>data &lt;- data[,-1]
+names(data) &lt;- c(&quot;ClumpThickness&quot;,
+&quot;UniformityCellSize&quot;,
+&quot;UniformityCellShape&quot;,
+&quot;MarginalAdhesion&quot;,
+&quot;SingleEpithelialCellSize&quot;,
+&quot;BareNuclei&quot;,
+&quot;BlandChromatin&quot;,
+&quot;NormalNucleoli&quot;,
+&quot;Mitoses&quot;,
+&quot;Class&quot;)
+data$Class &lt;- factor(data$Class, levels=c(2,4), labels=c(&quot;benign&quot;, &quot;malignant&quot;))
+print(summary(data))</code></pre>
+<pre><code>##  ClumpThickness   UniformityCellSize UniformityCellShape MarginalAdhesion
+##  Min.   : 1.000   Min.   : 1.000     Min.   : 1.000      Min.   : 1.000  
+##  1st Qu.: 2.000   1st Qu.: 1.000     1st Qu.: 1.000      1st Qu.: 1.000  
+##  Median : 4.000   Median : 1.000     Median : 1.000      Median : 1.000  
+##  Mean   : 4.418   Mean   : 3.134     Mean   : 3.207      Mean   : 2.807  
+##  3rd Qu.: 6.000   3rd Qu.: 5.000     3rd Qu.: 5.000      3rd Qu.: 4.000  
+##  Max.   :10.000   Max.   :10.000     Max.   :10.000      Max.   :10.000  
+##                                                                          
+##  SingleEpithelialCellSize   BareNuclei     BlandChromatin  
+##  Min.   : 1.000           Min.   : 1.000   Min.   : 1.000  
+##  1st Qu.: 2.000           1st Qu.: 1.000   1st Qu.: 2.000  
+##  Median : 2.000           Median : 1.000   Median : 3.000  
+##  Mean   : 3.216           Mean   : 3.545   Mean   : 3.438  
+##  3rd Qu.: 4.000           3rd Qu.: 6.000   3rd Qu.: 5.000  
+##  Max.   :10.000           Max.   :10.000   Max.   :10.000  
+##                           NA&#39;s   :16                       
+##  NormalNucleoli      Mitoses             Class    
+##  Min.   : 1.000   Min.   : 1.000   benign   :458  
+##  1st Qu.: 1.000   1st Qu.: 1.000   malignant:241  
+##  Median : 1.000   Median : 1.000                  
+##  Mean   : 2.867   Mean   : 1.589                  
+##  3rd Qu.: 4.000   3rd Qu.: 1.000                  
+##  Max.   :10.000   Max.   :10.000                  
+## </code></pre>
+<pre class="r"><code>set.seed(2345)
+ind &lt;- sample(2, nrow(iris), replace=TRUE, prob=c(0.7, 0.3))
+trainData &lt;- data[ind==1,]
+testData &lt;- data[ind==2,]
+model &lt;- naiveBayes(Class ~ ., data=trainData)
+predict(model, trainData)</code></pre>
+<pre><code>##   [1] benign    malignant malignant benign    malignant malignant malignant
+##   [8] benign    benign    benign    benign    malignant malignant benign   
+##  [15] benign    malignant benign    malignant malignant benign    malignant
+##  [22] benign    benign    benign    benign    benign    benign    malignant
+##  [29] malignant malignant malignant malignant malignant benign    benign   
+##  [36] malignant malignant malignant malignant malignant malignant malignant
+##  [43] malignant malignant malignant benign    malignant malignant benign   
+##  [50] benign    malignant malignant malignant benign    malignant benign   
+##  [57] benign    benign    benign    benign    benign    benign    malignant
+##  [64] malignant malignant malignant benign    benign    benign    benign   
+##  [71] benign    benign    benign    malignant malignant malignant benign   
+##  [78] malignant malignant malignant benign    malignant malignant malignant
+##  [85] benign    benign    benign    malignant benign    malignant malignant
+##  [92] benign    malignant malignant benign    malignant benign    benign   
+##  [99] benign    benign    benign    benign    benign    benign    benign   
+## [106] benign    benign    benign    malignant benign    benign    malignant
+## [113] benign    benign    malignant benign    benign    malignant benign   
+## [120] benign    malignant malignant benign    benign    benign    malignant
+## [127] malignant malignant malignant benign    benign    benign    malignant
+## [134] malignant malignant malignant benign    malignant benign    benign   
+## [141] benign    benign    benign    malignant benign    benign    benign   
+## [148] malignant malignant benign    benign    malignant malignant benign   
+## [155] malignant malignant benign    benign    malignant malignant benign   
+## [162] malignant benign    malignant malignant malignant malignant malignant
+## [169] malignant benign    benign    malignant malignant malignant benign   
+## [176] benign    benign    benign    malignant malignant benign    benign   
+## [183] benign    malignant malignant malignant benign    benign    malignant
+## [190] malignant malignant malignant benign    malignant malignant benign   
+## [197] malignant benign    benign    benign    malignant benign    malignant
+## [204] malignant malignant malignant benign    malignant malignant benign   
+## [211] benign    malignant benign    malignant malignant benign    benign   
+## [218] malignant malignant benign    malignant benign    benign    malignant
+## [225] benign    benign    malignant malignant malignant benign    malignant
+## [232] benign    malignant benign    benign    benign    malignant malignant
+## [239] benign    malignant malignant malignant benign    malignant benign   
+## [246] benign    malignant benign    malignant malignant benign    malignant
+## [253] malignant benign    benign    malignant malignant malignant malignant
+## [260] malignant benign    benign    benign    malignant malignant benign   
+## [267] benign    benign    benign    benign    benign    benign    benign   
+## [274] malignant benign    benign    benign    benign    malignant benign   
+## [281] benign    benign    benign    benign    benign    benign    benign   
+## [288] benign    benign    malignant benign    benign    benign    benign   
+## [295] benign    benign    malignant benign    malignant malignant malignant
+## [302] benign    malignant benign    benign    malignant benign    benign   
+## [309] benign    benign    malignant malignant malignant benign    benign   
+## [316] benign    malignant benign    benign    benign    benign    benign   
+## [323] benign    malignant benign    malignant malignant benign    benign   
+## [330] benign    benign    benign    benign    malignant malignant malignant
+## [337] benign    benign    benign    benign    benign    benign    benign   
+## [344] benign    benign    benign    malignant benign    benign    malignant
+## [351] benign    malignant benign    malignant benign    benign    benign   
+## [358] benign    benign    benign    benign    benign    malignant benign   
+## [365] benign    benign    benign    benign    benign    malignant benign   
+## [372] benign    benign    benign    malignant malignant benign    benign   
+## [379] benign    benign    benign    benign    benign    benign    benign   
+## [386] benign    benign    benign    benign    benign    benign    benign   
+## [393] malignant benign    benign    malignant benign    benign    benign   
+## [400] benign    benign    benign    benign    benign    benign    benign   
+## [407] malignant benign    benign    malignant benign    malignant benign   
+## [414] benign    benign    benign    malignant benign    benign    malignant
+## [421] benign    malignant benign    malignant malignant benign    malignant
+## [428] benign    benign    benign    malignant malignant malignant benign   
+## [435] malignant malignant malignant malignant benign    benign    benign   
+## [442] benign    benign    benign    benign    benign    benign    benign   
+## [449] benign    benign    benign    benign    benign    malignant benign   
+## [456] malignant benign    benign    benign    benign    benign    benign   
+## [463] malignant benign    benign    benign    benign    benign    benign   
+## [470] benign    malignant benign    benign    benign    benign    benign   
+## [477] benign    benign    benign    malignant benign    benign    benign   
+## [484] benign    benign    benign    benign    malignant benign    benign   
+## [491] benign    benign    benign    benign    benign    benign    benign   
+## [498] benign    benign    malignant malignant malignant
+## Levels: benign malignant</code></pre>
+<pre class="r"><code>print(model)</code></pre>
+<pre><code>## 
+## Naive Bayes Classifier for Discrete Predictors
+## 
+## Call:
+## naiveBayes.default(x = X, y = Y, laplace = laplace)
+## 
+## A-priori probabilities:
+## Y
+##    benign malignant 
+## 0.6454183 0.3545817 
+## 
+## Conditional probabilities:
+##            ClumpThickness
+## Y               [,1]     [,2]
+##   benign    3.021605 1.624930
+##   malignant 7.101124 2.391345
+## 
+##            UniformityCellSize
+## Y               [,1]      [,2]
+##   benign    1.320988 0.9119388
+##   malignant 6.719101 2.6954189
+## 
+##            UniformityCellShape
+## Y               [,1]      [,2]
+##   benign    1.432099 0.9820465
+##   malignant 6.668539 2.5571919
+## 
+##            MarginalAdhesion
+## Y               [,1]      [,2]
+##   benign    1.351852 0.9951724
+##   malignant 5.764045 3.2295335
+## 
+##            SingleEpithelialCellSize
+## Y               [,1]      [,2]
+##   benign    2.095679 0.8512128
+##   malignant 5.432584 2.5038851
+## 
+##            BareNuclei
+## Y               [,1]     [,2]
+##   benign    1.349359 1.217398
+##   malignant 7.542373 3.190836
+## 
+##            BlandChromatin
+## Y               [,1]     [,2]
+##   benign    2.058642 0.988926
+##   malignant 6.005618 2.317941
+## 
+##            NormalNucleoli
+## Y               [,1]      [,2]
+##   benign    1.240741 0.8748679
+##   malignant 5.983146 3.4006891
+## 
+##            Mitoses
+## Y               [,1]     [,2]
+##   benign    1.052469 0.438503
+##   malignant 2.533708 2.504570</code></pre>
+<pre class="r"><code>predict(model, trainData, type=&quot;raw&quot;)</code></pre>
+<pre><code>##               benign    malignant
+##   [1,]  1.000000e+00 2.030164e-09
+##   [2,]  7.753259e-20 1.000000e+00
+##   [3,]  9.813755e-28 1.000000e+00
+##   [4,]  1.000000e+00 5.607070e-09
+##   [5,]  5.255384e-81 1.000000e+00
+##   [6,]  1.537301e-02 9.846270e-01
+##   [7,]  7.565480e-08 9.999999e-01
+##   [8,]  1.000000e+00 1.447206e-10
+##   [9,]  1.000000e+00 5.910818e-11
+##  [10,]  9.370647e-01 6.293528e-02
+##  [11,]  1.000000e+00 8.512376e-10
+##  [12,]  8.743100e-57 1.000000e+00
+##  [13,]  2.234771e-10 1.000000e+00
+##  [14,]  1.000000e+00 2.440400e-10
+##  [15,]  1.000000e+00 7.359038e-10
+##  [16,]  3.402529e-33 1.000000e+00
+##  [17,]  1.000000e+00 6.867152e-09
+##  [18,]  1.230304e-42 1.000000e+00
+##  [19,]  2.585078e-08 1.000000e+00
+##  [20,]  1.000000e+00 1.190979e-10
+##  [21,]  6.227569e-08 9.999999e-01
+##  [22,]  1.000000e+00 6.732419e-10
+##  [23,]  1.000000e+00 5.910818e-11
+##  [24,]  1.000000e+00 1.317992e-10
+##  [25,]  1.000000e+00 1.782410e-10
+##  [26,]  1.000000e+00 3.115484e-10
+##  [27,]  1.000000e+00 2.565226e-10
+##  [28,]  3.010571e-73 1.000000e+00
+##  [29,]  1.281690e-30 1.000000e+00
+##  [30,]  6.583160e-18 1.000000e+00
+##  [31,]  9.661036e-10 1.000000e+00
+##  [32,]  1.043296e-63 1.000000e+00
+##  [33,]  2.377784e-75 1.000000e+00
+##  [34,]  1.000000e+00 3.949518e-11
+##  [35,]  1.000000e+00 5.607070e-09
+##  [36,]  3.482210e-37 1.000000e+00
+##  [37,]  1.344189e-27 1.000000e+00
+##  [38,]  8.757017e-30 1.000000e+00
+##  [39,]  4.379776e-82 1.000000e+00
+##  [40,]  1.731774e-32 1.000000e+00
+##  [41,]  8.168638e-20 1.000000e+00
+##  [42,]  3.454519e-53 1.000000e+00
+##  [43,]  2.592405e-12 1.000000e+00
+##  [44,]  1.803483e-05 9.999820e-01
+##  [45,]  1.631534e-24 1.000000e+00
+##  [46,]  1.000000e+00 7.914579e-11
+##  [47,]  4.196700e-59 1.000000e+00
+##  [48,]  1.066915e-16 1.000000e+00
+##  [49,]  1.000000e+00 3.949518e-11
+##  [50,]  1.000000e+00 7.359038e-10
+##  [51,]  3.874194e-36 1.000000e+00
+##  [52,]  2.510341e-96 1.000000e+00
+##  [53,] 2.030298e-149 1.000000e+00
+##  [54,]  9.626583e-01 3.734171e-02
+##  [55,]  1.996594e-48 1.000000e+00
+##  [56,]  1.000000e+00 8.122613e-09
+##  [57,]  1.000000e+00 7.409292e-09
+##  [58,]  1.000000e+00 2.208311e-08
+##  [59,]  1.000000e+00 1.648685e-10
+##  [60,]  1.000000e+00 4.265590e-10
+##  [61,]  1.000000e+00 5.164108e-09
+##  [62,]  9.997676e-01 2.324396e-04
+##  [63,] 1.607404e-100 1.000000e+00
+##  [64,] 2.032484e-149 1.000000e+00
+##  [65,]  8.109549e-14 1.000000e+00
+##  [66,]  9.541531e-45 1.000000e+00
+##  [67,]  1.000000e+00 7.359038e-10
+##  [68,]  1.000000e+00 1.190979e-10
+##  [69,]  1.000000e+00 7.359038e-10
+##  [70,]  1.000000e+00 1.782410e-10
+##  [71,]  1.000000e+00 1.190979e-10
+##  [72,]  1.000000e+00 7.907692e-11
+##  [73,]  1.000000e+00 2.030164e-09
+##  [74,] 3.554264e-143 1.000000e+00
+##  [75,]  3.873566e-67 1.000000e+00
+##  [76,]  9.446104e-45 1.000000e+00
+##  [77,]  1.000000e+00 1.740444e-09
+##  [78,]  8.617724e-07 9.999991e-01
+##  [79,] 1.167361e-142 1.000000e+00
+##  [80,]  1.183974e-55 1.000000e+00
+##  [81,]  1.000000e+00 5.719176e-10
+##  [82,]  4.783236e-16 1.000000e+00
+##  [83,]  3.092194e-37 1.000000e+00
+##  [84,]  1.489133e-67 1.000000e+00
+##  [85,]  9.999999e-01 1.037536e-07
+##  [86,]  1.000000e+00 1.549669e-08
+##  [87,]  9.998476e-01 1.524442e-04
+##  [88,]  5.912711e-93 1.000000e+00
+##  [89,]  1.000000e+00 3.751189e-09
+##  [90,]  5.432594e-71 1.000000e+00
+##  [91,]  2.481746e-57 1.000000e+00
+##  [92,]  1.000000e+00 3.949518e-11
+##  [93,]  1.001893e-46 1.000000e+00
+##  [94,]  1.295377e-08 1.000000e+00
+##  [95,]  1.000000e+00 9.114952e-09
+##  [96,]  4.580120e-73 1.000000e+00
+##  [97,]  1.000000e+00 3.025357e-10
+##  [98,]  9.999999e-01 5.891206e-08
+##  [99,]  1.000000e+00 2.440400e-10
+## [100,]  1.000000e+00 8.301770e-11
+## [101,]  1.000000e+00 5.771652e-10
+## [102,]  1.000000e+00 9.877439e-10
+## [103,]  1.000000e+00 8.301770e-11
+## [104,]  1.000000e+00 4.524095e-11
+## [105,]  1.000000e+00 1.549669e-08
+## [106,]  1.000000e+00 5.910818e-11
+## [107,]  1.000000e+00 1.100529e-08
+## [108,]  1.000000e+00 1.447206e-10
+## [109,]  1.717781e-21 1.000000e+00
+## [110,]  1.000000e+00 1.335033e-09
+## [111,]  1.000000e+00 3.022931e-11
+## [112,]  1.379406e-17 1.000000e+00
+## [113,]  1.000000e+00 2.376005e-10
+## [114,]  1.000000e+00 4.104227e-09
+## [115,]  1.748784e-42 1.000000e+00
+## [116,]  1.000000e+00 1.521549e-09
+## [117,]  1.000000e+00 3.270744e-10
+## [118,]  1.008422e-30 1.000000e+00
+## [119,]  1.000000e+00 4.178353e-08
+## [120,]  1.000000e+00 3.049086e-09
+## [121,]  2.418362e-65 1.000000e+00
+## [122,] 2.721816e-135 1.000000e+00
+## [123,]  1.000000e+00 3.270744e-10
+## [124,]  1.000000e+00 6.420554e-11
+## [125,]  1.000000e+00 1.190979e-10
+## [126,] 1.202984e-143 1.000000e+00
+## [127,]  4.750701e-22 1.000000e+00
+## [128,]  5.082801e-62 1.000000e+00
+## [129,]  2.437555e-69 1.000000e+00
+## [130,]  1.000000e+00 7.359038e-10
+## [131,]  1.000000e+00 1.447206e-10
+## [132,]  1.000000e+00 3.022931e-11
+## [133,]  7.750817e-59 1.000000e+00
+## [134,]  4.396496e-26 1.000000e+00
+## [135,]  8.041609e-49 1.000000e+00
+## [136,]  4.819562e-66 1.000000e+00
+## [137,]  1.000000e+00 4.101583e-09
+## [138,]  1.757474e-88 1.000000e+00
+## [139,]  1.000000e+00 6.732419e-10
+## [140,]  1.000000e+00 3.270744e-10
+## [141,]  9.999998e-01 1.681596e-07
+## [142,]  1.000000e+00 3.022931e-11
+## [143,]  1.000000e+00 1.084642e-10
+## [144,]  2.661908e-53 1.000000e+00
+## [145,]  1.000000e+00 1.190979e-10
+## [146,]  1.000000e+00 2.030164e-09
+## [147,]  1.000000e+00 1.190979e-10
+## [148,] 3.424212e-104 1.000000e+00
+## [149,]  3.650579e-45 1.000000e+00
+## [150,]  1.000000e+00 1.447206e-10
+## [151,]  1.000000e+00 2.466933e-09
+## [152,] 1.459171e-119 1.000000e+00
+## [153,]  4.448761e-59 1.000000e+00
+## [154,]  1.000000e+00 1.190979e-10
+## [155,] 4.676593e-106 1.000000e+00
+## [156,]  4.265431e-82 1.000000e+00
+## [157,]  1.000000e+00 3.949518e-11
+## [158,]  1.000000e+00 1.190979e-10
+## [159,]  9.881275e-66 1.000000e+00
+## [160,]  6.277593e-68 1.000000e+00
+## [161,]  9.999988e-01 1.158277e-06
+## [162,]  4.531813e-20 1.000000e+00
+## [163,]  1.000000e+00 3.949518e-11
+## [164,]  3.073388e-48 1.000000e+00
+## [165,]  1.022709e-45 1.000000e+00
+## [166,]  1.739897e-96 1.000000e+00
+## [167,]  4.358174e-55 1.000000e+00
+## [168,]  1.571639e-05 9.999843e-01
+## [169,]  8.072376e-21 1.000000e+00
+## [170,]  7.667092e-01 2.332908e-01
+## [171,]  9.999987e-01 1.262853e-06
+## [172,] 3.966002e-144 1.000000e+00
+## [173,]  4.246707e-59 1.000000e+00
+## [174,] 2.910256e-166 1.000000e+00
+## [175,]  9.999980e-01 2.015309e-06
+## [176,]  1.000000e+00 1.782410e-10
+## [177,]  1.000000e+00 1.190979e-10
+## [178,]  1.000000e+00 7.111036e-09
+## [179,]  6.055933e-75 1.000000e+00
+## [180,]  2.375159e-09 1.000000e+00
+## [181,]  9.945002e-01 5.499790e-03
+## [182,]  1.000000e+00 6.731635e-09
+## [183,]  1.000000e+00 1.818576e-10
+## [184,]  2.727234e-19 1.000000e+00
+## [185,]  1.043296e-63 1.000000e+00
+## [186,]  4.196700e-59 1.000000e+00
+## [187,]  1.000000e+00 8.301770e-11
+## [188,]  1.000000e+00 3.270744e-10
+## [189,] 1.054753e-102 1.000000e+00
+## [190,]  1.226648e-55 1.000000e+00
+## [191,]  4.274613e-40 1.000000e+00
+## [192,]  6.097530e-55 1.000000e+00
+## [193,]  9.999992e-01 7.874597e-07
+## [194,]  1.027450e-37 1.000000e+00
+## [195,]  2.784182e-14 1.000000e+00
+## [196,]  1.000000e+00 2.030164e-09
+## [197,]  2.784182e-14 1.000000e+00
+## [198,]  1.000000e+00 6.762565e-10
+## [199,]  1.000000e+00 3.022344e-08
+## [200,]  1.000000e+00 1.084642e-10
+## [201,]  1.426874e-69 1.000000e+00
+## [202,]  1.000000e+00 3.270744e-10
+## [203,]  4.389495e-33 1.000000e+00
+## [204,]  3.344722e-42 1.000000e+00
+## [205,]  6.458927e-98 1.000000e+00
+## [206,] 5.694202e-191 1.000000e+00
+## [207,]  1.000000e+00 3.025357e-10
+## [208,]  8.672662e-22 1.000000e+00
+## [209,]  1.084471e-63 1.000000e+00
+## [210,]  1.000000e+00 3.022931e-11
+## [211,]  1.000000e+00 1.190979e-10
+## [212,]  4.903612e-18 1.000000e+00
+## [213,]  1.000000e+00 8.128645e-10
+## [214,]  3.041879e-39 1.000000e+00
+## [215,]  1.435578e-47 1.000000e+00
+## [216,]  1.000000e+00 1.190979e-10
+## [217,]  1.000000e+00 1.190979e-10
+## [218,]  7.996173e-24 1.000000e+00
+## [219,]  3.458672e-57 1.000000e+00
+## [220,]  1.000000e+00 1.190979e-10
+## [221,]  3.481146e-52 1.000000e+00
+## [222,]  1.000000e+00 1.648685e-10
+## [223,]  1.000000e+00 3.022931e-11
+## [224,]  3.941425e-42 1.000000e+00
+## [225,]  1.000000e+00 3.022931e-11
+## [226,]  1.000000e+00 4.799216e-11
+## [227,]  2.862782e-34 1.000000e+00
+## [228,]  3.924914e-17 1.000000e+00
+## [229,]  1.098824e-60 1.000000e+00
+## [230,]  9.999999e-01 1.006289e-07
+## [231,]  9.013565e-13 1.000000e+00
+## [232,]  1.000000e+00 6.731635e-09
+## [233,]  2.172643e-29 1.000000e+00
+## [234,]  1.000000e+00 1.190979e-10
+## [235,]  1.000000e+00 9.448856e-09
+## [236,]  1.000000e+00 3.949518e-11
+## [237,]  4.308622e-44 1.000000e+00
+## [238,]  2.110276e-17 1.000000e+00
+## [239,]  1.000000e+00 2.454095e-08
+## [240,]  1.106686e-20 1.000000e+00
+## [241,]  3.231612e-25 1.000000e+00
+## [242,]  1.770775e-26 1.000000e+00
+## [243,]  1.000000e+00 4.799216e-11
+## [244,]  3.618084e-19 1.000000e+00
+## [245,]  1.000000e+00 1.190979e-10
+## [246,]  1.000000e+00 4.524095e-11
+## [247,]  1.416473e-61 1.000000e+00
+## [248,]  1.000000e+00 5.319170e-10
+## [249,]  1.123290e-16 1.000000e+00
+## [250,]  1.005411e-16 1.000000e+00
+## [251,]  1.000000e+00 3.926180e-09
+## [252,]  1.257903e-14 1.000000e+00
+## [253,]  2.801180e-81 1.000000e+00
+## [254,]  1.000000e+00 3.949518e-11
+## [255,]  1.000000e+00 1.407395e-09
+## [256,]  2.290901e-01 7.709099e-01
+## [257,]  2.944567e-58 1.000000e+00
+## [258,]  2.306493e-17 1.000000e+00
+## [259,] 5.687391e-195 1.000000e+00
+## [260,]  1.070199e-57 1.000000e+00
+## [261,]  9.999999e-01 1.229795e-07
+## [262,]  9.997704e-01 2.296039e-04
+## [263,]  1.000000e+00 1.782410e-10
+## [264,] 1.139550e-135 1.000000e+00
+## [265,]  1.669705e-80 1.000000e+00
+## [266,]  1.000000e+00 4.092715e-10
+## [267,]  1.000000e+00 4.092715e-10
+## [268,]  1.000000e+00 5.771652e-10
+## [269,]  1.000000e+00 1.176763e-09
+## [270,]  1.000000e+00 3.022931e-11
+## [271,]  1.000000e+00 3.949518e-11
+## [272,]  1.000000e+00 4.799216e-11
+## [273,]  9.998116e-01 1.884297e-04
+## [274,]  2.208564e-50 1.000000e+00
+## [275,]  1.000000e+00 7.111034e-09
+## [276,]  1.000000e+00 4.524095e-11
+## [277,]  1.000000e+00 4.524095e-11
+## [278,]  9.991614e-01 8.386390e-04
+## [279,]  1.054493e-23 1.000000e+00
+## [280,]  9.999975e-01 2.514736e-06
+## [281,]  1.000000e+00 1.222116e-10
+## [282,]  1.000000e+00 6.903386e-11
+## [283,]  1.000000e+00 1.084642e-10
+## [284,]  1.000000e+00 1.360165e-09
+## [285,]  1.000000e+00 1.084642e-10
+## [286,]  1.000000e+00 3.270744e-10
+## [287,]  1.000000e+00 1.867864e-10
+## [288,]  1.000000e+00 5.704476e-10
+## [289,]  1.000000e+00 1.041060e-09
+## [290,] 3.122172e-109 1.000000e+00
+## [291,]  9.999998e-01 1.710509e-07
+## [292,]  1.000000e+00 3.766690e-09
+## [293,]  1.000000e+00 1.211357e-09
+## [294,]  1.000000e+00 1.468129e-09
+## [295,]  1.000000e+00 2.770890e-08
+## [296,]  1.000000e+00 9.877439e-10
+## [297,]  8.497803e-63 1.000000e+00
+## [298,]  1.000000e+00 4.801424e-09
+## [299,]  6.641784e-27 1.000000e+00
+## [300,]  8.236698e-04 9.991763e-01
+## [301,]  2.731142e-53 1.000000e+00
+## [302,]  1.000000e+00 3.949518e-11
+## [303,]  9.367757e-79 1.000000e+00
+## [304,]  9.999973e-01 2.707469e-06
+## [305,]  1.000000e+00 8.301770e-11
+## [306,] 3.261798e-114 1.000000e+00
+## [307,]  9.950849e-01 4.915114e-03
+## [308,]  1.000000e+00 5.910818e-11
+## [309,]  1.000000e+00 1.532428e-09
+## [310,]  1.000000e+00 1.391990e-09
+## [311,]  1.452515e-31 1.000000e+00
+## [312,]  1.590936e-39 1.000000e+00
+## [313,]  7.244922e-51 1.000000e+00
+## [314,]  1.000000e+00 1.867864e-10
+## [315,]  1.000000e+00 1.926830e-08
+## [316,]  1.000000e+00 5.152942e-10
+## [317,]  1.893313e-42 1.000000e+00
+## [318,]  9.999883e-01 1.165020e-05
+## [319,]  1.000000e+00 6.057759e-11
+## [320,]  9.997150e-01 2.850466e-04
+## [321,]  1.000000e+00 4.524095e-11
+## [322,]  1.000000e+00 2.259447e-09
+## [323,]  1.000000e+00 5.152942e-10
+## [324,]  7.006382e-50 1.000000e+00
+## [325,]  1.000000e+00 2.368061e-09
+## [326,]  4.321984e-01 5.678016e-01
+## [327,]  1.992787e-45 1.000000e+00
+## [328,]  1.000000e+00 1.218693e-09
+## [329,]  1.000000e+00 3.926180e-09
+## [330,]  1.000000e+00 4.255802e-08
+## [331,]  1.000000e+00 1.328054e-08
+## [332,]  1.000000e+00 3.861981e-10
+## [333,]  1.000000e+00 1.867864e-10
+## [334,]  2.780131e-68 1.000000e+00
+## [335,]  1.152657e-41 1.000000e+00
+## [336,]  6.194666e-35 1.000000e+00
+## [337,]  1.000000e+00 1.867864e-10
+## [338,]  1.000000e+00 9.340779e-11
+## [339,]  1.000000e+00 1.328054e-08
+## [340,]  1.000000e+00 1.867864e-10
+## [341,]  1.000000e+00 5.152942e-10
+## [342,]  1.000000e+00 8.301770e-11
+## [343,]  1.000000e+00 1.867864e-10
+## [344,]  1.000000e+00 1.310749e-09
+## [345,]  1.000000e+00 6.261545e-10
+## [346,]  9.999981e-01 1.894328e-06
+## [347,]  2.310108e-64 1.000000e+00
+## [348,]  1.000000e+00 1.218693e-09
+## [349,]  1.000000e+00 1.317992e-10
+## [350,]  1.796649e-20 1.000000e+00
+## [351,]  9.997316e-01 2.683820e-04
+## [352,]  5.737164e-38 1.000000e+00
+## [353,]  1.000000e+00 2.965427e-10
+## [354,]  1.573194e-12 1.000000e+00
+## [355,]  1.000000e+00 4.751267e-10
+## [356,]  1.000000e+00 2.440400e-10
+## [357,]  1.000000e+00 2.440400e-10
+## [358,]  1.000000e+00 6.867152e-09
+## [359,]  1.000000e+00 4.265590e-10
+## [360,]  1.000000e+00 7.359038e-10
+## [361,]  1.000000e+00 3.022931e-11
+## [362,]  1.000000e+00 1.557908e-09
+## [363,] 1.366485e-111 1.000000e+00
+## [364,]  1.000000e+00 5.152942e-10
+## [365,]  1.000000e+00 4.524095e-11
+## [366,]  1.000000e+00 3.022931e-11
+## [367,]  1.000000e+00 6.732419e-10
+## [368,]  1.000000e+00 5.152942e-10
+## [369,]  1.000000e+00 1.317992e-10
+## [370,]  1.050789e-66 1.000000e+00
+## [371,]  1.000000e+00 3.673283e-11
+## [372,]  1.000000e+00 4.799216e-11
+## [373,]  1.000000e+00 3.431846e-10
+## [374,]  1.000000e+00 5.209971e-10
+## [375,]  9.423594e-14 1.000000e+00
+## [376,]  4.068514e-36 1.000000e+00
+## [377,]  1.000000e+00 1.451071e-10
+## [378,]  1.000000e+00 1.867864e-10
+## [379,]  1.000000e+00 7.359038e-10
+## [380,]  1.000000e+00 2.965427e-10
+## [381,]  1.000000e+00 1.468129e-09
+## [382,]  1.000000e+00 1.447206e-10
+## [383,]  1.000000e+00 1.084642e-10
+## [384,]  1.000000e+00 5.910818e-11
+## [385,]  1.000000e+00 2.818417e-09
+## [386,]  1.000000e+00 2.030164e-09
+## [387,]  1.000000e+00 4.801424e-09
+## [388,]  1.000000e+00 2.440400e-10
+## [389,]  1.000000e+00 1.349133e-09
+## [390,]  1.000000e+00 9.669997e-09
+## [391,]  1.000000e+00 1.398778e-09
+## [392,]  1.000000e+00 6.732419e-10
+## [393,]  3.935134e-87 1.000000e+00
+## [394,]  1.000000e+00 5.497407e-11
+## [395,]  1.000000e+00 1.008781e-10
+## [396,]  2.278092e-38 1.000000e+00
+## [397,]  1.000000e+00 1.084642e-10
+## [398,]  1.000000e+00 4.949220e-08
+## [399,]  9.985659e-01 1.434063e-03
+## [400,]  1.000000e+00 8.301770e-11
+## [401,]  1.000000e+00 8.602380e-09
+## [402,]  1.000000e+00 5.910818e-11
+## [403,]  1.000000e+00 2.030164e-09
+## [404,]  1.000000e+00 1.190979e-10
+## [405,]  1.000000e+00 1.084642e-10
+## [406,]  1.000000e+00 1.521549e-09
+## [407,]  3.712750e-85 1.000000e+00
+## [408,]  1.000000e+00 7.735449e-10
+## [409,]  1.000000e+00 1.744246e-09
+## [410,]  4.790033e-66 1.000000e+00
+## [411,]  1.000000e+00 1.084642e-10
+## [412,]  9.369342e-38 1.000000e+00
+## [413,]  1.000000e+00 4.801424e-09
+## [414,]  1.000000e+00 6.732419e-10
+## [415,]  1.000000e+00 1.190979e-10
+## [416,]  1.000000e+00 1.592246e-09
+## [417,]  1.077959e-58 1.000000e+00
+## [418,]  9.997818e-01 2.181871e-04
+## [419,]  1.000000e+00 3.022931e-11
+## [420,] 5.660136e-100 1.000000e+00
+## [421,]  1.000000e+00 1.391990e-09
+## [422,]  1.269660e-37 1.000000e+00
+## [423,]  1.000000e+00 5.152942e-10
+## [424,]  7.217551e-41 1.000000e+00
+## [425,]  3.908259e-34 1.000000e+00
+## [426,]  1.000000e+00 1.218693e-09
+## [427,]  1.958337e-29 1.000000e+00
+## [428,]  1.000000e+00 6.732419e-10
+## [429,]  1.000000e+00 1.084642e-10
+## [430,]  1.000000e+00 4.799216e-11
+## [431,]  1.471410e-41 1.000000e+00
+## [432,]  2.678724e-27 1.000000e+00
+## [433,]  1.445699e-51 1.000000e+00
+## [434,]  1.000000e+00 3.264850e-10
+## [435,]  1.190641e-89 1.000000e+00
+## [436,]  1.402627e-34 1.000000e+00
+## [437,]  1.677793e-61 1.000000e+00
+## [438,] 1.564732e-188 1.000000e+00
+## [439,]  1.000000e+00 1.109222e-09
+## [440,]  1.000000e+00 7.182469e-11
+## [441,]  1.000000e+00 3.304033e-09
+## [442,]  1.000000e+00 1.084642e-10
+## [443,]  1.000000e+00 7.560117e-10
+## [444,]  1.000000e+00 2.440400e-10
+## [445,]  1.000000e+00 6.732419e-10
+## [446,]  7.645205e-01 2.354795e-01
+## [447,]  1.000000e+00 3.022931e-11
+## [448,]  1.000000e+00 1.429932e-09
+## [449,]  9.999999e-01 1.422437e-07
+## [450,]  1.000000e+00 2.319223e-08
+## [451,]  1.000000e+00 4.524095e-11
+## [452,]  9.999999e-01 6.002723e-08
+## [453,]  1.000000e+00 6.732419e-10
+## [454,]  3.425564e-35 1.000000e+00
+## [455,]  1.000000e+00 8.301770e-11
+## [456,]  3.212921e-81 1.000000e+00
+## [457,]  1.000000e+00 1.867864e-10
+## [458,]  1.000000e+00 3.926180e-09
+## [459,]  1.000000e+00 1.084642e-10
+## [460,]  1.000000e+00 1.084642e-10
+## [461,]  1.000000e+00 4.524095e-11
+## [462,]  1.000000e+00 2.303261e-10
+## [463,] 1.076442e-188 1.000000e+00
+## [464,]  1.000000e+00 1.084642e-10
+## [465,]  1.000000e+00 1.836403e-08
+## [466,]  1.000000e+00 1.391990e-09
+## [467,]  1.000000e+00 2.440400e-10
+## [468,]  1.000000e+00 3.270744e-10
+## [469,]  1.000000e+00 1.084642e-10
+## [470,]  1.000000e+00 6.732419e-10
+## [471,]  3.259833e-46 1.000000e+00
+## [472,]  1.000000e+00 3.022931e-11
+## [473,]  1.000000e+00 3.949518e-11
+## [474,]  1.000000e+00 7.359038e-10
+## [475,]  1.000000e+00 5.347211e-10
+## [476,]  1.000000e+00 5.347211e-10
+## [477,]  1.000000e+00 8.264213e-10
+## [478,]  9.999999e-01 6.549932e-08
+## [479,]  1.000000e+00 3.270744e-10
+## [480,]  1.858060e-40 1.000000e+00
+## [481,]  1.000000e+00 1.454216e-09
+## [482,]  1.000000e+00 1.782410e-10
+## [483,]  9.999999e-01 6.379040e-08
+## [484,]  1.000000e+00 3.504111e-08
+## [485,]  1.000000e+00 9.340779e-11
+## [486,]  1.000000e+00 5.152942e-10
+## [487,]  1.000000e+00 4.524095e-11
+## [488,]  2.040592e-72 1.000000e+00
+## [489,]  1.000000e+00 4.197551e-09
+## [490,]  1.000000e+00 3.022931e-11
+## [491,]  1.000000e+00 3.022931e-11
+## [492,]  1.000000e+00 3.022931e-11
+## [493,]  1.000000e+00 3.022931e-11
+## [494,]  1.000000e+00 1.570638e-09
+## [495,]  1.000000e+00 1.867864e-10
+## [496,]  1.000000e+00 2.303261e-10
+## [497,]  1.000000e+00 8.301770e-11
+## [498,]  1.000000e+00 4.640283e-10
+## [499,]  1.000000e+00 4.524095e-11
+## [500,]  1.269391e-69 1.000000e+00
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 2 rows ]</code></pre>
+<pre class="r"><code>#predict(model, trainData)</code></pre>
+<pre class="r"><code>ytest &lt;- testData$Class
+pred &lt;- predict(model, testData)
+pred_prob &lt;- predict(model, testData, type=&quot;raw&quot;)
+ConfusionMatrix(ytest, pred)</code></pre>
+<pre><code>##            y_pred
+## y_true      benign malignant
+##   benign       126         2
+##   malignant      8        61</code></pre>
+<pre class="r"><code>Accuracy(ytest, pred)</code></pre>
+<pre><code>## [1] 0.9492386</code></pre>
+<pre class="r"><code>Precision(ytest, pred)</code></pre>
+<pre><code>## [1] 0.984375</code></pre>
+<pre class="r"><code>Recall(ytest, pred)</code></pre>
+<pre><code>## [1] 0.9402985</code></pre>
+<pre class="r"><code>F1_Score(ytest, pred)</code></pre>
+<pre><code>## [1] 0.9618321</code></pre>
+<pre class="r"><code>Precision(ytest, pred, &quot;benign&quot;)</code></pre>
+<pre><code>## [1] 0.984375</code></pre>
+<div id="roc-curves" class="section level2">
+<h2>ROC curves</h2>
+<p><a href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic" class="uri">https://en.wikipedia.org/wiki/Receiver_operating_characteristic</a></p>
+<p>The acronym stands for receiver operating characteristic, a term used in signal detection to characterize the tradeoff between hit rate and false alarm rate over a noisy channel.</p>
+<p>In statistics, a receiver operating characteristic (ROC), or ROC curve, is a graphical plot that illustrates the performance of a binary classifier system as its discrimination threshold is varied. The curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings</p>
+<p>The basic idea of diagnostic test interpretation is to calculate the probability a patient has a disease under consideration given a certain test result. A 2 by 2 table is used as a mneumonic device. Be sure to label the table with the test results on the left side and the disease status on top as shown here:</p>
+<p>Sensitivity is the proportion of patients with disease who test positive. In probability notation: P(T+|D+) = TP / (TP+FN).</p>
+<p>Specificity is the proportion of patients without disease who test negative. In probability notation: P(T-|D-) = TN / (TN + FP).</p>
+<p>Sensitivity (also called the true positive rate, the recall, or probability of detection[1] in some fields) measures the proportion of positives that are correctly identified as such (e.g., the percentage of sick people who are correctly identified as having the condition). Specificity (also called the true negative rate) measures the proportion of negatives that are correctly identified as such (e.g., the percentage of healthy people who are correctly identified as not having the condition).</p>
+<p>An ROC curve demonstrates several things:</p>
+<p>It shows the tradeoff between sensitivity and specificity (any increase in sensitivity will be accompanied by a decrease in specificity). The closer the curve follows the left-hand border and then the top border of the ROC space, the more accurate the test. The closer the curve comes to the 45-degree diagonal of the ROC space, the less accurate the test. The slope of the tangent line at a cutpoint gives the likelihood ratio (LR) for that value of the test. You can check this out on the graph above. Recall that the LR for T4 &lt; 5 is 52. This corresponds to the far left, steep portion of the curve. The LR for T4 &gt; 9 is 0.2. This corresponds to the far right, nearly horizontal portion of the curve. The area under the curve is a measure of text accuracy. This is discussed further in the next section.</p>
+<p>Accuracy is measured by the area under the ROC curve. An area of 1 represents a perfect test; an area of .5 represents a worthless test. A rough guide for classifying the accuracy of a diagnostic test is the traditional academic point system:</p>
+<p>.90-1 = excellent (A) .80-.90 = good (B) .70-.80 = fair (C) .60-.70 = poor (D) .50-.60 = fail (F)</p>
+<p><a href="http://gim.unmc.edu/dxtests/ROC1.htm" class="uri">http://gim.unmc.edu/dxtests/ROC1.htm</a></p>
+<pre class="r"><code>pred_obj = prediction(pred_prob[, 2], ytest,label.ordering=c(&quot;benign&quot;, &quot;malignant&quot;))
+ROCcurve &lt;- performance(pred_obj, &quot;tpr&quot;, &quot;fpr&quot;)
+performance(pred_obj, &quot;auc&quot;)</code></pre>
+<pre><code>## An object of class &quot;performance&quot;
+## Slot &quot;x.name&quot;:
+## [1] &quot;None&quot;
+## 
+## Slot &quot;y.name&quot;:
+## [1] &quot;Area under the ROC curve&quot;
+## 
+## Slot &quot;alpha.name&quot;:
+## [1] &quot;none&quot;
+## 
+## Slot &quot;x.values&quot;:
+## list()
+## 
+## Slot &quot;y.values&quot;:
+## [[1]]
+## [1] 0.9759536
+## 
+## 
+## Slot &quot;alpha.values&quot;:
+## list()</code></pre>
+<p>Laplace smoothing (explain what it is).</p>
+<pre class="r"><code>a &lt;- runif(197)
+pred_prob_laplace &lt;-cbind(a, 1-a)
+pred_obj_laplace = prediction(pred_prob_laplace[, 2], ytest,label.ordering=c(&quot;benign&quot;, &quot;malignant&quot;))
+
+ROCcurve_laplace &lt;- performance(pred_obj_laplace, &quot;tpr&quot;, &quot;fpr&quot;)
+plot(ROCcurve, col = &quot;blue&quot;)
+abline(0,1, col = &quot;grey&quot;)
+lines(ROCcurve_laplace@x.values[[1]], ROCcurve_laplace@y.values[[1]] , col=&quot;red&quot;)</code></pre>
+<p><img src="nb_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-2782275-11', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
