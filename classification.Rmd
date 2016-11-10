@@ -1,7 +1,5 @@
 ---
 title: "Classification"
-author: "Kyriakos Chatzidimitriou"
-date: "11/7/2016"
 output: html_document
 ---
 
@@ -9,4 +7,4 @@ Notes on:
 
   - [Decision Trees](dt.html)
   - [Naive Bayes](nb.html)
-  - [kNN](kNN.html)
+  - [k Nearest Neighbors](knn.html)

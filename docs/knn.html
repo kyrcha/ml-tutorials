@@ -185,25 +185,13 @@ $(document).ready(function () {
   <a href="r.html">R</a>
 </li>
 <li>
-  <a href="uc.html">Data</a>
-</li>
-<li>
   <a href="classification.html">Classification</a>
-</li>
-<li>
-  <a href="uc.html">Regression</a>
-</li>
-<li>
-  <a href="uc.html">Dimensionality Reduction</a>
 </li>
 <li>
   <a href="uc.html">Clustering</a>
 </li>
 <li>
-  <a href="uc.html">Anomaly Detection</a>
-</li>
-<li>
-  <a href="uc.html">Association Rules</a>
+  <a href="finder.html">Finder</a>
 </li>
       </ul>
     </div><!--/.nav-collapse -->
@@ -221,80 +209,36 @@ $(document).ready(function () {
 </div>
 
 
-<pre class="r"><code>fileURL &lt;- &quot;http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data&quot;
-download.file(fileURL, destfile=&quot;breast-cancer-wisconsin.data&quot;, method=&quot;curl&quot;)
-# read the data
-data &lt;- read.table(&quot;breast-cancer-wisconsin.data&quot;, na.strings = &quot;?&quot;, sep=&quot;,&quot;)
-str(data)</code></pre>
-<pre><code>## &#39;data.frame&#39;:    699 obs. of  11 variables:
-##  $ V1 : int  1000025 1002945 1015425 1016277 1017023 1017122 1018099 1018561 1033078 1033078 ...
-##  $ V2 : int  5 5 3 6 4 8 1 2 2 4 ...
-##  $ V3 : int  1 4 1 8 1 10 1 1 1 2 ...
-##  $ V4 : int  1 4 1 8 1 10 1 2 1 1 ...
-##  $ V5 : int  1 5 1 1 3 8 1 1 1 1 ...
-##  $ V6 : int  2 7 2 3 2 7 2 2 2 2 ...
-##  $ V7 : int  1 10 2 4 1 10 10 1 1 1 ...
-##  $ V8 : int  3 3 3 3 3 9 3 3 1 2 ...
-##  $ V9 : int  1 2 1 7 1 7 1 1 1 1 ...
-##  $ V10: int  1 1 1 1 1 1 1 1 5 1 ...
-##  $ V11: int  2 2 2 2 2 4 2 2 2 2 ...</code></pre>
-<pre class="r"><code>data &lt;- data[,-1]
-names(data) &lt;- c(&quot;ClumpThickness&quot;,
-&quot;UniformityCellSize&quot;,
-&quot;UniformityCellShape&quot;,
-&quot;MarginalAdhesion&quot;,
-&quot;SingleEpithelialCellSize&quot;,
-&quot;BareNuclei&quot;,
-&quot;BlandChromatin&quot;,
-&quot;NormalNucleoli&quot;,
-&quot;Mitoses&quot;,
-&quot;Class&quot;)
-data$Class &lt;- factor(data$Class, levels=c(2,4), labels=c(&quot;benign&quot;, &quot;malignant&quot;))
-print(summary(data))</code></pre>
-<pre><code>##  ClumpThickness   UniformityCellSize UniformityCellShape MarginalAdhesion
-##  Min.   : 1.000   Min.   : 1.000     Min.   : 1.000      Min.   : 1.000  
-##  1st Qu.: 2.000   1st Qu.: 1.000     1st Qu.: 1.000      1st Qu.: 1.000  
-##  Median : 4.000   Median : 1.000     Median : 1.000      Median : 1.000  
-##  Mean   : 4.418   Mean   : 3.134     Mean   : 3.207      Mean   : 2.807  
-##  3rd Qu.: 6.000   3rd Qu.: 5.000     3rd Qu.: 5.000      3rd Qu.: 4.000  
-##  Max.   :10.000   Max.   :10.000     Max.   :10.000      Max.   :10.000  
-##                                                                          
-##  SingleEpithelialCellSize   BareNuclei     BlandChromatin  
-##  Min.   : 1.000           Min.   : 1.000   Min.   : 1.000  
-##  1st Qu.: 2.000           1st Qu.: 1.000   1st Qu.: 2.000  
-##  Median : 2.000           Median : 1.000   Median : 3.000  
-##  Mean   : 3.216           Mean   : 3.545   Mean   : 3.438  
-##  3rd Qu.: 4.000           3rd Qu.: 6.000   3rd Qu.: 5.000  
-##  Max.   :10.000           Max.   :10.000   Max.   :10.000  
-##                           NA&#39;s   :16                       
-##  NormalNucleoli      Mitoses             Class    
-##  Min.   : 1.000   Min.   : 1.000   benign   :458  
-##  1st Qu.: 1.000   1st Qu.: 1.000   malignant:241  
-##  Median : 1.000   Median : 1.000                  
-##  Mean   : 2.867   Mean   : 1.589                  
-##  3rd Qu.: 4.000   3rd Qu.: 1.000                  
-##  Max.   :10.000   Max.   :10.000                  
-## </code></pre>
-<pre class="r"><code>set.seed(2345)
-ind &lt;- sample(2, nrow(iris), replace=TRUE, prob=c(0.7, 0.3))
-trainData &lt;- data[ind==1,]
-validationData &lt;- data[ind==2,]
-library(class)
-trainData &lt;- trainData[complete.cases(trainData),]
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The goal of this notebook is to introduce the k-Nearest Neighbors instance-based learning model in R using the class package. For this example we are going to use the <a href="http://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Original%29">Breast Cancer Wisconsin (Original) Data Set</a>. The steps for loading and splitting the dataset to training and validation are the same as in the <a href="dt.html">decision trees notes</a></p>
+</div>
+<div id="training-prediction" class="section level2">
+<h2>Training &amp; Prediction</h2>
+<p>There is a kNN algorithm in the class package.</p>
+<pre class="r"><code>library(class)</code></pre>
+<p>Because all the attributes are between 1 and 10 there is no need to do normalization between 0 and 1, since no attribute will dominate the others in the distance calculation of kNN. Because kNN accepts the training and testing datasets without the target column, which puts in a 3rd argument, we are going to do some data manipulation to have the data the way the <code>knn</code> function likes them (look the manual with ?knn). Also, because no missing values are allowed in kNN, let’s remove those too.</p>
+<pre class="r"><code>trainData &lt;- trainData[complete.cases(trainData),]
 validationData &lt;- validationData[complete.cases(validationData),]
 trainDataX &lt;- trainData[,-ncol(trainData)]
 trainDataY &lt;- trainData$Class
 validationDataX &lt;- validationData[,-ncol(trainData)]
-validationDataY &lt;- validationData$Class
-prediction = knn(trainDataX, validationDataX, trainDataY, k = 1)</code></pre>
+validationDataY &lt;- validationData$Class</code></pre>
+<p>Let’s predict, since there is no need to training when using kNN. The training instances are the model.</p>
+<pre class="r"><code>prediction = knn(trainDataX, validationDataX, trainDataY, k = 1)</code></pre>
+<p>You can play with the values of k to look for a better model.</p>
+</div>
+<div id="evaluation" class="section level2">
+<h2>Evaluation</h2>
+<p>Make the predictions for the validation dataset and print the confusion matrix:</p>
 <pre class="r"><code>cat(&quot;Confusion matrix:\n&quot;)</code></pre>
 <pre><code>## Confusion matrix:</code></pre>
 <pre class="r"><code>xtab = table(prediction, validationData$Class)
 print(xtab)</code></pre>
 <pre><code>##            
 ## prediction  benign malignant
-##   benign       129         5
-##   malignant      3        57</code></pre>
+##   benign        99         4
+##   malignant      6        60</code></pre>
 <pre class="r"><code>cat(&quot;\nEvaluation:\n\n&quot;)</code></pre>
 <pre><code>## 
 ## Evaluation:</code></pre>
@@ -303,33 +247,28 @@ precision = xtab[1,1]/sum(xtab[,1])
 recall = xtab[1,1]/sum(xtab[1,])
 f = 2 * (precision * recall) / (precision + recall)
 cat(paste(&quot;Accuracy:\t&quot;, format(accuracy, digits=2), &quot;\n&quot;,sep=&quot; &quot;))</code></pre>
-<pre><code>## Accuracy:     0.96</code></pre>
+<pre><code>## Accuracy:     0.94</code></pre>
 <pre class="r"><code>cat(paste(&quot;Precision:\t&quot;, format(precision, digits=2), &quot;\n&quot;,sep=&quot; &quot;))</code></pre>
-<pre><code>## Precision:    0.98</code></pre>
+<pre><code>## Precision:    0.94</code></pre>
 <pre class="r"><code>cat(paste(&quot;Recall:\t\t&quot;, format(recall, digits=2), &quot;\n&quot;,sep=&quot; &quot;))</code></pre>
 <pre><code>## Recall:       0.96</code></pre>
 <pre class="r"><code>cat(paste(&quot;F-measure:\t&quot;, format(f, digits=2), &quot;\n&quot;,sep=&quot; &quot;))</code></pre>
-<pre><code>## F-measure:    0.97</code></pre>
-<div id="cross-validation" class="section level2">
-<h2>Cross Validation</h2>
-<p><a href="https://cran.r-project.org/web/packages/caret/vignettes/caret.pdf" class="uri">https://cran.r-project.org/web/packages/caret/vignettes/caret.pdf</a></p>
+<pre><code>## F-measure:    0.95</code></pre>
+<div id="cross-validation" class="section level3">
+<h3>Cross Validation</h3>
+<p>For performing cross-validation we will use the <code>caret</code> package. <a href="https://cran.r-project.org/web/packages/caret/vignettes/caret.pdf">Here</a> you can find a quick guide to caret.</p>
 <pre><code> Define sets of model
  </code></pre>
 <p>Write here the main caret stuff</p>
-<div id="split-data-in-two-groups" class="section level3">
-<h3>Split data in two groups</h3>
-<p><code>createDataParitiion</code> does a stratified random split of the data</p>
+<div id="split-data-in-two-groups" class="section level4">
+<h4>Split data in two groups</h4>
+<p>The function <code>createDataParitiion</code> does a stratified random split of the data. Similar to what we did above ourselves (not stratified though). Then we will use the <code>train</code> function to build the kNN model.</p>
 <pre class="r"><code>library(caret)
 library(mlbench)
 data(Sonar)
 set.seed(107)
 inTrain &lt;- createDataPartition(y = Sonar$Class, p = .75, list = FALSE)
-str(inTrain)</code></pre>
-<pre><code>##  int [1:157, 1] 1 2 3 6 7 9 10 11 12 13 ...
-##  - attr(*, &quot;dimnames&quot;)=List of 2
-##   ..$ : NULL
-##   ..$ : chr &quot;Resample1&quot;</code></pre>
-<pre class="r"><code>training &lt;- Sonar[ inTrain,]
+training &lt;- Sonar[ inTrain,]
 testing &lt;- Sonar[-inTrain,]
 nrow(training)</code></pre>
 <pre><code>## [1] 157</code></pre>
@@ -338,13 +277,33 @@ nrow(training)</code></pre>
 <pre class="r"><code>kNNFit &lt;- train(Class ~ ., 
                 data = training,
                 method = &quot;knn&quot;,
-                preProc = c(&quot;center&quot;, &quot;scale&quot;))</code></pre>
+                preProc = c(&quot;center&quot;, &quot;scale&quot;))
+print(kNNFit)</code></pre>
+<pre><code>## k-Nearest Neighbors 
+## 
+## 157 samples
+##  60 predictors
+##   2 classes: &#39;M&#39;, &#39;R&#39; 
+## 
+## Pre-processing: centered (60), scaled (60) 
+## Resampling: Bootstrapped (25 reps) 
+## Summary of sample sizes: 157, 157, 157, 157, 157, 157, ... 
+## Resampling results across tuning parameters:
+## 
+##   k  Accuracy   Kappa    
+##   5  0.7491044  0.4919467
+##   7  0.7484501  0.4889733
+##   9  0.7458334  0.4834793
+## 
+## Accuracy was used to select the optimal model using  the largest value.
+## The final value used for the model was k = 5.</code></pre>
+<p>We can also search for the best <em>k</em> value given the training dataset.</p>
 <pre class="r"><code>kNNFit1 &lt;- train(Class ~ ., 
                 data = training,
                 method = &quot;knn&quot;,
                 tuneLength = 15,
                 preProc = c(&quot;center&quot;, &quot;scale&quot;))
-kNNFit1</code></pre>
+print(kNNFit1)</code></pre>
 <pre><code>## k-Nearest Neighbors 
 ## 
 ## 157 samples
@@ -375,6 +334,7 @@ kNNFit1</code></pre>
 ## 
 ## Accuracy was used to select the optimal model using  the largest value.
 ## The final value used for the model was k = 5.</code></pre>
+<p>To create a 10-fold cross-validation based search of <em>k</em>, repeated 3 times we have to use the function <code>trainControl</code>:</p>
 <pre class="r"><code>ctrl &lt;- trainControl(method = &quot;repeatedcv&quot;, repeats = 3)
 kNNFit2 &lt;- train(Class ~ ., 
                 data = training,
@@ -382,7 +342,7 @@ kNNFit2 &lt;- train(Class ~ .,
                 tuneLength = 15,
                 trControl = ctrl,
                 preProc = c(&quot;center&quot;, &quot;scale&quot;))
-kNNFit2</code></pre>
+print(kNNFit2)</code></pre>
 <pre><code>## k-Nearest Neighbors 
 ## 
 ## 157 samples
@@ -414,8 +374,8 @@ kNNFit2</code></pre>
 ## Accuracy was used to select the optimal model using  the largest value.
 ## The final value used for the model was k = 5.</code></pre>
 <pre class="r"><code>plot(kNNFit2)</code></pre>
-<p><img src="knn_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p><a href="http://rstudio-pubs-static.s3.amazonaws.com/16444_caf85a306d564eb490eebdbaf0072df2.html" class="uri">http://rstudio-pubs-static.s3.amazonaws.com/16444_caf85a306d564eb490eebdbaf0072df2.html</a></p>
+<p><img src="knn_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>For predictions:</p>
 <pre class="r"><code>knnPredict &lt;- predict(kNNFit2, newdata = testing )
 #Get the confusion matrix to see accuracy value and other parameter values
 confusionMatrix(knnPredict, testing$Class )</code></pre>
@@ -452,6 +412,7 @@ confusionMatrix(knnPredict, testing$Class )</code></pre>
 ## 
 ## attr(,&quot;class&quot;)
 ## [1] &quot;confusionMatrix&quot;</code></pre>
+<p>Adding more information in the output:</p>
 <pre class="r"><code>ctrl &lt;- trainControl(method = &quot;repeatedcv&quot;, repeats = 3, classProbs=TRUE, summaryFunction = twoClassSummary)
 kNNFit4 &lt;- train(Class ~ ., 
                 data = training,
@@ -493,16 +454,17 @@ kNNFit4 &lt;- train(Class ~ .,
 ## ROC was used to select the optimal model using  the largest value.
 ## The final value used for the model was k = 5.</code></pre>
 <pre class="r"><code>plot(kNNFit4)</code></pre>
-<p><img src="knn_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="knn_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>And finally how to use bootstrap with the caret package:</p>
 <pre class="r"><code>knnFit5 &lt;- train(Class ~ ., 
                 data = training,
                  method = &quot;knn&quot;,
                  preProcess = c(&quot;center&quot;, &quot;scale&quot;),
                  tuneLength = 10, 
                  trControl = trainControl(method = &quot;boot&quot;))
-knnPredict2 &lt;- predict(knnFit5, newdata = testing )
+knnPredict2 &lt;- predict(knnFit5, newdata = testing)
 #Get the confusion matrix to see accuracy value and other parameter values
-confusionMatrix(knnPredict2, testing$Class )</code></pre>
+confusionMatrix(knnPredict2, testing$Class)</code></pre>
 <pre><code>## $positive
 ## [1] &quot;M&quot;
 ## 
@@ -536,6 +498,8 @@ confusionMatrix(knnPredict2, testing$Class )</code></pre>
 ## 
 ## attr(,&quot;class&quot;)
 ## [1] &quot;confusionMatrix&quot;</code></pre>
+<p>Reference: <a href="http://rstudio-pubs-static.s3.amazonaws.com/16444_caf85a306d564eb490eebdbaf0072df2.html" class="uri">http://rstudio-pubs-static.s3.amazonaws.com/16444_caf85a306d564eb490eebdbaf0072df2.html</a></p>
+</div>
 </div>
 </div>
 

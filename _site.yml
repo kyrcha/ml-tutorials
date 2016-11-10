@@ -1,22 +1,14 @@
-name: "Machine Learning Tutorials in R"
+name: "Machine Learning Tutorials and R"
 navbar:
   title: "ML & R"
   right:
     - text: "R"
       href: r.html
-    - text: "Data"
-      href: uc.html
     - text: "Classification"
       href: classification.html
-    - text: "Regression"
-      href: uc.html
-    - text: "Dimensionality Reduction"
-      href: uc.html
     - text: "Clustering"
       href: uc.html
-    - text: "Anomaly Detection"
-      href: uc.html
-    - text: "Association Rules"
+    - text: "Dimensionality Reduction"
       href: uc.html
     - text: "Finder"
       href: finder.html

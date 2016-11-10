@@ -1,6 +1,9 @@
 ---
 title: "Introduction to R"
-output: html_document
+author: "Kyriakos Chatzidimitriou"
+date: "November 7, 2016"
+output:
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -556,19 +559,3 @@ Then try to answer the next questions/problems:
 - Repeat the last two bullets for every month for all the years.
 
 _Tip: to transform a row of the data frame to a vector you can use `unlist` (e.g. `unlist(air["Jan",]`)_
-
-## Acknowledgements
-
-This tutorial, besides including the author's knowledge of R, is derived also from other material and more specifically: from an introductory R leaflet from the Pattern Recognition course of the Electrical and Computer Engineering Department of the Aristotle University of Thessaloniki (Fall semester 2016, author: Themistoklis Diamantopoulos, professor: Andreas L. Symeonidis), the leaflet from the course CS545 Machine Learnig (Fall 2008, author and professor: Charles W. Anderson) and the [Software Caprentry](https://software-carpentry.org/) lesson: [Programming in R](http://swcarpentry.github.io/r-novice-inflammation/) from which the inflammation data were also taken. 
-
-
-## License
-
-This work is made available under the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/).
-
-## Links
-
-- [R project](https://www.r-project.org/)
-    - [R official manuals](https://cran.r-project.org/manuals.html)
-    - [R packages](https://cran.r-project.org/web/packages/available_packages_by_name.html)
-- [R studio](https://www.rstudio.com/) Nice R IDE that works in Linux, Mac and Windows systems.

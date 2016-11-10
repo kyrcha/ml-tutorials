@@ -6,13 +6,20 @@ output:
   html_document: default
 ---
 
-```{r}
+## Introduction
+
+The goal of this notebook is to introduce the k-Nearest Neighbors instance-based learning model in R using
+the class package. For this example we are going to use the [Breast Cancer Wisconsin (Original) Data Set](http://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Original%29). The steps for loading and splitting the dataset to training and validation are the same as in the [decision trees notes](dt.html)
+
+```{r include=FALSE}
+# download the dataset
 fileURL <- "http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data"
 download.file(fileURL, destfile="breast-cancer-wisconsin.data", method="curl")
 # read the data
 data <- read.table("breast-cancer-wisconsin.data", na.strings = "?", sep=",")
-str(data)
+# remove the id column
 data <- data[,-1]
+# put names in the columns (attributes)
 names(data) <- c("ClumpThickness",
 "UniformityCellSize",
 "UniformityCellShape",
@@ -23,21 +30,46 @@ names(data) <- c("ClumpThickness",
 "NormalNucleoli",
 "Mitoses",
 "Class")
+# make the class a factor
 data$Class <- factor(data$Class, levels=c(2,4), labels=c("benign", "malignant"))
-print(summary(data))
-set.seed(2345)
+# set the seed
+set.seed(1234)
+# split the dataset
 ind <- sample(2, nrow(iris), replace=TRUE, prob=c(0.7, 0.3))
 trainData <- data[ind==1,]
 validationData <- data[ind==2,]
+```
+
+## Training & Prediction
+
+There is a kNN algorithm in the class package.
+
+```{r}
 library(class)
+```
+
+Because all the attributes are between 1 and 10 there is no need to do normalization between 0 and 1, since no attribute will dominate the others in the distance calculation of kNN. Because kNN accepts the training and testing datasets without the target column, which puts in a 3rd argument, we are going to do some data manipulation to have the data the way the `knn` function likes them (look the manual with ?knn). Also, because no missing values are allowed in kNN, let’s remove those too.
+
+```{r}
 trainData <- trainData[complete.cases(trainData),]
 validationData <- validationData[complete.cases(validationData),]
 trainDataX <- trainData[,-ncol(trainData)]
 trainDataY <- trainData$Class
 validationDataX <- validationData[,-ncol(trainData)]
 validationDataY <- validationData$Class
+```
+
+Let’s predict, since there is no need to training when using kNN. The training instances are the model.
+
+```{r}
 prediction = knn(trainDataX, validationDataX, trainDataY, k = 1)
 ```
+
+You can play with the values of k to look for a better model.
+
+## Evaluation
+
+Make the predictions for the validation dataset and print the confusion matrix:
 
 ```{r}
 cat("Confusion matrix:\n")
@@ -54,17 +86,19 @@ cat(paste("Recall:\t\t", format(recall, digits=2), "\n",sep=" "))
 cat(paste("F-measure:\t", format(f, digits=2), "\n",sep=" "))
 ```
 
-## Cross Validation
+### Cross Validation
 
-https://cran.r-project.org/web/packages/caret/vignettes/caret.pdf
+For performing cross-validation we will use the `caret` package. [Here](https://cran.r-project.org/web/packages/caret/vignettes/caret.pdf) you can find a quick guide to caret.
+
+
 
      Define sets of model
      
 Write here the main caret stuff
 
-### Split data in two groups
+#### Split data in two groups
 
-`createDataParitiion` does a stratified random split of the data
+The function `createDataParitiion` does a stratified random split of the data. Similar to what we did above ourselves (not stratified though). Then we will use the `train` function to build the kNN model.
 
 ```{r}
 library(caret)
@@ -72,17 +106,18 @@ library(mlbench)
 data(Sonar)
 set.seed(107)
 inTrain <- createDataPartition(y = Sonar$Class, p = .75, list = FALSE)
-str(inTrain)
 training <- Sonar[ inTrain,]
 testing <- Sonar[-inTrain,]
 nrow(training)
 nrow(testing)
-
 kNNFit <- train(Class ~ ., 
                 data = training,
                 method = "knn",
                 preProc = c("center", "scale"))
+print(kNNFit)
 ```
+
+We can also search for the best _k_ value given the training dataset.
 
 ```{r}
 kNNFit1 <- train(Class ~ ., 
@@ -90,8 +125,10 @@ kNNFit1 <- train(Class ~ .,
                 method = "knn",
                 tuneLength = 15,
                 preProc = c("center", "scale"))
-kNNFit1
+print(kNNFit1)
 ```
+
+To create a 10-fold cross-validation based search of _k_, repeated 3 times we have to use the function `trainControl`:
 
 ```{r}
 ctrl <- trainControl(method = "repeatedcv", repeats = 3)
@@ -101,17 +138,19 @@ kNNFit2 <- train(Class ~ .,
                 tuneLength = 15,
                 trControl = ctrl,
                 preProc = c("center", "scale"))
-kNNFit2
+print(kNNFit2)
 plot(kNNFit2)
 ```
 
-http://rstudio-pubs-static.s3.amazonaws.com/16444_caf85a306d564eb490eebdbaf0072df2.html
+For predictions:
 
 ```{r}
 knnPredict <- predict(kNNFit2, newdata = testing )
 #Get the confusion matrix to see accuracy value and other parameter values
 confusionMatrix(knnPredict, testing$Class )
 ```
+
+Adding more information in the output:
 
 ```{r}
 ctrl <- trainControl(method = "repeatedcv", repeats = 3, classProbs=TRUE, summaryFunction = twoClassSummary)
@@ -125,6 +164,7 @@ kNNFit4
 plot(kNNFit4)
 ```
 
+And finally how to use bootstrap with the caret package:
 
 ```{r}
 knnFit5 <- train(Class ~ ., 
@@ -133,8 +173,9 @@ knnFit5 <- train(Class ~ .,
                  preProcess = c("center", "scale"),
                  tuneLength = 10, 
                  trControl = trainControl(method = "boot"))
-knnPredict2 <- predict(knnFit5, newdata = testing )
+knnPredict2 <- predict(knnFit5, newdata = testing)
 #Get the confusion matrix to see accuracy value and other parameter values
-confusionMatrix(knnPredict2, testing$Class )
+confusionMatrix(knnPredict2, testing$Class)
 ```
 
+Reference: [http://rstudio-pubs-static.s3.amazonaws.com/16444_caf85a306d564eb490eebdbaf0072df2.html](http://rstudio-pubs-static.s3.amazonaws.com/16444_caf85a306d564eb490eebdbaf0072df2.html)

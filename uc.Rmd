@@ -1,8 +1,7 @@
 ---
 title: "Under Construction"
-author: "Kyriakos Chatzidimitriou"
-date: "11/7/2016"
-output: html_document
+output:
+  html_document: default
 ---
 
 This page is under construction.

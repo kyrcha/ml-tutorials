@@ -9,6 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
+<meta name="author" content="Kyriakos Chatzidimitriou" />
 
 
 <title>Introduction to R</title>
@@ -22,7 +23,7 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet"
-      href="site_libs/highlight/textmate.css"
+      href="site_libs/highlight/default.css"
       type="text/css" />
 <script src="site_libs/highlight/highlight.js"></script>
 <style type="text/css">
@@ -67,7 +68,6 @@ h6 {
 }
 </style>
 
-<link rel="stylesheet" href="style.css" type="text/css" />
 
 </head>
 
@@ -185,25 +185,13 @@ $(document).ready(function () {
   <a href="r.html">R</a>
 </li>
 <li>
-  <a href="uc.html">Data</a>
-</li>
-<li>
   <a href="classification.html">Classification</a>
-</li>
-<li>
-  <a href="uc.html">Regression</a>
-</li>
-<li>
-  <a href="uc.html">Dimensionality Reduction</a>
 </li>
 <li>
   <a href="uc.html">Clustering</a>
 </li>
 <li>
-  <a href="uc.html">Anomaly Detection</a>
-</li>
-<li>
-  <a href="uc.html">Association Rules</a>
+  <a href="finder.html">Finder</a>
 </li>
       </ul>
     </div><!--/.nav-collapse -->
@@ -215,6 +203,8 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Introduction to R</h1>
+<h4 class="author"><em>Kyriakos Chatzidimitriou</em></h4>
+<h4 class="date"><em>November 7, 2016</em></h4>
 
 </div>
 
@@ -247,21 +237,29 @@ print(a)</code></pre>
 <pre><code>## [1] 42</code></pre>
 <p>With <code>ls()</code> one can check all the variables existing in the current R session.</p>
 <pre class="r"><code>ls()</code></pre>
-<pre><code>##  [1] &quot;a&quot;                 &quot;accuracy&quot;          &quot;b&quot;                
-##  [4] &quot;ctree&quot;             &quot;ctrl&quot;              &quot;data&quot;             
-##  [7] &quot;entTree&quot;           &quot;evaluation&quot;        &quot;f&quot;                
-## [10] &quot;fileURL&quot;           &quot;GCtorture&quot;         &quot;ind&quot;              
-## [13] &quot;inTrain&quot;           &quot;kNNFit&quot;            &quot;kNNFit1&quot;          
-## [16] &quot;kNNFit2&quot;           &quot;kNNFit4&quot;           &quot;knnPredict&quot;       
-## [19] &quot;model&quot;             &quot;model_laplace&quot;     &quot;precision&quot;        
-## [22] &quot;pred&quot;              &quot;prediction&quot;        &quot;prediction_tree&quot;  
-## [25] &quot;pred_obj&quot;          &quot;pred_obj_laplace&quot;  &quot;pred_prob&quot;        
-## [28] &quot;pred_prob_laplace&quot; &quot;recall&quot;            &quot;ROCcurve&quot;         
-## [31] &quot;ROCcurve_laplace&quot;  &quot;Sonar&quot;             &quot;testData&quot;         
-## [34] &quot;testing&quot;           &quot;trainData&quot;         &quot;trainDataX&quot;       
-## [37] &quot;trainDataY&quot;        &quot;training&quot;          &quot;tree&quot;             
-## [40] &quot;validationData&quot;    &quot;validationDataX&quot;   &quot;validationDataY&quot;  
-## [43] &quot;xtab&quot;              &quot;ytest&quot;</code></pre>
+<pre><code>##  [1] &quot;a&quot;                        &quot;am&quot;                      
+##  [3] &quot;avg_day_inflammation&quot;     &quot;b&quot;                       
+##  [5] &quot;best_practice&quot;            &quot;bm&quot;                      
+##  [7] &quot;c&quot;                        &quot;ctree&quot;                   
+##  [9] &quot;d1&quot;                       &quot;d2&quot;                      
+## [11] &quot;d3&quot;                       &quot;data&quot;                    
+## [13] &quot;entTree&quot;                  &quot;evaluation&quot;              
+## [15] &quot;fahr_to_celsius&quot;          &quot;fahr_to_kelvin&quot;          
+## [17] &quot;fileURL&quot;                  &quot;food&quot;                    
+## [19] &quot;ind&quot;                      &quot;kelvin_to_celsius&quot;       
+## [21] &quot;len&quot;                      &quot;m&quot;                       
+## [23] &quot;m2&quot;                       &quot;max_day_inflammation&quot;    
+## [25] &quot;max_patient_inflammation&quot; &quot;min_day_inflammation&quot;    
+## [27] &quot;model&quot;                    &quot;num&quot;                     
+## [29] &quot;patient_1&quot;                &quot;positives&quot;               
+## [31] &quot;pred&quot;                     &quot;pred_obj&quot;                
+## [33] &quot;pred_prob&quot;                &quot;print_words&quot;             
+## [35] &quot;ROCcurve&quot;                 &quot;sex&quot;                     
+## [37] &quot;sign&quot;                     &quot;testData&quot;                
+## [39] &quot;trainData&quot;                &quot;tree&quot;                    
+## [41] &quot;tree_with_params&quot;         &quot;v&quot;                       
+## [43] &quot;validationData&quot;           &quot;vowels&quot;                  
+## [45] &quot;ytest&quot;</code></pre>
 <pre class="r"><code># while to delete all the variables in the current session you can use the call: 
 rm(list=ls())</code></pre>
 </div>
@@ -412,15 +410,15 @@ getwd()</code></pre>
 ##  [3] &quot;classification.Rmd&quot;           &quot;data&quot;                        
 ##  [5] &quot;docs&quot;                         &quot;dt_files&quot;                    
 ##  [7] &quot;dt.html&quot;                      &quot;dt.Rmd&quot;                      
-##  [9] &quot;exploration_files&quot;            &quot;exploration.html&quot;            
-## [11] &quot;exploration.Rmd&quot;              &quot;footer.html&quot;                 
-## [13] &quot;index.html&quot;                   &quot;index.Rmd&quot;                   
-## [15] &quot;intro.Rmd&quot;                    &quot;io.Rmd&quot;                      
+##  [9] &quot;finder.html&quot;                  &quot;finder.Rmd&quot;                  
+## [11] &quot;footer.html&quot;                  &quot;index.html&quot;                  
+## [13] &quot;index.Rmd&quot;                    &quot;intro_files&quot;                 
+## [15] &quot;intro.html&quot;                   &quot;intro.Rmd&quot;                   
 ## [17] &quot;knn.Rmd&quot;                      &quot;ml-tutorials.Rproj&quot;          
 ## [19] &quot;nb.Rmd&quot;                       &quot;README.md&quot;                   
 ## [21] &quot;r.Rmd&quot;                        &quot;site_libs&quot;                   
 ## [23] &quot;_site.yml&quot;                    &quot;style.css&quot;                   
-## [25] &quot;uc.Rmd&quot;</code></pre>
+## [25] &quot;temp_data&quot;                    &quot;uc.Rmd&quot;</code></pre>
 <p>The <code>dir</code> function return the files and directories of the file system. The argument <code>header=FALSE</code> lets the <code>read.csv</code> function know that there is no header row to give the columns names.</p>
 <p>With <code>head(data)</code> I can check if the data are loaded correctly. It return the first few rows:</p>
 <pre class="r"><code>head(data)</code></pre>
@@ -927,36 +925,7 @@ air = as.data.frame(t(airmat))</code></pre>
 </ul>
 <p><em>Tip: to transform a row of the data frame to a vector you can use <code>unlist</code> (e.g. <code>unlist(air[&quot;Jan&quot;,]</code>)</em></p>
 </div>
-<div id="acknowledgements" class="section level2">
-<h2>Acknowledgements</h2>
-<p>This tutorial, besides including the author’s knowledge of R, is derived also from other material and more specifically: from an introductory R leaflet from the Pattern Recognition course of the Electrical and Computer Engineering Department of the Aristotle University of Thessaloniki (Fall semester 2016, author: Themistoklis Diamantopoulos, professor: Andreas L. Symeonidis), the leaflet from the course CS545 Machine Learnig (Fall 2008, author and professor: Charles W. Anderson) and the <a href="https://software-carpentry.org/">Software Caprentry</a> lesson: <a href="http://swcarpentry.github.io/r-novice-inflammation/">Programming in R</a> from which the inflammation data were also taken.</p>
-</div>
-<div id="license" class="section level2">
-<h2>License</h2>
-<p>This work is made available under the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution license</a>.</p>
-</div>
-<div id="links" class="section level2">
-<h2>Links</h2>
-<ul>
-<li><a href="https://www.r-project.org/">R project</a>
-<ul>
-<li><a href="https://cran.r-project.org/manuals.html">R official manuals</a></li>
-<li><a href="https://cran.r-project.org/web/packages/available_packages_by_name.html">R packages</a></li>
-</ul></li>
-<li><a href="https://www.rstudio.com/">R studio</a> Nice R IDE that works in Linux, Mac and Windows systems.</li>
-</ul>
-</div>
 
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-2782275-11', 'auto');
-  ga('send', 'pageview');
-
-</script>
 
 
 

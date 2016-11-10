@@ -1,7 +1,5 @@
 ---
 title: "Finder"
-author: "Kyriakos Chatzidimitriou"
-date: "November 8, 2016"
 output: html_document
 ---
 

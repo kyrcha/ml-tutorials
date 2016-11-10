@@ -9,9 +9,11 @@
 <meta name="generator" content="pandoc" />
 
 
+<meta name="author" content="Kyriakos Chatzidimitriou" />
 
+<meta name="date" content="2016-11-10" />
 
-<title>Decision Trees</title>
+<title>Decision Trees in R</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -22,7 +24,7 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet"
-      href="site_libs/highlight/textmate.css"
+      href="site_libs/highlight/default.css"
       type="text/css" />
 <script src="site_libs/highlight/highlight.js"></script>
 <style type="text/css">
@@ -67,7 +69,6 @@ h6 {
 }
 </style>
 
-<link rel="stylesheet" href="style.css" type="text/css" />
 
 </head>
 
@@ -185,25 +186,13 @@ $(document).ready(function () {
   <a href="r.html">R</a>
 </li>
 <li>
-  <a href="uc.html">Data</a>
-</li>
-<li>
   <a href="classification.html">Classification</a>
-</li>
-<li>
-  <a href="uc.html">Regression</a>
-</li>
-<li>
-  <a href="uc.html">Dimensionality Reduction</a>
 </li>
 <li>
   <a href="uc.html">Clustering</a>
 </li>
 <li>
-  <a href="uc.html">Anomaly Detection</a>
-</li>
-<li>
-  <a href="uc.html">Association Rules</a>
+  <a href="finder.html">Finder</a>
 </li>
       </ul>
     </div><!--/.nav-collapse -->
@@ -214,13 +203,22 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Decision Trees</h1>
+<h1 class="title toc-ignore">Decision Trees in R</h1>
+<h4 class="author"><em>Kyriakos Chatzidimitriou</em></h4>
+<h4 class="date"><em>November 10, 2016</em></h4>
 
 </div>
 
 
-<p>We will work with the iris dataset.</p>
-<pre class="r"><code>fileURL &lt;- &quot;http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data&quot;
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The goal of this notebook is to introduce how to induce decision trees in R using the <code>party</code> and <code>rpart</code> packages. For this example we are going to use the <a href="http://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Original%29">Breast Cancer Wisconsin (Original) Data Set</a> and in particular the <a href="http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data">breast-cancer-wisconsin.data file</a> from the <a href="http://archive.ics.uci.edu/ml/index.html">UCI Machine Learning Repository</a>.</p>
+</div>
+<div id="loading-the-data" class="section level2">
+<h2>Loading the data</h2>
+<p>First we are going to load the dataset as a dataframe. We are assuming that the current working directory is in the same directory where the dataset is stored. We add the <code>sep</code> option because the default separator is the empty string. In addition, as one can observe from the dataset instructions, the missing values are denoted with <code>?</code>. To check the documentation of the <code>read.table</code> function use the command <code>?read.table</code>.</p>
+<pre class="r"><code># Downloading the file
+fileURL &lt;- &quot;http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data&quot;
 download.file(fileURL, destfile=&quot;breast-cancer-wisconsin.data&quot;, method=&quot;curl&quot;)
 # read the data
 data &lt;- read.table(&quot;breast-cancer-wisconsin.data&quot;, na.strings = &quot;?&quot;, sep=&quot;,&quot;)
@@ -237,8 +235,10 @@ str(data)</code></pre>
 ##  $ V9 : int  1 2 1 7 1 7 1 1 1 1 ...
 ##  $ V10: int  1 1 1 1 1 1 1 1 5 1 ...
 ##  $ V11: int  2 2 2 2 2 4 2 2 2 2 ...</code></pre>
-<pre class="r"><code>data &lt;- data[,-1]
-names(data) &lt;- c(&quot;ClumpThickness&quot;,
+<p>We won’t be needing the id number (1st column), because it is not an informative attribute, so let’s remove it.</p>
+<pre class="r"><code>data &lt;- data[,-1]</code></pre>
+<p>Let’s put names in the columns</p>
+<pre class="r"><code>names(data) &lt;- c(&quot;ClumpThickness&quot;,
 &quot;UniformityCellSize&quot;,
 &quot;UniformityCellShape&quot;,
 &quot;MarginalAdhesion&quot;,
@@ -247,9 +247,11 @@ names(data) &lt;- c(&quot;ClumpThickness&quot;,
 &quot;BlandChromatin&quot;,
 &quot;NormalNucleoli&quot;,
 &quot;Mitoses&quot;,
-&quot;Class&quot;)
-data$Class &lt;- factor(data$Class, levels=c(2,4), labels=c(&quot;benign&quot;, &quot;malignant&quot;))
-print(summary(data))</code></pre>
+&quot;Class&quot;)</code></pre>
+<p>Also let’s make the Class column a categorical value, aka a factor in R</p>
+<pre class="r"><code>data$Class &lt;- factor(data$Class, levels=c(2,4), labels=c(&quot;benign&quot;, &quot;malignant&quot;))</code></pre>
+<p>Now let’s see a summary of the data:</p>
+<pre class="r"><code>print(summary(data))</code></pre>
 <pre><code>##  ClumpThickness   UniformityCellSize UniformityCellShape MarginalAdhesion
 ##  Min.   : 1.000   Min.   : 1.000     Min.   : 1.000      Min.   : 1.000  
 ##  1st Qu.: 2.000   1st Qu.: 1.000     1st Qu.: 1.000      1st Qu.: 1.000  
@@ -274,20 +276,26 @@ print(summary(data))</code></pre>
 ##  3rd Qu.: 4.000   3rd Qu.: 1.000                  
 ##  Max.   :10.000   Max.   :10.000                  
 ## </code></pre>
-<p>Let’s split the <code>iris</code> dataset into two subsets: training (70%) and validation (30%).</p>
+<p>The next step is to split the dataset into a training (70%) and a validation set (30%). For comparing later different models or the same models trained with differernt parameters, we are going to use the same training and validation set. Since we are splitting them randomly, we set a seed so that we maintain the same split throughout our experiments.</p>
 <pre class="r"><code>set.seed(1234)
 ind &lt;- sample(2, nrow(data), replace=TRUE, prob=c(0.7, 0.3))
 trainData &lt;- data[ind==1,]
 validationData &lt;- data[ind==2,]</code></pre>
-<p>Now we load the libraries <code>rpart</code> and <code>party</code></p>
-<div id="rpart" class="section level2">
-<h2>rpart</h2>
-<pre class="r"><code>?rpart</code></pre>
+</div>
+<div id="training" class="section level2">
+<h2>Training</h2>
+<p>Now we load the libraries <code>rpart</code>, <code>rpart.plot</code> and <code>party</code>. If they are not in your system you will have to install them with the commands: <code>install.packages(&quot;rpart&quot;)</code>, <code>install.packages(&quot;rpart.plot&quot;)</code> and `install.packages(“party”).</p>
 <pre class="r"><code>library(rpart)
 library(rpart.plot)
-tree = rpart(Class ~ ., data=trainData, method=&quot;class&quot;)
-entTree = rpart(Class ~ ., data=trainData, method=&quot;class&quot;, parms=list(split=&quot;information&quot;))
-print(tree)</code></pre>
+library(party)</code></pre>
+<div id="rpart" class="section level3">
+<h3>rpart</h3>
+<p>Let’s product a decision tree by training the induction algorithm on the train dataset. Check out the options of rpart with the command <code>?rpart</code>.</p>
+<pre class="r"><code>tree = rpart(Class ~ ., data=trainData, method=&quot;class&quot;)</code></pre>
+<p>One can also use a differrent split criterion like the entropy split decision rule:</p>
+<pre class="r"><code>entTree = rpart(Class ~ ., data=trainData, method=&quot;class&quot;, parms=list(split=&quot;information&quot;))</code></pre>
+<p>The tree in text form:</p>
+<pre class="r"><code>print(tree)</code></pre>
 <pre><code>## n= 485 
 ## 
 ## node), split, n, loss, yval, (yprob)
@@ -304,12 +312,14 @@ print(tree)</code></pre>
 ##         28) BareNuclei&lt; 2.5 10   2 benign (0.800000000 0.200000000) *
 ##         29) BareNuclei&gt;=2.5 35   6 malignant (0.171428571 0.828571429) *
 ##       15) UniformityCellSize&gt;=4.5 133   5 malignant (0.037593985 0.962406015) *</code></pre>
+<p>And in a visual representation:</p>
 <pre class="r"><code>plot(tree)
 text(tree)</code></pre>
-<p><img src="dt_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p>or run</p>
+<p><img src="dt_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>A more advanced representation can be produced using the <code>rpart.plot</code> library as follows:</p>
 <pre class="r"><code>rpart.plot(tree, extra = 104, nn = TRUE)</code></pre>
-<p><img src="dt_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="dt_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>The parameters of the decision tree method can be shown with the command:</p>
 <pre class="r"><code>rpart.control()</code></pre>
 <pre><code>## $minsplit
 ## [1] 20
@@ -337,29 +347,17 @@ text(tree)</code></pre>
 ## 
 ## $xval
 ## [1] 10</code></pre>
-<ul>
-<li>minsplit : το ελάχιστο πλήθος παρατηρήσεων που πρέπει να έχει ένας κόμβος ώστε να διαχωριστεί</li>
-<li>minbucket : το ελάχιστο επιτρεπτό πλήθος παρατηρήσεων σε κάθε φύλλο του δένδρου</li>
-<li>maxdepth : το μέγιστο βάθος του δένδρου</li>
-<li>cp : παράμετρος που ελέγχει αν το complexity για κάποιο διαχωρισμό είναι επιτρεπτό και τίθεται εμπειρικά (όσο μεγαλώνει η τιμή της, τόσο περισσότερο γίνεται pruning στο δένδρο)</li>
-</ul>
+<p>For their meaning you can check out the documentation <code>?rpart.control</code>. The most important of them are: - minsplit: the minimum number of observations that must exist in a node in order for a split to be attempted. - minbucket: the minimum number of observations in any terminal (leaf) node. - maxdepth: sets the maximum depth of any node of the final tree - cp: parameter controlling if the complexity for a given split is allowed and is set empirically. Bigger values equal more prunning.</p>
+<pre class="r"><code># Usage
+tree_with_params = rpart(Class ~ ., data=trainData, method=&quot;class&quot;, minsplit = 1, minbucket = 1, cp = -1)
+rpart.plot(tree_with_params, extra = 104, nn = TRUE)</code></pre>
+<p><img src="dt_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
-<div id="party" class="section level2">
-<h2>party</h2>
-<pre class="r"><code>library(party)</code></pre>
-<pre><code>## Loading required package: grid</code></pre>
-<pre><code>## Loading required package: mvtnorm</code></pre>
-<pre><code>## Loading required package: modeltools</code></pre>
-<pre><code>## Loading required package: stats4</code></pre>
-<pre><code>## Loading required package: strucchange</code></pre>
-<pre><code>## Loading required package: zoo</code></pre>
-<pre><code>## 
-## Attaching package: &#39;zoo&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     as.Date, as.Date.numeric</code></pre>
-<pre><code>## Loading required package: sandwich</code></pre>
-<pre class="r"><code>ctree = ctree(Class ~ ., data=trainData)
+<div id="party" class="section level3">
+<h3>party</h3>
+<p>Let’s also try the <code>party</code> library and the <code>ctree</code> function:</p>
+<pre class="r"><code>library(party)
+ctree = ctree(Class ~ ., data=trainData)
 # print it
 print(ctree)</code></pre>
 <pre><code>## 
@@ -390,10 +388,12 @@ print(ctree)</code></pre>
 ##       13)*  weights = 96</code></pre>
 <pre class="r"><code># visualize it
 plot(ctree, type=&quot;simple&quot;)</code></pre>
-<p><img src="dt_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="dt_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
 </div>
 <div id="evaluation" class="section level2">
 <h2>Evaluation</h2>
+<p>The final step is to print the results in the validation set. We will create a function that get as input a tree model, the validation data and the type of the tree and prints results in the console.</p>
 <pre class="r"><code>evaluation &lt;- function(model, data, atype) {
   cat(&quot;\nConfusion matrix:\n&quot;)
   prediction = predict(model, data, type=atype)
@@ -437,6 +437,20 @@ evaluation(tree, validationData, &quot;class&quot;)</code></pre>
 ## Precision:    0.96 
 ## Recall:       0.97 
 ## F-measure:    0.96</code></pre>
+<pre class="r"><code>evaluation(tree_with_params, validationData, &quot;class&quot;)</code></pre>
+<pre><code>## 
+## Confusion matrix:
+##            
+## prediction  benign malignant
+##   benign       139        12
+##   malignant      5        58
+## 
+## Evaluation:
+## 
+## Accuracy:     0.92 
+## Precision:    0.97 
+## Recall:       0.92 
+## F-measure:    0.94</code></pre>
 <pre class="r"><code>evaluation(ctree, validationData, &quot;response&quot;)</code></pre>
 <pre><code>## 
 ## Confusion matrix:
@@ -452,24 +466,7 @@ evaluation(tree, validationData, &quot;class&quot;)</code></pre>
 ## Recall:       0.96 
 ## F-measure:    0.96</code></pre>
 </div>
-<div id="todo" class="section level2">
-<h2>TODO</h2>
-</div>
-<div id="add-theory-add-as-an-issue" class="section level1">
-<h1>Add theory, add as an issue</h1>
-<p>Add some with different depth # Explain differences ctree, rpart</p>
-</div>
 
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-2782275-11', 'auto');
-  ga('send', 'pageview');
-
-</script>
 
 
 

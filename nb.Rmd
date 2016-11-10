@@ -2,25 +2,30 @@
 title: "Naive Bayes"
 author: "Kyriakos Chatzidimitriou"
 date: "November 7, 2016"
-output: html_document
+output:
+  html_document: default
 ---
 
-$$ P(x) = \frac{x}{y}$$
+## Introduction
+
+The Naive Bayes classifier is included in the `e1071` package. We will also load the `MLmetrics` and `ROCR` packages in order to use their functions for evaluation caclulations and ROC curves.
 
 ```{r}
 library(e1071)
 library(MLmetrics)
 library(ROCR)
 ```
-`model <- naiveBayes(Target ~ ., data = ..., laplace = ...)`
+For this example we are going to use the [Breast Cancer Wisconsin (Original) Data Set](http://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Original%29). The steps for loading and splitting the dataset to training and validation are the same as in the [decision trees notes](dt.html)
 
-```{r}
+```{r include=FALSE}
+# download the dataset
 fileURL <- "http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data"
 download.file(fileURL, destfile="breast-cancer-wisconsin.data", method="curl")
 # read the data
 data <- read.table("breast-cancer-wisconsin.data", na.strings = "?", sep=",")
-str(data)
+# remove the id column
 data <- data[,-1]
+# put names in the columns (attributes)
 names(data) <- c("ClumpThickness",
 "UniformityCellSize",
 "UniformityCellShape",
@@ -31,60 +36,75 @@ names(data) <- c("ClumpThickness",
 "NormalNucleoli",
 "Mitoses",
 "Class")
+# make the class a factor
 data$Class <- factor(data$Class, levels=c(2,4), labels=c("benign", "malignant"))
-print(summary(data))
-set.seed(2345)
+# set the seed
+set.seed(1234)
+# split the dataset
 ind <- sample(2, nrow(iris), replace=TRUE, prob=c(0.7, 0.3))
 trainData <- data[ind==1,]
-testData <- data[ind==2,]
+validationData <- data[ind==2,]
+```
+
+## Training
+
+Next we construct the classifier.
+
+```{r}
 model <- naiveBayes(Class ~ ., data=trainData)
-predict(model, trainData)
 print(model)
 ```
 
-```{r}
-predict(model, trainData, type="raw")
-#predict(model, trainData)
-```
+## Prediction
+
+Given the model we start making predictions
 
 ```{r}
-ytest <- testData$Class
-pred <- predict(model, testData)
-pred_prob <- predict(model, testData, type="raw")
+predict(model, validationData)
+# To get the probabilities and not only the class.
+predict(model, validationData, type="raw")
+```
+
+## Evaluation
+
+To evaluate the model we use the `MLmetrics` and the `ROCR` packages.
+
+```{r}
+ytest <- validationData$Class
+pred <- predict(model, validationData)
+pred_prob <- predict(model, validationData, type="raw")
 ConfusionMatrix(ytest, pred)
 Accuracy(ytest, pred)
 Precision(ytest, pred)
 Recall(ytest, pred)
 F1_Score(ytest, pred)
-Precision(ytest, pred, "benign")
 ```
 
-## ROC curves
+### ROC curves
 
-https://en.wikipedia.org/wiki/Receiver_operating_characteristic
+Given the results of the classifier as probabilities we can calculate the true positive rate (TPR) and the false positive rate (FPR) with the commands:
 
-The acronym stands for receiver operating characteristic, a term
-used in signal detection to characterize the tradeoff between hit rate and false
-alarm rate over a noisy channel.
+```{r}
+pred_obj = prediction(pred_prob[, 2], ytest,label.ordering=c("benign", "malignant"))
+ROCcurve <- performance(pred_obj, "tpr", "fpr")
+```
 
-In statistics, a receiver operating characteristic (ROC), or ROC curve, is a graphical plot that illustrates the performance of a binary classifier system as its discrimination threshold is varied. The curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings
+and we can plot the ROC curve with the commands:
 
-The basic idea of diagnostic test interpretation is to calculate the probability a patient has a disease under consideration given a certain test result.  A 2 by 2 table is used as a mneumonic device. Be sure to label the table with the test results on the left side and the disease status on top as shown here: 
+```{r}
+plot(ROCcurve, col = "blue")
+abline(0,1, col = "grey")
+```
 
-Sensitivity is the proportion of patients with disease who test positive. In probability notation: P(T+|D+) = TP / (TP+FN).
-
-Specificity is the proportion of patients without disease who test negative. In probability notation: P(T-|D-) = TN / (TN + FP).
-
-Sensitivity (also called the true positive rate, the recall, or probability of detection[1] in some fields) measures the proportion of positives that are correctly identified as such (e.g., the percentage of sick people who are correctly identified as having the condition).
-Specificity (also called the true negative rate) measures the proportion of negatives that are correctly identified as such (e.g., the percentage of healthy people who are correctly identified as not having the condition).
+In statistics, a [receiver operating characteristic (ROC), or ROC curve](https://en.wikipedia.org/wiki/Receiver_operating_characteristic), is a graphical plot that illustrates the performance of a binary classifier system as its discrimination threshold is varied. The curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings
 
 An ROC curve demonstrates several things:
 
-It shows the tradeoff between sensitivity and specificity (any increase in sensitivity will be accompanied by a decrease in specificity).
-The closer the curve follows the left-hand border and then the top border of the ROC space, the more accurate the test.
-The closer the curve comes to the 45-degree diagonal of the ROC space, the less accurate the test.
-The slope of the tangent line at a cutpoint gives the likelihood ratio (LR) for that value of the test. You can check this out on the graph above. Recall that the LR for T4 < 5 is 52. This corresponds to the far left, steep portion of the curve. The LR for T4 > 9 is 0.2. This corresponds to the far right, nearly horizontal portion of the curve.
-The area under the curve is a measure of text accuracy. This is discussed further in the next section.
+  - It shows the tradeoff between sensitivity and specificity (any increase in sensitivity will be accompanied by a decrease in specificity).
+  - The closer the curve follows the left-hand border and then the top border of the ROC space, the more accurate the classifier.
+  - The closer the curve comes to the 45-degree diagonal of the ROC space, the less accurate the test.
+  - The slope of the tangent line at a cutpoint gives the likelihood ratio (LR) for that value of the test. 
+  - The area under the curve is a measure of text accuracy. This is discussed further in the next section.
 
 Accuracy is measured by the area under the ROC curve. An area of 1 represents a perfect test; an area of .5 represents a worthless test. A rough guide for classifying the accuracy of a diagnostic test is the traditional academic point system:
 
@@ -94,23 +114,4 @@ Accuracy is measured by the area under the ROC curve. An area of 1 represents a 
 .60-.70 = poor (D)
 .50-.60 = fail (F)
 
-http://gim.unmc.edu/dxtests/ROC1.htm
-
-```{r}
-pred_obj = prediction(pred_prob[, 2], ytest,label.ordering=c("benign", "malignant"))
-ROCcurve <- performance(pred_obj, "tpr", "fpr")
-performance(pred_obj, "auc")
-```
-
-Laplace smoothing (explain what it is).
-
-```{r}
-a <- runif(197)
-pred_prob_laplace <-cbind(a, 1-a)
-pred_obj_laplace = prediction(pred_prob_laplace[, 2], ytest,label.ordering=c("benign", "malignant"))
-
-ROCcurve_laplace <- performance(pred_obj_laplace, "tpr", "fpr")
-plot(ROCcurve, col = "blue")
-abline(0,1, col = "grey")
-lines(ROCcurve_laplace@x.values[[1]], ROCcurve_laplace@y.values[[1]] , col="red")
-```
+Reference: [http://gim.unmc.edu/dxtests/ROC1.htm](http://gim.unmc.edu/dxtests/ROC1.htm)

@@ -1,17 +1,36 @@
 ---
-title: "Decision Trees"
-output: html_document
+title: "Decision Trees in R"
+author: "Kyriakos Chatzidimitriou"
+date: "November 10, 2016"
+output:
+  html_document: default
 ---
 
-We will work with the iris dataset.
+## Introduction
+
+The goal of this notebook is to introduce how to induce decision trees in R using the `party` and `rpart` packages. For this example we are going to use the [Breast Cancer Wisconsin (Original) Data Set](http://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Original%29) and in particular the [breast-cancer-wisconsin.data file](http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data) from the [UCI Machine Learning Repository](http://archive.ics.uci.edu/ml/index.html).
+
+## Loading the data
+
+First we are going to load the dataset as a dataframe. We are assuming that the current working directory is in the same directory where the dataset is stored. We add the `sep` option because the default separator is the empty string. In addition, as one can observe from the dataset instructions, the missing values are denoted with `?`. To check the documentation of the `read.table` function use the command `?read.table`.
 
 ```{r}
+# Downloading the file
 fileURL <- "http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data"
 download.file(fileURL, destfile="breast-cancer-wisconsin.data", method="curl")
 # read the data
 data <- read.table("breast-cancer-wisconsin.data", na.strings = "?", sep=",")
 str(data)
+```
+
+We won't be needing the id number (1st column), because it is not an informative attribute, so let's remove it.
+```{r}
 data <- data[,-1]
+```
+
+Let's put names in the columns
+
+```{r}
 names(data) <- c("ClumpThickness",
 "UniformityCellSize",
 "UniformityCellShape",
@@ -22,11 +41,21 @@ names(data) <- c("ClumpThickness",
 "NormalNucleoli",
 "Mitoses",
 "Class")
+```
+
+Also let’s make the Class column a categorical value, aka a factor in R
+
+```{r}
 data$Class <- factor(data$Class, levels=c(2,4), labels=c("benign", "malignant"))
+```
+
+Now let’s see a summary of the data:
+
+```{r}
 print(summary(data))
 ```
 
-Let's split the `iris` dataset into two subsets: training (70%) and validation (30%).
+The next step is to split the dataset into a training (70%) and a validation set (30%). For comparing later different models or the same models trained with differernt parameters, we are going to use the same training and validation set. Since we are splitting them randomly, we set a seed so that we maintain the same split throughout our experiments.
 
 ```{r}
 set.seed(1234)
@@ -35,38 +64,70 @@ trainData <- data[ind==1,]
 validationData <- data[ind==2,]
 ```
 
-Now we load the libraries `rpart` and `party`
+## Training
 
-## rpart
-
-```{r}
-?rpart
-```
-
+Now we load the libraries `rpart`, `rpart.plot` and `party`. If they are not in your system you will have to install them with the commands: `install.packages("rpart")`, `install.packages("rpart.plot")` and `install.packages("party").
 
 ```{r}
 library(rpart)
 library(rpart.plot)
+library(party)
+```
+
+### rpart
+
+Let’s product a decision tree by training the induction algorithm on the train dataset. Check out the options of rpart with the command `?rpart`.
+
+```{r}
 tree = rpart(Class ~ ., data=trainData, method="class")
+```
+
+One can also use a differrent split criterion like the entropy split decision rule:
+
+```{r}
 entTree = rpart(Class ~ ., data=trainData, method="class", parms=list(split="information"))
+```
+
+The tree in text form:
+
+```{r}
 print(tree)
+```
+
+And in a visual representation:
+
+```{r}
 plot(tree)
 text(tree)
 ```
 
-or run
+A more advanced representation can be produced using the `rpart.plot` library as follows:
 
 ```{r}
 rpart.plot(tree, extra = 104, nn = TRUE)
+```
+
+The parameters of the decision tree method can be shown with the command:
+
+```{r}
 rpart.control()
 ```
 
-  - minsplit : το ελάχιστο πλήθος παρατηρήσεων που πρέπει να έχει ένας κόμβος ώστε να διαχωριστεί
-  - minbucket : το ελάχιστο επιτρεπτό πλήθος παρατηρήσεων σε κάθε φύλλο του δένδρου
-  - maxdepth : το μέγιστο βάθος του δένδρου
-  - cp : παράμετρος που ελέγχει αν το complexity για κάποιο διαχωρισμό είναι επιτρεπτό και τίθεται εμπειρικά (όσο μεγαλώνει η τιμή της, τόσο περισσότερο γίνεται pruning στο δένδρο)
+For their meaning you can check out the documentation `?rpart.control`. The most important of them are:
+  - minsplit: the minimum number of observations that must exist in a node in order for a split to be attempted.
+  - minbucket: the minimum number of observations in any terminal (leaf) node.
+  - maxdepth: sets the maximum depth of any node of the final tree
+  - cp: parameter controlling if the complexity for a given split is allowed and is set empirically. Bigger values equal more prunning.
 
-## party
+```{r}
+# Usage
+tree_with_params = rpart(Class ~ ., data=trainData, method="class", minsplit = 1, minbucket = 1, cp = -1)
+rpart.plot(tree_with_params, extra = 104, nn = TRUE)
+```
+
+### party
+
+Let’s also try the `party` library and the `ctree` function:
 
 ```{r}
 library(party)
@@ -78,6 +139,8 @@ plot(ctree, type="simple")
 ```
 
 ## Evaluation
+
+The final step is to print the results in the validation set. We will create a function that get as input a tree model, the validation data and the type of the tree and prints results in the console.
 
 ```{r}
 evaluation <- function(model, data, atype) {
@@ -97,10 +160,6 @@ evaluation <- function(model, data, atype) {
 }
 evaluation(tree, validationData, "class")
 evaluation(entTree, validationData, "class")
+evaluation(tree_with_params, validationData, "class")
 evaluation(ctree, validationData, "response")
 ```
-
-## TODO
-# Add theory, add as an issue
-Add some with different depth
-# Explain differences ctree, rpart
