@@ -281,6 +281,12 @@ print(model)</code></pre>
 ## Y               [,1]      [,2]
 ##   benign    1.037249 0.2760339
 ##   malignant 2.632768 2.5351281</code></pre>
+<p>The result includes the following components:</p>
+<ul>
+<li>apriori: Class distribution for the dependent variable.</li>
+<li>tables: A list of tables, one for each predictor variable. For each categorical variable a table giving, for each attribute level, the conditional probabilities given the target class. For each numeric variable, a table giving, for each target class, mean and standard deviation of the (sub-)variable.</li>
+</ul>
+<p>In our case because we have numeric attributes the mean and standard deviations are shown.</p>
 </div>
 <div id="prediction" class="section level2">
 <h2>Prediction</h2>

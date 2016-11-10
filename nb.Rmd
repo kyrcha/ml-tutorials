@@ -55,6 +55,13 @@ model <- naiveBayes(Class ~ ., data=trainData)
 print(model)
 ```
 
+The result includes the following components:
+
+  - apriori: Class distribution for the dependent variable.
+  - tables: A list of tables, one for each predictor variable. For each categorical variable a table giving, for each attribute level, the conditional probabilities given the target class. For each numeric variable, a table giving, for each target class, mean and standard deviation of the (sub-)variable.
+  
+In our case because we have numeric attributes the mean and standard deviations are shown.
+
 ## Prediction
 
 Given the model we start making predictions
