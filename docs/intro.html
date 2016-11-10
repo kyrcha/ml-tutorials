@@ -191,6 +191,9 @@ $(document).ready(function () {
   <a href="uc.html">Clustering</a>
 </li>
 <li>
+  <a href="uc.html">Dimensionality Reduction</a>
+</li>
+<li>
   <a href="finder.html">Finder</a>
 </li>
       </ul>
@@ -237,29 +240,39 @@ print(a)</code></pre>
 <pre><code>## [1] 42</code></pre>
 <p>With <code>ls()</code> one can check all the variables existing in the current R session.</p>
 <pre class="r"><code>ls()</code></pre>
-<pre><code>##  [1] &quot;a&quot;                        &quot;am&quot;                      
-##  [3] &quot;avg_day_inflammation&quot;     &quot;b&quot;                       
-##  [5] &quot;best_practice&quot;            &quot;bm&quot;                      
-##  [7] &quot;c&quot;                        &quot;ctree&quot;                   
-##  [9] &quot;d1&quot;                       &quot;d2&quot;                      
-## [11] &quot;d3&quot;                       &quot;data&quot;                    
-## [13] &quot;entTree&quot;                  &quot;evaluation&quot;              
-## [15] &quot;fahr_to_celsius&quot;          &quot;fahr_to_kelvin&quot;          
-## [17] &quot;fileURL&quot;                  &quot;food&quot;                    
-## [19] &quot;ind&quot;                      &quot;kelvin_to_celsius&quot;       
-## [21] &quot;len&quot;                      &quot;m&quot;                       
-## [23] &quot;m2&quot;                       &quot;max_day_inflammation&quot;    
-## [25] &quot;max_patient_inflammation&quot; &quot;min_day_inflammation&quot;    
-## [27] &quot;model&quot;                    &quot;num&quot;                     
-## [29] &quot;patient_1&quot;                &quot;positives&quot;               
-## [31] &quot;pred&quot;                     &quot;pred_obj&quot;                
-## [33] &quot;pred_prob&quot;                &quot;print_words&quot;             
-## [35] &quot;ROCcurve&quot;                 &quot;sex&quot;                     
-## [37] &quot;sign&quot;                     &quot;testData&quot;                
-## [39] &quot;trainData&quot;                &quot;tree&quot;                    
-## [41] &quot;tree_with_params&quot;         &quot;v&quot;                       
-## [43] &quot;validationData&quot;           &quot;vowels&quot;                  
-## [45] &quot;ytest&quot;</code></pre>
+<pre><code>##  [1] &quot;a&quot;                        &quot;accuracy&quot;                
+##  [3] &quot;am&quot;                       &quot;avg_day_inflammation&quot;    
+##  [5] &quot;b&quot;                        &quot;best_practice&quot;           
+##  [7] &quot;bm&quot;                       &quot;c&quot;                       
+##  [9] &quot;ctree&quot;                    &quot;ctrl&quot;                    
+## [11] &quot;d1&quot;                       &quot;d2&quot;                      
+## [13] &quot;d3&quot;                       &quot;data&quot;                    
+## [15] &quot;entTree&quot;                  &quot;evaluation&quot;              
+## [17] &quot;f&quot;                        &quot;fahr_to_celsius&quot;         
+## [19] &quot;fahr_to_kelvin&quot;           &quot;fileURL&quot;                 
+## [21] &quot;food&quot;                     &quot;ind&quot;                     
+## [23] &quot;inTrain&quot;                  &quot;kelvin_to_celsius&quot;       
+## [25] &quot;kNNFit&quot;                   &quot;kNNFit1&quot;                 
+## [27] &quot;kNNFit2&quot;                  &quot;kNNFit4&quot;                 
+## [29] &quot;knnFit5&quot;                  &quot;knnPredict&quot;              
+## [31] &quot;knnPredict2&quot;              &quot;len&quot;                     
+## [33] &quot;m&quot;                        &quot;m2&quot;                      
+## [35] &quot;max_day_inflammation&quot;     &quot;max_patient_inflammation&quot;
+## [37] &quot;min_day_inflammation&quot;     &quot;model&quot;                   
+## [39] &quot;num&quot;                      &quot;patient_1&quot;               
+## [41] &quot;positives&quot;                &quot;precision&quot;               
+## [43] &quot;pred&quot;                     &quot;prediction&quot;              
+## [45] &quot;pred_obj&quot;                 &quot;pred_prob&quot;               
+## [47] &quot;print_words&quot;              &quot;recall&quot;                  
+## [49] &quot;ROCcurve&quot;                 &quot;sex&quot;                     
+## [51] &quot;sign&quot;                     &quot;Sonar&quot;                   
+## [53] &quot;testing&quot;                  &quot;trainData&quot;               
+## [55] &quot;trainDataX&quot;               &quot;trainDataY&quot;              
+## [57] &quot;training&quot;                 &quot;tree&quot;                    
+## [59] &quot;tree_with_params&quot;         &quot;v&quot;                       
+## [61] &quot;validationData&quot;           &quot;validationDataX&quot;         
+## [63] &quot;validationDataY&quot;          &quot;vowels&quot;                  
+## [65] &quot;xtab&quot;                     &quot;ytest&quot;</code></pre>
 <pre class="r"><code># while to delete all the variables in the current session you can use the call: 
 rm(list=ls())</code></pre>
 </div>
@@ -407,18 +420,18 @@ getwd()</code></pre>
 <pre><code>## [1] &quot;/home/kyrcha/Workspaces/github/ml-tutorials&quot;</code></pre>
 <pre class="r"><code>dir()</code></pre>
 <pre><code>##  [1] &quot;breast-cancer-wisconsin.data&quot; &quot;classification.html&quot;         
-##  [3] &quot;classification.Rmd&quot;           &quot;data&quot;                        
-##  [5] &quot;docs&quot;                         &quot;dt_files&quot;                    
-##  [7] &quot;dt.html&quot;                      &quot;dt.Rmd&quot;                      
-##  [9] &quot;finder.html&quot;                  &quot;finder.Rmd&quot;                  
-## [11] &quot;footer.html&quot;                  &quot;index.html&quot;                  
-## [13] &quot;index.Rmd&quot;                    &quot;intro_files&quot;                 
-## [15] &quot;intro.html&quot;                   &quot;intro.Rmd&quot;                   
-## [17] &quot;knn.Rmd&quot;                      &quot;ml-tutorials.Rproj&quot;          
-## [19] &quot;nb.Rmd&quot;                       &quot;README.md&quot;                   
-## [21] &quot;r.Rmd&quot;                        &quot;site_libs&quot;                   
-## [23] &quot;_site.yml&quot;                    &quot;style.css&quot;                   
-## [25] &quot;temp_data&quot;                    &quot;uc.Rmd&quot;</code></pre>
+##  [3] &quot;classification.Rmd&quot;           &quot;CNAME&quot;                       
+##  [5] &quot;data&quot;                         &quot;docs&quot;                        
+##  [7] &quot;dt_files&quot;                     &quot;dt.html&quot;                     
+##  [9] &quot;dt.Rmd&quot;                       &quot;finder.html&quot;                 
+## [11] &quot;finder.Rmd&quot;                   &quot;footer.html&quot;                 
+## [13] &quot;index.html&quot;                   &quot;index.Rmd&quot;                   
+## [15] &quot;intro.Rmd&quot;                    &quot;knn.Rmd&quot;                     
+## [17] &quot;ml-tutorials.Rproj&quot;           &quot;nb.Rmd&quot;                      
+## [19] &quot;README.md&quot;                    &quot;r.Rmd&quot;                       
+## [21] &quot;site_libs&quot;                    &quot;_site.yml&quot;                   
+## [23] &quot;style.css&quot;                    &quot;temp_data&quot;                   
+## [25] &quot;uc.Rmd&quot;</code></pre>
 <p>The <code>dir</code> function return the files and directories of the file system. The argument <code>header=FALSE</code> lets the <code>read.csv</code> function know that there is no header row to give the columns names.</p>
 <p>With <code>head(data)</code> I can check if the data are loaded correctly. It return the first few rows:</p>
 <pre class="r"><code>head(data)</code></pre>

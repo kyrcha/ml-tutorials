@@ -1,4 +1,5 @@
 name: "Machine Learning Tutorials and R"
+include: ["CNAME"]
 navbar:
   title: "ML & R"
   right:
