@@ -23,7 +23,7 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet"
-      href="site_libs/highlight/default.css"
+      href="site_libs/highlight/textmate.css"
       type="text/css" />
 <script src="site_libs/highlight/highlight.js"></script>
 <style type="text/css">
@@ -68,6 +68,7 @@ h6 {
 }
 </style>
 
+<link rel="stylesheet" href="style.css" type="text/css" />
 
 </head>
 
@@ -411,14 +412,14 @@ getwd()</code></pre>
 ##  [7] &quot;dt_files&quot;                     &quot;dt.html&quot;                     
 ##  [9] &quot;dt.pdf&quot;                       &quot;dt.Rmd&quot;                      
 ## [11] &quot;finder.html&quot;                  &quot;finder.Rmd&quot;                  
-## [13] &quot;footer.html&quot;                  &quot;index.html&quot;                  
-## [15] &quot;index.Rmd&quot;                    &quot;intro.pdf&quot;                   
-## [17] &quot;intro.Rmd&quot;                    &quot;knn.pdf&quot;                     
-## [19] &quot;knn.Rmd&quot;                      &quot;ml-tutorials.Rproj&quot;          
-## [21] &quot;nb.pdf&quot;                       &quot;nb.Rmd&quot;                      
-## [23] &quot;README.md&quot;                    &quot;r.Rmd&quot;                       
-## [25] &quot;site_libs&quot;                    &quot;_site.yml&quot;                   
-## [27] &quot;style.css&quot;                    &quot;temp_data&quot;                   
+## [13] &quot;footer.html&quot;                  &quot;footer.tex&quot;                  
+## [15] &quot;index.html&quot;                   &quot;index.Rmd&quot;                   
+## [17] &quot;intro.pdf&quot;                    &quot;intro.Rmd&quot;                   
+## [19] &quot;knn.pdf&quot;                      &quot;knn.Rmd&quot;                     
+## [21] &quot;ml-tutorials.Rproj&quot;           &quot;nb.pdf&quot;                      
+## [23] &quot;nb.Rmd&quot;                       &quot;README.md&quot;                   
+## [25] &quot;r.Rmd&quot;                        &quot;site_libs&quot;                   
+## [27] &quot;_site.yml&quot;                    &quot;style.css&quot;                   
 ## [29] &quot;uc.Rmd&quot;</code></pre>
 <p>The <code>dir</code> function return the files and directories of the file system. The argument <code>header=FALSE</code> lets the <code>read.csv</code> function know that there is no header row to give the columns names.</p>
 <p>With <code>head(data)</code> I can check if the data are loaded correctly. It return the first few rows:</p>
@@ -927,6 +928,22 @@ air = as.data.frame(t(airmat))</code></pre>
 <p><em>Tip: to transform a row of the data frame to a vector you can use <code>unlist</code> (e.g. <code>unlist(air[&quot;Jan&quot;,]</code>)</em></p>
 </div>
 
+<h2>Acknowledgements</h2>
+
+<p>The tutorials, besides including the author's original contributions and knowledge of Machine Learning algorithms and R, also include contributions from other material and more specifically: 1) from an introductory R leaflet from the Pattern Recognition course leaflets of the Electrical and Computer Engineering Department of the Aristotle University of Thessaloniki (Fall semester 2016, authors: Themistoklis Diamantopoulos/Michalis Papamichail, professor: Andreas Symeonidis), 2) the leaflet from the course CS545 Machine Learnig (Fall 2008, author and professor: Charles W. Anderson) and 3) <a href="https://software-carpentry.org/">Software Caprentry</a> lessons like <a href="http://swcarpentry.github.io/r-novice-inflammation/">Programming in R</a> from which the inflammation data were also included.</p>
+
+<h2>License</h2>
+
+<p>This work is made available under the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution license</a>.</p>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2782275-11', 'auto');
+  ga('send', 'pageview');
+</script>
 
 
 

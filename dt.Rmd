@@ -2,8 +2,15 @@
 title: "Decision Trees in R"
 author: "Kyriakos Chatzidimitriou"
 date: "November 10, 2016"
-output:
-  html_document: default
+output: html_document
+#  html_document:
+#    highlight: textmate
+#    includes:
+#      after_body: footer.html
+#    css: style.css
+#  pdf_document:
+#    includes:
+#      after_body: footer.tex
 ---
 
 ## Introduction

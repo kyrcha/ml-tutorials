@@ -16,7 +16,7 @@ navbar:
 output:
   html_document:
     highlight: textmate
-    include:
+    includes:
       after_body: footer.html
     css: style.css
 output_dir: "docs"
