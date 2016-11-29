@@ -1,0 +1,53 @@
+---
+title: "Wrapper Selection"
+author: "Kyriakos Chatzidimitriou"
+date: "November 28, 2016"
+output: html_document
+---
+
+```{r}
+library(FSelector)
+library(rpart)
+
+data <- read.table('breast-cancer-wisconsin.data', na.strings = "?", sep=",")
+data <- data[,-1]
+names(data) <- c("ClumpThickness", 
+                 "UniformityCellSize", 
+                 "UniformityCellShape", 
+                 "MarginalAdhesion",
+                 "SingleEpithelialCellSize",
+                 "BareNuclei",
+                 "BlandChromatin",
+                 "NormalNucleoli",
+                 "Mitoses",
+                 "Class")
+data$Class <- factor(data$Class, levels=c(2,4), labels=c("benign", "malignant"))
+set.seed(1234)
+ind <- sample(2, nrow(data), replace=TRUE, prob=c(0.7, 0.3))
+trainData <- data[ind==1,]
+validationData <- data[ind==2,]
+# remove cases with missing data
+trainData <- trainData[complete.cases(trainData),]
+validationData <- validationData[complete.cases(validationData),]
+
+evaluator <- function(subset) {
+  #k-fold cross validation
+  k <- 5
+  splits <- runif(nrow(trainData))
+  results = sapply(1:k, function(i) {
+    test.idx <- (splits >= (i - 1) / k) & (splits < i / k)
+    train.idx <- !test.idx
+    test <- trainData[test.idx, , drop=FALSE]
+    train <- trainData[train.idx, , drop=FALSE]
+    tree <- rpart(as.simple.formula(subset, "Class"), train)
+    error.rate = sum(test$Class != predict(tree, test, type="c")) / nrow(test)
+    return(1 - error.rate)
+  })
+  print(subset)
+  print(mean(results))
+  return(mean(results))
+}
+subset <- forward.search(names(trainData)[-10], evaluator)
+f <- as.simple.formula(subset, "Class")
+print(f)
+```

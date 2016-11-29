@@ -9,8 +9,8 @@ navbar:
       href: classification.html
     - text: "Clustering"
       href: uc.html
-    - text: "Dimensionality Reduction"
-      href: uc.html
+    - text: "Data Engineering"
+      href: data-eng.html
     - text: "Finder"
       href: finder.html
 output:

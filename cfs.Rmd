@@ -1,0 +1,145 @@
+---
+title: "Feature Selection"
+author: "Kyriakos Chatzidimitriou"
+date: "November 28, 2016"
+output: html_document
+#  html_document:
+#    highlight: textmate
+#    includes:
+#      after_body: footer.html
+#    css: style.css
+#  pdf_document:
+#    includes:
+#      after_body: footer.tex
+---
+
+```{r}
+# download the file
+fileURL <- "http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data"
+download.file(fileURL, destfile="breast-cancer-wisconsin.data", method="curl")
+# read the data
+data <- read.table('breast-cancer-wisconsin.data', na.strings = "?", sep=",")
+
+data <- data[,-1]
+
+names(data) <- c("ClumpThickness", 
+                "UniformityCellSize", 
+                "UniformityCellShape", 
+                "MarginalAdhesion",
+                "SingleEpithelialCellSize",
+                "BareNuclei",
+                "BlandChromatin",
+                "NormalNucleoli",
+                "Mitoses",
+                "Class")
+
+data$Class <- factor(data$Class, levels=c(2,4), labels=c("benign", "malignant"))
+
+print(summary(data))
+
+set.seed(2345)
+ind <- sample(2, nrow(data), replace=TRUE, prob=c(0.7, 0.3))
+trainData <- data[ind==1,]
+validationData <- data[ind==2,]
+trainData <- trainData[complete.cases(trainData),]
+validationData <- validationData[complete.cases(validationData),]
+library(FSelector)
+subset <- cfs(Class ~ ., trainData)
+f <- as.simple.formula(subset, "Class")
+print(f)
+# sudo R CMD javareconf of help for setting up the FSlector li and its dependencies
+```
+
+Now that we have the formula with the CFS filter method we can use it in various classification algorithms.
+
+## Naive Bayes
+```{r}
+library(e1071)
+model <- naiveBayes(Class ~ ., data=trainData, laplace = 1)
+simpler_model <- naiveBayes(f, data=trainData, laplace = 1)
+
+pred <- predict(model, validationData)
+simpler_pred <- predict(simpler_model, validationData)
+
+library(MLmetrics)
+train_pred <- predict(model, trainData)
+train_simpler_pred <- predict(simpler_model, trainData)
+Accuracy(train_pred, trainData$Class)
+Accuracy(train_simpler_pred, trainData$Class)
+Accuracy(pred, validationData$Class)
+Accuracy(simpler_pred, validationData$Class)
+```
+## Iris dataset
+
+```{r}
+ind <- sample(2, nrow(iris), replace=TRUE, prob=c(0.7, 0.3))
+trainData <- iris[ind==1,]
+validationData <- iris[ind==2,]
+trainData <- trainData[complete.cases(trainData),]
+validationData <- validationData[complete.cases(validationData),]
+library(FSelector)
+subset <- cfs(Species ~ ., trainData)
+f <- as.simple.formula(subset, "Species")
+print(f)
+```
+
+```{r}
+library(e1071)
+model <- naiveBayes(Species ~ ., data=trainData, laplace = 1)
+simpler_model <- naiveBayes(f, data=trainData, laplace = 1)
+
+pred <- predict(model, validationData)
+simpler_pred <- predict(simpler_model, validationData)
+
+library(MLmetrics)
+train_pred <- predict(model, trainData)
+train_simpler_pred <- predict(simpler_model, trainData)
+Accuracy(train_pred, trainData$Species)
+Accuracy(train_simpler_pred, trainData$Species)
+Accuracy(pred, validationData$Species)
+Accuracy(simpler_pred, validationData$Species)
+
+```
+
+## Neural Networks
+```{r}
+library(neuralnet)
+data <- read.table('breast-cancer-wisconsin.data', na.strings = "?", sep=",")
+
+data <- data[,-1]
+
+names(data) <- c("ClumpThickness", 
+                "UniformityCellSize", 
+                "UniformityCellShape", 
+                "MarginalAdhesion",
+                "SingleEpithelialCellSize",
+                "BareNuclei",
+                "BlandChromatin",
+                "NormalNucleoli",
+                "Mitoses",
+                "Class")
+set.seed(1234)
+ind <- sample(2, nrow(data), replace=TRUE, prob=c(0.7, 0.3))
+trainData <- data[ind==1,]
+validationData <- data[ind==2,]
+trainData <- trainData[complete.cases(trainData),]
+validationData <- validationData[complete.cases(validationData),]
+nn.bp <- neuralnet(f, data=trainData, hidden=10, err.fct="ce", linear.output=FALSE, learningrate=0.01)
+# get the predictions
+output <- compute(nn.bp, subset(validationData, select=subset))$net.result
+# from numeric values between 0 and 1 make them T or F
+output[output > 0.5] <- TRUE
+output[output < 0.5] <- FALSE
+cat("\nConfusion matrix:\n")    
+xtab = table(output, validationData$Class)
+print(xtab)
+cat("\nEvaluation:\n\n")
+accuracy = sum(output == validationData$Class)/length(validationData$Class)
+precision = xtab[1,1]/sum(xtab[,1])
+recall = xtab[1,1]/sum(xtab[1,])
+f = 2 * (precision * recall) / (precision + recall)
+cat(paste("Accuracy:\t", format(accuracy, digits=2), "\n",sep=" "))
+cat(paste("Precision:\t", format(precision, digits=2), "\n",sep=" "))
+cat(paste("Recall:\t\t", format(recall, digits=2), "\n",sep=" "))
+cat(paste("F-measure:\t", format(f, digits=2), "\n",sep=" "))
+```

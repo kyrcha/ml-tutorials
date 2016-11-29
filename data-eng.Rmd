@@ -1,0 +1,25 @@
+---
+title: "Data Engineering"
+author: "Kyriakos Chatzidimitriou"
+date: "November 28, 2016"
+output: html_document
+#  html_document:
+#    highlight: textmate
+#    includes:
+#      after_body: footer.html
+#    css: style.css
+#  pdf_document:
+#    includes:
+#      after_body: footer.tex
+---
+
+Notes on:
+
+  - Feature Selection
+    - Filter methods 
+      - Correlation Feature Selection: [CFS](cfs.html)
+    - Wrapper methods
+      - Recursive Feature Elimination ([RFE](rfe.html)) using `caret` (and Naive Bayes)
+      - [Forward Search](wrapper.html) using `FSelector` (and Decision Trees)
+  - Dimensionality Reduction
+    - [Principal Components Analysis](pca.html)
