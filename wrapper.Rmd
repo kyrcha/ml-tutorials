@@ -2,7 +2,11 @@
 title: "Wrapper Selection"
 author: "Kyriakos Chatzidimitriou"
 date: "November 28, 2016"
-output: html_document
+output: 
+  html_document: default
+  pdf_document:
+    includes:
+      after_body: footer.tex
 ---
 
 ## Introduction
@@ -36,7 +40,7 @@ validationData <- validationData[complete.cases(validationData),]
 
 We will use the `forward.search` method of the `FSelector` package and the `rpart` decision trees training method of the homonymous package. The `forward.search` method needs an evaluation function that evaluates a subset of attributes. In our case the `evaluator` function performs 5-fold cross-validation on the training dataset.
 
-```{r include=FALSE}
+```{r}
 library(FSelector)
 library(rpart)
 
@@ -83,10 +87,14 @@ simpler_pred <- predict(simpler_model, validationData)
 library(MLmetrics)
 train_pred <- predict(model, trainData)
 train_simpler_pred <- predict(simpler_model, trainData)
-paste("Accuracy in training all attributes", Accuracy(train_pred, trainData$Class), sep=" - ")
-paste("Accuracy in training forward search attributes", Accuracy(train_simpler_pred, trainData$Class), sep=" - ")
-paste("Accuracy in validation all attributes", Accuracy(pred, validationData$Class), sep=" - ")
-paste("Accuracy in validation forward search attributes", Accuracy(simpler_pred, validationData$Class), sep=" - ")
+paste("Accuracy in training all attributes", 
+      Accuracy(train_pred, trainData$Class), sep=" - ")
+paste("Accuracy in training forward search attributes", 
+      Accuracy(train_simpler_pred, trainData$Class), sep=" - ")
+paste("Accuracy in validation all attributes", 
+      Accuracy(pred, validationData$Class), sep=" - ")
+paste("Accuracy in validation forward search attributes", 
+      Accuracy(simpler_pred, validationData$Class), sep=" - ")
 ```
 
 In the breast cancer Wisconsin dataset, the feature selection algorithm did not outperform the use of all attributes. The obvious cause is that there 9 attributes are handpicked by domain experts and have indeed a predictive power all together. So removing some does not product better results. 

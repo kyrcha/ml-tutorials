@@ -3,15 +3,17 @@ title: "Feature Selection"
 author: "Kyriakos Chatzidimitriou"
 date: "November 28, 2016"
 output:
+  pdf_document:
+    includes:
+      after_body: footer.tex
   html_document: default
-  pdf_document: default
 ---
 
 ## Introduction
 
 In this section we will use the Correlation Feature Selection (CFS) method to select attributes to be used when training and testing the machine learning models. We will use the Iris dataset for this purpose.
 
-```{r include=FALSE}
+```{r}
 data = iris
 # split into training and validation datasets
 set.seed(1234)
@@ -50,10 +52,14 @@ simpler_pred <- predict(simpler_model, validationData)
 library(MLmetrics)
 train_pred <- predict(model, trainData)
 train_simpler_pred <- predict(simpler_model, trainData)
-paste("Accuracy in training all attributes", Accuracy(train_pred, trainData$Species), sep=" - ")
-paste("Accuracy in training CFS attributes", Accuracy(train_simpler_pred, trainData$Species), sep=" - ")
-paste("Accuracy in validation all attributes", Accuracy(pred, validationData$Species), sep=" - ")
-paste("Accuracy in validation CFS attributes", Accuracy(simpler_pred, validationData$Species), sep=" - ")
+paste("Accuracy in training all attributes", 
+      Accuracy(train_pred, trainData$Species), sep=" - ")
+paste("Accuracy in training CFS attributes", 
+      Accuracy(train_simpler_pred, trainData$Species), sep=" - ")
+paste("Accuracy in validation all attributes", 
+      Accuracy(pred, validationData$Species), sep=" - ")
+paste("Accuracy in validation CFS attributes", 
+      Accuracy(simpler_pred, validationData$Species), sep=" - ")
 ```
 
 The accuracy in the training set is increased when using all the attrbitues, but decreased in the validation set in relation to the simpler model that only used 2 attributes.

@@ -4,7 +4,9 @@ author: "Kyriakos Chatzidimitriou"
 date: "November 28, 2016"
 output:
   html_document: default
-  pdf_document: default
+  pdf_document:
+    includes:
+      after_body: footer.tex
 ---
 
 ## "Raw" Principal Components Analysis

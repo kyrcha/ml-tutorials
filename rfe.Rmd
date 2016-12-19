@@ -2,7 +2,11 @@
 title: "Recursive Feature Elimination"
 author: "Kyriakos Chatzidimitriou"
 date: "November 28, 2016"
-output: html_document
+output:
+  html_document: default
+  pdf_document:
+    includes:
+      after_body: footer.tex
 ---
 
 ## Introduction
@@ -11,7 +15,7 @@ In this tutorial, we will use the Recurrent Feature Elimination (RFE) method to 
 
 First we will split the dataset in train and validation datasets.
 
-```{r include=FALSE}
+```{r}
 # ensure the results are repeatable
 set.seed(1234)
 # load the library
@@ -31,11 +35,16 @@ validationData <- validationData[complete.cases(validationData),]
 
 Next we will use the `rfe` method of the `caret` package, setting up using the `rfeControl` method.
 
-```{r}
+```{r warning=FALSE}
 # define the control using a random forest selection function
 control <- rfeControl(functions=nbFuncs, method="cv", number=10)
 # run the RFE algorithm
 results <- rfe(trainData[,1:8], trainData[,9], sizes=c(1:8), rfeControl=control)
+```
+
+Let's see the results.
+
+```{r}
 # summarize the results
 print(results)
 # list the chosen features
@@ -60,10 +69,14 @@ simpler_pred <- predict(simpler_model, validationData)
 library(MLmetrics)
 train_pred <- predict(model, trainData)
 train_simpler_pred <- predict(simpler_model, trainData)
-paste("Accuracy in training all attributes", Accuracy(train_pred, trainData$diabetes), sep=" - ")
-paste("Accuracy in training RFE attributes", Accuracy(train_simpler_pred, trainData$diabetes), sep=" - ")
-paste("Accuracy in validation all attributes", Accuracy(pred, validationData$diabetes), sep=" - ")
-paste("Accuracy in validation RFE attributes", Accuracy(simpler_pred, validationData$diabetes), sep=" - ")
+paste("Accuracy in training all attributes", 
+      Accuracy(train_pred, trainData$diabetes), sep=" - ")
+paste("Accuracy in training RFE attributes", 
+      Accuracy(train_simpler_pred, trainData$diabetes), sep=" - ")
+paste("Accuracy in validation all attributes", 
+      Accuracy(pred, validationData$diabetes), sep=" - ")
+paste("Accuracy in validation RFE attributes", 
+      Accuracy(simpler_pred, validationData$diabetes), sep=" - ")
 ```
 
 Using a simpler formula with 5 out of 8 attibutes we were able to get better generalization results in the validation dataset.
