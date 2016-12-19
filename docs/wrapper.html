@@ -24,7 +24,7 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet"
-      href="site_libs/highlight/textmate.css"
+      href="site_libs/highlight/default.css"
       type="text/css" />
 <script src="site_libs/highlight/highlight.js"></script>
 <style type="text/css">
@@ -69,7 +69,6 @@ h6 {
 }
 </style>
 
-<link rel="stylesheet" href="style.css" type="text/css" />
 
 </head>
 
@@ -241,12 +240,130 @@ validationData &lt;- validationData[complete.cases(validationData),]</code></pre
 <div id="forward-search" class="section level2">
 <h2>Forward-search</h2>
 <p>We will use the <code>forward.search</code> method of the <code>FSelector</code> package and the <code>rpart</code> decision trees training method of the homonymous package. The <code>forward.search</code> method needs an evaluation function that evaluates a subset of attributes. In our case the <code>evaluator</code> function performs 5-fold cross-validation on the training dataset.</p>
+<pre class="r"><code>library(FSelector)
+library(rpart)
+
+evaluator &lt;- function(subset) {
+  #k-fold cross validation
+  k &lt;- 5
+  splits &lt;- runif(nrow(trainData))
+  results = sapply(1:k, function(i) {
+    test.idx &lt;- (splits &gt;= (i - 1) / k) &amp; (splits &lt; i / k)
+    train.idx &lt;- !test.idx
+    test &lt;- trainData[test.idx, , drop=FALSE]
+    train &lt;- trainData[train.idx, , drop=FALSE]
+    tree &lt;- rpart(as.simple.formula(subset, &quot;Class&quot;), train)
+    error.rate = sum(test$Class != predict(tree, test, type=&quot;c&quot;)) / nrow(test)
+    return(1 - error.rate)
+  })
+  print(subset)
+  print(mean(results))
+  return(mean(results))
+}
+
+subset &lt;- forward.search(names(trainData)[-10], evaluator)</code></pre>
+<pre><code>## [1] &quot;ClumpThickness&quot;
+## [1] 0.8535402
+## [1] &quot;UniformityCellSize&quot;
+## [1] 0.8982188
+## [1] &quot;UniformityCellShape&quot;
+## [1] 0.9132406
+## [1] &quot;MarginalAdhesion&quot;
+## [1] 0.8564007
+## [1] &quot;SingleEpithelialCellSize&quot;
+## [1] 0.9055005
+## [1] &quot;BareNuclei&quot;
+## [1] 0.9079083
+## [1] &quot;BlandChromatin&quot;
+## [1] 0.9027608
+## [1] &quot;NormalNucleoli&quot;
+## [1] 0.895089
+## [1] &quot;Mitoses&quot;
+## [1] 0.7942549
+## [1] &quot;ClumpThickness&quot;      &quot;UniformityCellShape&quot;
+## [1] 0.9297849
+## [1] &quot;UniformityCellSize&quot;  &quot;UniformityCellShape&quot;
+## [1] 0.9335359
+## [1] &quot;UniformityCellShape&quot; &quot;MarginalAdhesion&quot;   
+## [1] 0.9167509
+## [1] &quot;UniformityCellShape&quot;      &quot;SingleEpithelialCellSize&quot;
+## [1] 0.9404055
+## [1] &quot;UniformityCellShape&quot; &quot;BareNuclei&quot;         
+## [1] 0.9384218
+## [1] &quot;UniformityCellShape&quot; &quot;BlandChromatin&quot;     
+## [1] 0.9283328
+## [1] &quot;UniformityCellShape&quot; &quot;NormalNucleoli&quot;     
+## [1] 0.944158
+## [1] &quot;UniformityCellShape&quot; &quot;Mitoses&quot;            
+## [1] 0.9162663
+## [1] &quot;ClumpThickness&quot;      &quot;UniformityCellShape&quot; &quot;NormalNucleoli&quot;     
+## [1] 0.9405466
+## [1] &quot;UniformityCellSize&quot;  &quot;UniformityCellShape&quot; &quot;NormalNucleoli&quot;     
+## [1] 0.9322648
+## [1] &quot;UniformityCellShape&quot; &quot;MarginalAdhesion&quot;    &quot;NormalNucleoli&quot;     
+## [1] 0.9387149
+## [1] &quot;UniformityCellShape&quot;      &quot;SingleEpithelialCellSize&quot;
+## [3] &quot;NormalNucleoli&quot;          
+## [1] 0.9314805
+## [1] &quot;UniformityCellShape&quot; &quot;BareNuclei&quot;          &quot;NormalNucleoli&quot;     
+## [1] 0.9470806
+## [1] &quot;UniformityCellShape&quot; &quot;BlandChromatin&quot;      &quot;NormalNucleoli&quot;     
+## [1] 0.9267064
+## [1] &quot;UniformityCellShape&quot; &quot;NormalNucleoli&quot;      &quot;Mitoses&quot;            
+## [1] 0.9401233
+## [1] &quot;ClumpThickness&quot;      &quot;UniformityCellShape&quot; &quot;BareNuclei&quot;         
+## [4] &quot;NormalNucleoli&quot;     
+## [1] 0.9335856
+## [1] &quot;UniformityCellSize&quot;  &quot;UniformityCellShape&quot; &quot;BareNuclei&quot;         
+## [4] &quot;NormalNucleoli&quot;     
+## [1] 0.9498017
+## [1] &quot;UniformityCellShape&quot; &quot;MarginalAdhesion&quot;    &quot;BareNuclei&quot;         
+## [4] &quot;NormalNucleoli&quot;     
+## [1] 0.9418352
+## [1] &quot;UniformityCellShape&quot;      &quot;SingleEpithelialCellSize&quot;
+## [3] &quot;BareNuclei&quot;               &quot;NormalNucleoli&quot;          
+## [1] 0.9415623
+## [1] &quot;UniformityCellShape&quot; &quot;BareNuclei&quot;          &quot;BlandChromatin&quot;     
+## [4] &quot;NormalNucleoli&quot;     
+## [1] 0.9506024
+## [1] &quot;UniformityCellShape&quot; &quot;BareNuclei&quot;          &quot;NormalNucleoli&quot;     
+## [4] &quot;Mitoses&quot;            
+## [1] 0.9382617
+## [1] &quot;ClumpThickness&quot;      &quot;UniformityCellShape&quot; &quot;BareNuclei&quot;         
+## [4] &quot;BlandChromatin&quot;      &quot;NormalNucleoli&quot;     
+## [1] 0.9515459
+## [1] &quot;UniformityCellSize&quot;  &quot;UniformityCellShape&quot; &quot;BareNuclei&quot;         
+## [4] &quot;BlandChromatin&quot;      &quot;NormalNucleoli&quot;     
+## [1] 0.930654
+## [1] &quot;UniformityCellShape&quot; &quot;MarginalAdhesion&quot;    &quot;BareNuclei&quot;         
+## [4] &quot;BlandChromatin&quot;      &quot;NormalNucleoli&quot;     
+## [1] 0.9454745
+## [1] &quot;UniformityCellShape&quot;      &quot;SingleEpithelialCellSize&quot;
+## [3] &quot;BareNuclei&quot;               &quot;BlandChromatin&quot;          
+## [5] &quot;NormalNucleoli&quot;          
+## [1] 0.9385037
+## [1] &quot;UniformityCellShape&quot; &quot;BareNuclei&quot;          &quot;BlandChromatin&quot;     
+## [4] &quot;NormalNucleoli&quot;      &quot;Mitoses&quot;            
+## [1] 0.935793
+## [1] &quot;ClumpThickness&quot;      &quot;UniformityCellSize&quot;  &quot;UniformityCellShape&quot;
+## [4] &quot;BareNuclei&quot;          &quot;BlandChromatin&quot;      &quot;NormalNucleoli&quot;     
+## [1] 0.9460072
+## [1] &quot;ClumpThickness&quot;      &quot;UniformityCellShape&quot; &quot;MarginalAdhesion&quot;   
+## [4] &quot;BareNuclei&quot;          &quot;BlandChromatin&quot;      &quot;NormalNucleoli&quot;     
+## [1] 0.9494458
+## [1] &quot;ClumpThickness&quot;           &quot;UniformityCellShape&quot;     
+## [3] &quot;SingleEpithelialCellSize&quot; &quot;BareNuclei&quot;              
+## [5] &quot;BlandChromatin&quot;           &quot;NormalNucleoli&quot;          
+## [1] 0.9506376
+## [1] &quot;ClumpThickness&quot;      &quot;UniformityCellShape&quot; &quot;BareNuclei&quot;         
+## [4] &quot;BlandChromatin&quot;      &quot;NormalNucleoli&quot;      &quot;Mitoses&quot;            
+## [1] 0.939423</code></pre>
 <p>After the search we get the following formula, where 5 out of the 9 variables were kept.</p>
 <pre class="r"><code>f &lt;- as.simple.formula(subset, &quot;Class&quot;)
 print(f)</code></pre>
 <pre><code>## Class ~ ClumpThickness + UniformityCellShape + BareNuclei + BlandChromatin + 
 ##     NormalNucleoli
-## &lt;environment: 0x12b6ce2e0&gt;</code></pre>
+## &lt;environment: 0x7fe8401b1118&gt;</code></pre>
 </div>
 <div id="naive-bayes" class="section level2">
 <h2>Naive Bayes</h2>
@@ -261,13 +378,17 @@ simpler_pred &lt;- predict(simpler_model, validationData)
 library(MLmetrics)
 train_pred &lt;- predict(model, trainData)
 train_simpler_pred &lt;- predict(simpler_model, trainData)
-paste(&quot;Accuracy in training all attributes&quot;, Accuracy(train_pred, trainData$Class), sep=&quot; - &quot;)</code></pre>
+paste(&quot;Accuracy in training all attributes&quot;, 
+      Accuracy(train_pred, trainData$Class), sep=&quot; - &quot;)</code></pre>
 <pre><code>## [1] &quot;Accuracy in training all attributes - 0.957805907172996&quot;</code></pre>
-<pre class="r"><code>paste(&quot;Accuracy in training forward search attributes&quot;, Accuracy(train_simpler_pred, trainData$Class), sep=&quot; - &quot;)</code></pre>
+<pre class="r"><code>paste(&quot;Accuracy in training forward search attributes&quot;, 
+      Accuracy(train_simpler_pred, trainData$Class), sep=&quot; - &quot;)</code></pre>
 <pre><code>## [1] &quot;Accuracy in training forward search attributes - 0.953586497890295&quot;</code></pre>
-<pre class="r"><code>paste(&quot;Accuracy in validation all attributes&quot;, Accuracy(pred, validationData$Class), sep=&quot; - &quot;)</code></pre>
+<pre class="r"><code>paste(&quot;Accuracy in validation all attributes&quot;, 
+      Accuracy(pred, validationData$Class), sep=&quot; - &quot;)</code></pre>
 <pre><code>## [1] &quot;Accuracy in validation all attributes - 0.976076555023923&quot;</code></pre>
-<pre class="r"><code>paste(&quot;Accuracy in validation forward search attributes&quot;, Accuracy(simpler_pred, validationData$Class), sep=&quot; - &quot;)</code></pre>
+<pre class="r"><code>paste(&quot;Accuracy in validation forward search attributes&quot;, 
+      Accuracy(simpler_pred, validationData$Class), sep=&quot; - &quot;)</code></pre>
 <pre><code>## [1] &quot;Accuracy in validation forward search attributes - 0.971291866028708&quot;</code></pre>
 <p>In the breast cancer Wisconsin dataset, the feature selection algorithm did not outperform the use of all attributes. The obvious cause is that there 9 attributes are handpicked by domain experts and have indeed a predictive power all together. So removing some does not product better results.</p>
 </div>
@@ -276,22 +397,6 @@ paste(&quot;Accuracy in training all attributes&quot;, Accuracy(train_pred, trai
 <p>One can also alter the <code>forward.search</code> method with <code>backward.search</code> to perform the backward search wrapper selection method. In fact in the case of <code>backward.search</code> all attributes are kept.</p>
 </div>
 
-<h2>Acknowledgements</h2>
-
-<p>The tutorials, besides including the author's original contributions and knowledge of Machine Learning algorithms and R, also include contributions from other material and more specifically: 1) from an introductory R leaflet from the Pattern Recognition course leaflets of the Electrical and Computer Engineering Department of the Aristotle University of Thessaloniki (Fall semester 2016, authors: Themistoklis Diamantopoulos/Michalis Papamichail, professor: Andreas Symeonidis), 2) the leaflet from the course CS545 Machine Learnig (Fall 2008, author and professor: Charles W. Anderson) and 3) <a href="https://software-carpentry.org/">Software Caprentry</a> lessons like <a href="http://swcarpentry.github.io/r-novice-inflammation/">Programming in R</a> from which the inflammation data were also included.</p>
-
-<h2>License</h2>
-
-<p>This work is made available under the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution license</a>.</p>
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-2782275-11', 'auto');
-  ga('send', 'pageview');
-</script>
 
 
 

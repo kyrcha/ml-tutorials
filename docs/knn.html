@@ -264,8 +264,10 @@ cat(paste(&quot;Accuracy:\t&quot;, format(accuracy, digits=2), &quot;\n&quot;,se
 <div id="split-data-in-two-groups" class="section level4">
 <h4>Split data in two groups</h4>
 <p>The function <code>createDataParitiion</code> does a stratified random split of the data. Similar to what we did above ourselves (not stratified though). Then we will use the <code>train</code> function to build the kNN model.</p>
-<pre class="r"><code>library(caret)
-library(mlbench)
+<pre class="r"><code>library(caret)</code></pre>
+<pre><code>## Loading required package: lattice</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre class="r"><code>library(mlbench)
 data(Sonar)
 set.seed(107)
 inTrain &lt;- createDataPartition(y = Sonar$Class, p = .75, list = FALSE)
@@ -291,10 +293,10 @@ print(kNNFit)</code></pre>
 ## Summary of sample sizes: 157, 157, 157, 157, 157, 157, ... 
 ## Resampling results across tuning parameters:
 ## 
-##   k  Accuracy      Kappa       
-##   5  0.7491043869  0.4919467330
-##   7  0.7484500782  0.4889732990
-##   9  0.7458334327  0.4834792808
+##   k  Accuracy   Kappa    
+##   5  0.7491044  0.4919467
+##   7  0.7484501  0.4889733
+##   9  0.7458334  0.4834793
 ## 
 ## Accuracy was used to select the optimal model using  the largest value.
 ## The final value used for the model was k = 5.</code></pre>
@@ -316,22 +318,22 @@ print(kNNFit1)</code></pre>
 ## Summary of sample sizes: 157, 157, 157, 157, 157, 157, ... 
 ## Resampling results across tuning parameters:
 ## 
-##   k   Accuracy      Kappa       
-##    5  0.7519389199  0.4939164004
-##    7  0.7322398739  0.4542330043
-##    9  0.7319090223  0.4535786306
-##   11  0.7194588084  0.4291184551
-##   13  0.7122780236  0.4179367919
-##   15  0.7023942713  0.3983258616
-##   17  0.6944155541  0.3789999830
-##   19  0.6906744445  0.3745708065
-##   21  0.6853735800  0.3624348211
-##   23  0.6858047028  0.3634749289
-##   25  0.6857579586  0.3637183181
-##   27  0.6766955520  0.3468448714
-##   29  0.6673992283  0.3300590538
-##   31  0.6747241970  0.3454881537
-##   33  0.6760501728  0.3493650566
+##   k   Accuracy   Kappa    
+##    5  0.7519389  0.4939164
+##    7  0.7322399  0.4542330
+##    9  0.7319090  0.4535786
+##   11  0.7194588  0.4291185
+##   13  0.7122780  0.4179368
+##   15  0.7023943  0.3983259
+##   17  0.6944156  0.3790000
+##   19  0.6906744  0.3745708
+##   21  0.6853736  0.3624348
+##   23  0.6858047  0.3634749
+##   25  0.6857580  0.3637183
+##   27  0.6766956  0.3468449
+##   29  0.6673992  0.3300591
+##   31  0.6747242  0.3454882
+##   33  0.6760502  0.3493651
 ## 
 ## Accuracy was used to select the optimal model using  the largest value.
 ## The final value used for the model was k = 5.</code></pre>
@@ -355,22 +357,22 @@ print(kNNFit2)</code></pre>
 ## Summary of sample sizes: 141, 141, 140, 141, 142, 142, ... 
 ## Resampling results across tuning parameters:
 ## 
-##   k   Accuracy      Kappa       
-##    5  0.7878758170  0.5687596395
-##    7  0.7792647059  0.5498863582
-##    9  0.7725816993  0.5355200743
-##   11  0.7598202614  0.5104632130
-##   13  0.7289379085  0.4461774405
-##   15  0.6903267974  0.3671680535
-##   17  0.6878104575  0.3605085405
-##   19  0.6956372549  0.3761905368
-##   21  0.6977532680  0.3821736209
-##   23  0.6920098039  0.3717321737
-##   25  0.7082924837  0.4060241541
-##   27  0.7039869281  0.3964805263
-##   29  0.7295424837  0.4482189256
-##   31  0.7170261438  0.4242971412
-##   33  0.7294035948  0.4494975698
+##   k   Accuracy   Kappa    
+##    5  0.7878758  0.5687596
+##    7  0.7792647  0.5498864
+##    9  0.7725817  0.5355201
+##   11  0.7598203  0.5104632
+##   13  0.7289379  0.4461774
+##   15  0.6903268  0.3671681
+##   17  0.6878105  0.3605085
+##   19  0.6956373  0.3761905
+##   21  0.6977533  0.3821736
+##   23  0.6920098  0.3717322
+##   25  0.7082925  0.4060242
+##   27  0.7039869  0.3964805
+##   29  0.7295425  0.4482189
+##   31  0.7170261  0.4242971
+##   33  0.7294036  0.4494976
 ## 
 ## Accuracy was used to select the optimal model using  the largest value.
 ## The final value used for the model was k = 5.</code></pre>
@@ -386,25 +388,25 @@ confusionMatrix(knnPredict, testing$Class )</code></pre>
 ## Prediction  M  R
 ##          M 25  9
 ##          R  2 15
-##                                                 
-##                Accuracy : 0.7843137             
-##                  95% CI : (0.6467859, 0.8871094)
-##     No Information Rate : 0.5294118             
-##     P-Value [Acc &gt; NIR] : 0.0001502273          
-##                                                 
-##                   Kappa : 0.56                  
-##  Mcnemar&#39;s Test P-Value : 0.0704404293          
-##                                                 
-##             Sensitivity : 0.9259259             
-##             Specificity : 0.6250000             
-##          Pos Pred Value : 0.7352941             
-##          Neg Pred Value : 0.8823529             
-##              Prevalence : 0.5294118             
-##          Detection Rate : 0.4901961             
-##    Detection Prevalence : 0.6666667             
-##       Balanced Accuracy : 0.7754630             
-##                                                 
-##        &#39;Positive&#39; Class : M                     
+##                                           
+##                Accuracy : 0.7843          
+##                  95% CI : (0.6468, 0.8871)
+##     No Information Rate : 0.5294          
+##     P-Value [Acc &gt; NIR] : 0.0001502       
+##                                           
+##                   Kappa : 0.56            
+##  Mcnemar&#39;s Test P-Value : 0.0704404       
+##                                           
+##             Sensitivity : 0.9259          
+##             Specificity : 0.6250          
+##          Pos Pred Value : 0.7353          
+##          Neg Pred Value : 0.8824          
+##              Prevalence : 0.5294          
+##          Detection Rate : 0.4902          
+##    Detection Prevalence : 0.6667          
+##       Balanced Accuracy : 0.7755          
+##                                           
+##        &#39;Positive&#39; Class : M               
 ## </code></pre>
 <p>Adding more information in the output:</p>
 <pre class="r"><code>ctrl &lt;- trainControl(method = &quot;repeatedcv&quot;, repeats = 3, classProbs=TRUE, summaryFunction = twoClassSummary)
@@ -428,22 +430,22 @@ kNNFit4 &lt;- train(Class ~ .,
 ## Summary of sample sizes: 142, 140, 141, 142, 142, 142, ... 
 ## Resampling results across tuning parameters:
 ## 
-##   k   ROC           Sens          Spec        
-##    5  0.8953207672  0.8722222222  0.7011904762
-##    7  0.8816013558  0.8722222222  0.6767857143
-##    9  0.8748387897  0.8638888889  0.6535714286
-##   11  0.8678902116  0.8564814815  0.6321428571
-##   13  0.8588004299  0.8324074074  0.6196428571
-##   15  0.8485656415  0.8162037037  0.5821428571
-##   17  0.8406250000  0.8162037037  0.5779761905
-##   19  0.8310474537  0.8166666667  0.5910714286
-##   21  0.8233837632  0.8166666667  0.5904761905
-##   23  0.8290178571  0.7833333333  0.6053571429
-##   25  0.8253885582  0.7990740741  0.6375000000
-##   27  0.8177124669  0.7930555556  0.6369047619
-##   29  0.8109209656  0.7958333333  0.6458333333
-##   31  0.8064856151  0.7768518519  0.6553571429
-##   33  0.8054687500  0.7611111111  0.6714285714
+##   k   ROC        Sens       Spec     
+##    5  0.8953208  0.8722222  0.7011905
+##    7  0.8816014  0.8722222  0.6767857
+##    9  0.8748388  0.8638889  0.6535714
+##   11  0.8678902  0.8564815  0.6321429
+##   13  0.8588004  0.8324074  0.6196429
+##   15  0.8485656  0.8162037  0.5821429
+##   17  0.8406250  0.8162037  0.5779762
+##   19  0.8310475  0.8166667  0.5910714
+##   21  0.8233838  0.8166667  0.5904762
+##   23  0.8290179  0.7833333  0.6053571
+##   25  0.8253886  0.7990741  0.6375000
+##   27  0.8177125  0.7930556  0.6369048
+##   29  0.8109210  0.7958333  0.6458333
+##   31  0.8064856  0.7768519  0.6553571
+##   33  0.8054687  0.7611111  0.6714286
 ## 
 ## ROC was used to select the optimal model using  the largest value.
 ## The final value used for the model was k = 5.</code></pre>
@@ -465,25 +467,25 @@ confusionMatrix(knnPredict2, testing$Class)</code></pre>
 ## Prediction  M  R
 ##          M 25  9
 ##          R  2 15
-##                                                 
-##                Accuracy : 0.7843137             
-##                  95% CI : (0.6467859, 0.8871094)
-##     No Information Rate : 0.5294118             
-##     P-Value [Acc &gt; NIR] : 0.0001502273          
-##                                                 
-##                   Kappa : 0.56                  
-##  Mcnemar&#39;s Test P-Value : 0.0704404293          
-##                                                 
-##             Sensitivity : 0.9259259             
-##             Specificity : 0.6250000             
-##          Pos Pred Value : 0.7352941             
-##          Neg Pred Value : 0.8823529             
-##              Prevalence : 0.5294118             
-##          Detection Rate : 0.4901961             
-##    Detection Prevalence : 0.6666667             
-##       Balanced Accuracy : 0.7754630             
-##                                                 
-##        &#39;Positive&#39; Class : M                     
+##                                           
+##                Accuracy : 0.7843          
+##                  95% CI : (0.6468, 0.8871)
+##     No Information Rate : 0.5294          
+##     P-Value [Acc &gt; NIR] : 0.0001502       
+##                                           
+##                   Kappa : 0.56            
+##  Mcnemar&#39;s Test P-Value : 0.0704404       
+##                                           
+##             Sensitivity : 0.9259          
+##             Specificity : 0.6250          
+##          Pos Pred Value : 0.7353          
+##          Neg Pred Value : 0.8824          
+##              Prevalence : 0.5294          
+##          Detection Rate : 0.4902          
+##    Detection Prevalence : 0.6667          
+##       Balanced Accuracy : 0.7755          
+##                                           
+##        &#39;Positive&#39; Class : M               
 ## </code></pre>
 <p>Reference: <a href="http://rstudio-pubs-static.s3.amazonaws.com/16444_caf85a306d564eb490eebdbaf0072df2.html" class="uri">http://rstudio-pubs-static.s3.amazonaws.com/16444_caf85a306d564eb490eebdbaf0072df2.html</a></p>
 </div>

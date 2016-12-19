@@ -216,6 +216,14 @@ $(document).ready(function () {
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <p>In this section we will use the Correlation Feature Selection (CFS) method to select attributes to be used when training and testing the machine learning models. We will use the Iris dataset for this purpose.</p>
+<pre class="r"><code>data = iris
+# split into training and validation datasets
+set.seed(1234)
+ind &lt;- sample(2, nrow(data), replace=TRUE, prob=c(0.7, 0.3))
+trainData &lt;- data[ind==1,]
+validationData &lt;- data[ind==2,]
+trainData &lt;- trainData[complete.cases(trainData),]
+validationData &lt;- validationData[complete.cases(validationData),]</code></pre>
 </div>
 <div id="using-the-cfs-method" class="section level2">
 <h2>Using the CFS method</h2>
@@ -225,7 +233,7 @@ subset &lt;- cfs(Species ~ ., trainData)
 f &lt;- as.simple.formula(subset, &quot;Species&quot;)
 print(f)</code></pre>
 <pre><code>## Species ~ Petal.Length + Petal.Width
-## &lt;environment: 0x13b05d830&gt;</code></pre>
+## &lt;environment: 0x7fe83563fc60&gt;</code></pre>
 <p>Now that we have the formula with the CFS filter method we can use it in various classification algorithms.</p>
 </div>
 <div id="naive-bayes" class="section level2">
@@ -238,16 +246,25 @@ simpler_model &lt;- naiveBayes(f, data=trainData, laplace = 1)
 pred &lt;- predict(model, validationData)
 simpler_pred &lt;- predict(simpler_model, validationData)
 
-library(MLmetrics)
-train_pred &lt;- predict(model, trainData)
+library(MLmetrics)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;MLmetrics&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     Recall</code></pre>
+<pre class="r"><code>train_pred &lt;- predict(model, trainData)
 train_simpler_pred &lt;- predict(simpler_model, trainData)
-paste(&quot;Accuracy in training all attributes&quot;, Accuracy(train_pred, trainData$Species), sep=&quot; - &quot;)</code></pre>
+paste(&quot;Accuracy in training all attributes&quot;, 
+      Accuracy(train_pred, trainData$Species), sep=&quot; - &quot;)</code></pre>
 <pre><code>## [1] &quot;Accuracy in training all attributes - 0.964285714285714&quot;</code></pre>
-<pre class="r"><code>paste(&quot;Accuracy in training CFS attributes&quot;, Accuracy(train_simpler_pred, trainData$Species), sep=&quot; - &quot;)</code></pre>
+<pre class="r"><code>paste(&quot;Accuracy in training CFS attributes&quot;, 
+      Accuracy(train_simpler_pred, trainData$Species), sep=&quot; - &quot;)</code></pre>
 <pre><code>## [1] &quot;Accuracy in training CFS attributes - 0.955357142857143&quot;</code></pre>
-<pre class="r"><code>paste(&quot;Accuracy in validation all attributes&quot;, Accuracy(pred, validationData$Species), sep=&quot; - &quot;)</code></pre>
+<pre class="r"><code>paste(&quot;Accuracy in validation all attributes&quot;, 
+      Accuracy(pred, validationData$Species), sep=&quot; - &quot;)</code></pre>
 <pre><code>## [1] &quot;Accuracy in validation all attributes - 0.947368421052632&quot;</code></pre>
-<pre class="r"><code>paste(&quot;Accuracy in validation CFS attributes&quot;, Accuracy(simpler_pred, validationData$Species), sep=&quot; - &quot;)</code></pre>
+<pre class="r"><code>paste(&quot;Accuracy in validation CFS attributes&quot;, 
+      Accuracy(simpler_pred, validationData$Species), sep=&quot; - &quot;)</code></pre>
 <pre><code>## [1] &quot;Accuracy in validation CFS attributes - 0.973684210526316&quot;</code></pre>
 <p>The accuracy in the training set is increased when using all the attrbitues, but decreased in the validation set in relation to the simpler model that only used 2 attributes.</p>
 </div>

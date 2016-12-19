@@ -236,26 +236,26 @@ plot(data_norm, xlab=&quot;x1&quot;, ylab=&quot;x2&quot;)</code></pre>
 <h3>Step 3: Calculate the covariance matrix</h3>
 <pre class="r"><code>S &lt;- cov(data_norm)
 print(S)</code></pre>
-<pre><code>##              [,1]         [,2]
-## [1,] 0.6165555556 0.6154444444
-## [2,] 0.6154444444 0.7165555556</code></pre>
+<pre><code>##           [,1]      [,2]
+## [1,] 0.6165556 0.6154444
+## [2,] 0.6154444 0.7165556</code></pre>
 </div>
 <div id="step-4-computer-the-eigenvectors-of-the-covariance-matrix" class="section level3">
 <h3>Step 4: Computer the eigenvectors of the covariance matrix</h3>
 <pre class="r"><code>udv &lt;- svd(S)
 print(udv)</code></pre>
 <pre><code>## $d
-## [1] 1.28402771217 0.04908339894
+## [1] 1.2840277 0.0490834
 ## 
 ## $u
-##               [,1]          [,2]
-## [1,] -0.6778733985 -0.7351786555
-## [2,] -0.7351786555  0.6778733985
+##            [,1]       [,2]
+## [1,] -0.6778734 -0.7351787
+## [2,] -0.7351787  0.6778734
 ## 
 ## $v
-##               [,1]          [,2]
-## [1,] -0.6778733985 -0.7351786555
-## [2,] -0.7351786555  0.6778733985</code></pre>
+##            [,1]       [,2]
+## [1,] -0.6778734 -0.7351787
+## [2,] -0.7351787  0.6778734</code></pre>
 <pre class="r"><code># asp=1 keep the aspect ratio to 1 so that the eigenvectors are perpendicular
 plot(data_norm, asp=1, xlab=&quot;x1&quot;, ylab=&quot;x2&quot;)
 arrows(0,0,udv$u[1,1],udv$u[2,1], lwd=1)
@@ -267,7 +267,7 @@ arrows(0,0,udv$u[1,2],udv$u[2,2], lwd=0.5)</code></pre>
 <pre class="r"><code>barplot(udv$d)</code></pre>
 <p><img src="pca_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <pre class="r"><code>print(cumsum(udv$d)/sum(udv$d))</code></pre>
-<pre><code>## [1] 0.9631813143 1.0000000000</code></pre>
+<pre><code>## [1] 0.9631813 1.0000000</code></pre>
 <p>We can see that the 1st component accounts for more than 95% of the variance.</p>
 </div>
 <div id="step-6-picking-the-1st-component" class="section level3">
@@ -275,10 +275,10 @@ arrows(0,0,udv$u[1,2],udv$u[2,2], lwd=0.5)</code></pre>
 <p>We transform the 2D dataset into a 1D dataset using just the 1st PC.</p>
 <pre class="r"><code>data_new &lt;- t(udv$u[,1,drop=FALSE]) %*% t(data_norm)
 data_new</code></pre>
-<pre><code>##               [,1]        [,2]          [,3]         [,4]         [,5]
-## [1,] -0.8279701862 1.777580325 -0.9921974944 -0.274210416 -1.675801419
-##               [,6]         [,7]        [,8]         [,9]       [,10]
-## [1,] -0.9129491032 0.0991094375 1.144572164 0.4380461368 1.223820555</code></pre>
+<pre><code>##            [,1]    [,2]       [,3]       [,4]      [,5]       [,6]
+## [1,] -0.8279702 1.77758 -0.9921975 -0.2742104 -1.675801 -0.9129491
+##            [,7]     [,8]      [,9]    [,10]
+## [1,] 0.09910944 1.144572 0.4380461 1.223821</code></pre>
 <pre class="r"><code>plot(data_new,data_new,asp=1,xlab=&quot;x1&quot;, ylab=&quot;x2&quot;)</code></pre>
 <p><img src="pca_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
@@ -304,10 +304,10 @@ logTrainDataX &lt;- log(trainDataX)
 train.pca &lt;- prcomp(logTrainDataX, center = TRUE, scale. = TRUE)
 summary(train.pca)</code></pre>
 <pre><code>## Importance of components:
-##                             PC1       PC2       PC3       PC4
-## Standard deviation     1.722641 0.9312903 0.3648375 0.1791644
-## Proportion of Variance 0.741870 0.2168300 0.0332800 0.0080200
-## Cumulative Proportion  0.741870 0.9587000 0.9919800 1.0000000</code></pre>
+##                           PC1    PC2     PC3     PC4
+## Standard deviation     1.7226 0.9313 0.36484 0.17916
+## Proportion of Variance 0.7419 0.2168 0.03328 0.00802
+## Cumulative Proportion  0.7419 0.9587 0.99198 1.00000</code></pre>
 <p>From the summary, you can see that with 2 PCs, I can explain more than 95% of the variance.</p>
 <pre class="r"><code>trainDataY &lt;- trainData$Species
 validationDataX &lt;- validationData[,-ncol(trainData)]

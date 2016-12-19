@@ -256,37 +256,29 @@ str(data)</code></pre>
 <pre class="r"><code>data$Class &lt;- factor(data$Class, levels=c(2,4), labels=c(&quot;benign&quot;, &quot;malignant&quot;))</code></pre>
 <p>Now let???s see a summary of the data:</p>
 <pre class="r"><code>print(summary(data))</code></pre>
-<pre><code>##  ClumpThickness     UniformityCellSize  UniformityCellShape
-##  Min.   : 1.00000   Min.   : 1.000000   Min.   : 1.000000  
-##  1st Qu.: 2.00000   1st Qu.: 1.000000   1st Qu.: 1.000000  
-##  Median : 4.00000   Median : 1.000000   Median : 1.000000  
-##  Mean   : 4.41774   Mean   : 3.134478   Mean   : 3.207439  
-##  3rd Qu.: 6.00000   3rd Qu.: 5.000000   3rd Qu.: 5.000000  
-##  Max.   :10.00000   Max.   :10.000000   Max.   :10.000000  
-##                                                            
-##  MarginalAdhesion    SingleEpithelialCellSize   BareNuclei       
-##  Min.   : 1.000000   Min.   : 1.000000        Min.   : 1.000000  
-##  1st Qu.: 1.000000   1st Qu.: 2.000000        1st Qu.: 1.000000  
-##  Median : 1.000000   Median : 2.000000        Median : 1.000000  
-##  Mean   : 2.806867   Mean   : 3.216023        Mean   : 3.544656  
-##  3rd Qu.: 4.000000   3rd Qu.: 4.000000        3rd Qu.: 6.000000  
-##  Max.   :10.000000   Max.   :10.000000        Max.   :10.000000  
-##                                               NA&#39;s   :16         
-##  BlandChromatin      NormalNucleoli         Mitoses         
-##  Min.   : 1.000000   Min.   : 1.000000   Min.   : 1.000000  
-##  1st Qu.: 2.000000   1st Qu.: 1.000000   1st Qu.: 1.000000  
-##  Median : 3.000000   Median : 1.000000   Median : 1.000000  
-##  Mean   : 3.437768   Mean   : 2.866953   Mean   : 1.589413  
-##  3rd Qu.: 5.000000   3rd Qu.: 4.000000   3rd Qu.: 1.000000  
-##  Max.   :10.000000   Max.   :10.000000   Max.   :10.000000  
-##                                                             
-##        Class    
-##  benign   :458  
-##  malignant:241  
-##                 
-##                 
-##                 
-##                 
+<pre><code>##  ClumpThickness   UniformityCellSize UniformityCellShape MarginalAdhesion
+##  Min.   : 1.000   Min.   : 1.000     Min.   : 1.000      Min.   : 1.000  
+##  1st Qu.: 2.000   1st Qu.: 1.000     1st Qu.: 1.000      1st Qu.: 1.000  
+##  Median : 4.000   Median : 1.000     Median : 1.000      Median : 1.000  
+##  Mean   : 4.418   Mean   : 3.134     Mean   : 3.207      Mean   : 2.807  
+##  3rd Qu.: 6.000   3rd Qu.: 5.000     3rd Qu.: 5.000      3rd Qu.: 4.000  
+##  Max.   :10.000   Max.   :10.000     Max.   :10.000      Max.   :10.000  
+##                                                                          
+##  SingleEpithelialCellSize   BareNuclei     BlandChromatin  
+##  Min.   : 1.000           Min.   : 1.000   Min.   : 1.000  
+##  1st Qu.: 2.000           1st Qu.: 1.000   1st Qu.: 2.000  
+##  Median : 2.000           Median : 1.000   Median : 3.000  
+##  Mean   : 3.216           Mean   : 3.545   Mean   : 3.438  
+##  3rd Qu.: 4.000           3rd Qu.: 6.000   3rd Qu.: 5.000  
+##  Max.   :10.000           Max.   :10.000   Max.   :10.000  
+##                           NA&#39;s   :16                       
+##  NormalNucleoli      Mitoses             Class    
+##  Min.   : 1.000   Min.   : 1.000   benign   :458  
+##  1st Qu.: 1.000   1st Qu.: 1.000   malignant:241  
+##  Median : 1.000   Median : 1.000                  
+##  Mean   : 2.867   Mean   : 1.589                  
+##  3rd Qu.: 4.000   3rd Qu.: 1.000                  
+##  Max.   :10.000   Max.   :10.000                  
 ## </code></pre>
 <p>The next step is to split the dataset into a training (70%) and a validation set (30%). For comparing later different models or the same models trained with differernt parameters, we are going to use the same training and validation set. Since we are splitting them randomly, we set a seed so that we maintain the same split throughout our experiments.</p>
 <pre class="r"><code>set.seed(1234)
@@ -300,6 +292,19 @@ validationData &lt;- data[ind==2,]</code></pre>
 <pre class="r"><code>library(rpart)
 library(rpart.plot)
 library(party)</code></pre>
+<pre><code>## Loading required package: methods</code></pre>
+<pre><code>## Loading required package: grid</code></pre>
+<pre><code>## Loading required package: mvtnorm</code></pre>
+<pre><code>## Loading required package: modeltools</code></pre>
+<pre><code>## Loading required package: stats4</code></pre>
+<pre><code>## Loading required package: strucchange</code></pre>
+<pre><code>## Loading required package: zoo</code></pre>
+<pre><code>## 
+## Attaching package: &#39;zoo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.Date, as.Date.numeric</code></pre>
+<pre><code>## Loading required package: sandwich</code></pre>
 <div id="rpart" class="section level3">
 <h3>rpart</h3>
 <p>Let???s product a decision tree by training the induction algorithm on the train dataset. Check out the options of rpart with the command <code>?rpart</code>.</p>
@@ -313,17 +318,17 @@ library(party)</code></pre>
 ## node), split, n, loss, yval, (yprob)
 ##       * denotes terminal node
 ## 
-##  1) root 485 171 benign (0.647422680412 0.352577319588)  
-##    2) UniformityCellSize&lt; 2.5 292   9 benign (0.969178082192 0.030821917808)  
-##      4) BareNuclei&lt; 4.5 280   1 benign (0.996428571429 0.003571428571) *
-##      5) BareNuclei&gt;=4.5 12   4 malignant (0.333333333333 0.666666666667) *
-##    3) UniformityCellSize&gt;=2.5 193  31 malignant (0.160621761658 0.839378238342)  
-##      6) UniformityCellShape&lt; 2.5 15   3 benign (0.800000000000 0.200000000000) *
-##      7) UniformityCellShape&gt;=2.5 178  19 malignant (0.106741573034 0.893258426966)  
-##       14) UniformityCellSize&lt; 4.5 45  14 malignant (0.311111111111 0.688888888889)  
-##         28) BareNuclei&lt; 2.5 10   2 benign (0.800000000000 0.200000000000) *
-##         29) BareNuclei&gt;=2.5 35   6 malignant (0.171428571429 0.828571428571) *
-##       15) UniformityCellSize&gt;=4.5 133   5 malignant (0.037593984962 0.962406015038) *</code></pre>
+##  1) root 485 171 benign (0.647422680 0.352577320)  
+##    2) UniformityCellSize&lt; 2.5 292   9 benign (0.969178082 0.030821918)  
+##      4) BareNuclei&lt; 4.5 280   1 benign (0.996428571 0.003571429) *
+##      5) BareNuclei&gt;=4.5 12   4 malignant (0.333333333 0.666666667) *
+##    3) UniformityCellSize&gt;=2.5 193  31 malignant (0.160621762 0.839378238)  
+##      6) UniformityCellShape&lt; 2.5 15   3 benign (0.800000000 0.200000000) *
+##      7) UniformityCellShape&gt;=2.5 178  19 malignant (0.106741573 0.893258427)  
+##       14) UniformityCellSize&lt; 4.5 45  14 malignant (0.311111111 0.688888889)  
+##         28) BareNuclei&lt; 2.5 10   2 benign (0.800000000 0.200000000) *
+##         29) BareNuclei&gt;=2.5 35   6 malignant (0.171428571 0.828571429) *
+##       15) UniformityCellSize&gt;=4.5 133   5 malignant (0.037593985 0.962406015) *</code></pre>
 <p>And in a visual representation:</p>
 <pre class="r"><code>plot(tree)
 text(tree)</code></pre>
