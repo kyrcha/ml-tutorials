@@ -5,10 +5,11 @@ date: "November 28, 2016"
 output: html_document
 ---
 
-```{r}
-library(FSelector)
-library(rpart)
+## Introduction
 
+We will apply a wrapper selection method using forward search and decision trees as a model in the breast cancer Wisconsin dataset. First we will split the dataset into training and validation datasets.
+
+```{r}
 data <- read.table('breast-cancer-wisconsin.data', na.strings = "?", sep=",")
 data <- data[,-1]
 names(data) <- c("ClumpThickness", 
@@ -29,6 +30,15 @@ validationData <- data[ind==2,]
 # remove cases with missing data
 trainData <- trainData[complete.cases(trainData),]
 validationData <- validationData[complete.cases(validationData),]
+```
+
+## Forward-search
+
+We will use the `forward.search` method of the `FSelector` package and the `rpart` decision trees training method of the homonymous package. The `forward.search` method needs an evaluation function that evaluates a subset of attributes. In our case the `evaluator` function performs 5-fold cross-validation on the training dataset.
+
+```{r include=FALSE}
+library(FSelector)
+library(rpart)
 
 evaluator <- function(subset) {
   #k-fold cross validation
@@ -47,7 +57,40 @@ evaluator <- function(subset) {
   print(mean(results))
   return(mean(results))
 }
+
 subset <- forward.search(names(trainData)[-10], evaluator)
+```
+
+After the search we get the following formula, where 5 out of the 9 variables were kept.
+
+```{r}
 f <- as.simple.formula(subset, "Class")
 print(f)
 ```
+
+## Naive Bayes
+
+We can use the Naive Bayes algorithm to evaluate the forward selection algorithm both in the training and the validation datasets under the accuracy metric.
+
+```{r}
+library(e1071)
+model <- naiveBayes(Class ~ ., data=trainData, laplace = 1)
+simpler_model <- naiveBayes(f, data=trainData, laplace = 1)
+
+pred <- predict(model, validationData)
+simpler_pred <- predict(simpler_model, validationData)
+
+library(MLmetrics)
+train_pred <- predict(model, trainData)
+train_simpler_pred <- predict(simpler_model, trainData)
+paste("Accuracy in training all attributes", Accuracy(train_pred, trainData$Class), sep=" - ")
+paste("Accuracy in training forward search attributes", Accuracy(train_simpler_pred, trainData$Class), sep=" - ")
+paste("Accuracy in validation all attributes", Accuracy(pred, validationData$Class), sep=" - ")
+paste("Accuracy in validation forward search attributes", Accuracy(simpler_pred, validationData$Class), sep=" - ")
+```
+
+In the breast cancer Wisconsin dataset, the feature selection algorithm did not outperform the use of all attributes. The obvious cause is that there 9 attributes are handpicked by domain experts and have indeed a predictive power all together. So removing some does not product better results. 
+
+## Backward search
+
+One can also alter the `forward.search` method with `backward.search` to perform the backward search wrapper selection method. In fact in the case of `backward.search` all attributes are kept.

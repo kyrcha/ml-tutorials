@@ -2,13 +2,18 @@
 title: "Principal Components Analysis"
 author: "Kyriakos Chatzidimitriou"
 date: "November 28, 2016"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
+## "Raw" Principal Components Analysis
 
-## Raw PCA
+First we will try to perform Principal Components analysis (PCA) without using a premade function.
 
 ### Step 1: Data
+
+Make the dataset and plot it
 
 ```{r}
 d <- c(2.5, 2.4, 0.5, 0.7, 2.2, 2.9, 1.9, 2.2, 3.1, 3.0, 2.3, 
@@ -54,7 +59,9 @@ print(cumsum(udv$d)/sum(udv$d))
 
 We can see that the 1st component accounts for more than 95% of the variance.
 
+### Step 6: Picking the 1st component
 
+We transform the 2D dataset into a 1D dataset using just the 1st PC.
 
 ```{r}
 data_new <- t(udv$u[,1,drop=FALSE]) %*% t(data_norm)
@@ -64,24 +71,11 @@ plot(data_new,data_new,asp=1,xlab="x1", ylab="x2")
 
 ## PCA using an R function
 
+Next we will the `prcomp` function that performs PCA in one step. We will apply it on the Iris dataset.
+
 ```{r}
 # download the file
-#fileURL <- "http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data"
-#download.file(fileURL, destfile="breast-cancer-wisconsin.data", method="curl")
-# read the data
-data <- read.table('breast-cancer-wisconsin.data', na.strings = "?", sep=",")
-data <- data[,-1]
-names(data) <- c("ClumpThickness", 
-                "UniformityCellSize", 
-                "UniformityCellShape", 
-                "MarginalAdhesion",
-                "SingleEpithelialCellSize",
-                "BareNuclei",
-                "BlandChromatin",
-                "NormalNucleoli",
-                "Mitoses",
-                "Class")
-data$Class <- factor(data$Class, levels=c(2,4), labels=c("benign", "malignant"))
+data = iris
 set.seed(1234)
 ind <- sample(2, nrow(data), replace=TRUE, prob=c(0.7, 0.3))
 trainData <- data[ind==1,]
@@ -99,37 +93,45 @@ train.pca <- prcomp(logTrainDataX, center = TRUE, scale. = TRUE)
 summary(train.pca)
 ```
 
+From the summary, you can see that with 2 PCs, I can explain more than 95% of the variance.
+
 ```{r}
-# From the summary, you can see that with 7 variables I can explain more than 95%
-# of the variance
-trainDataY <- trainData$Class
+trainDataY <- trainData$Species
 validationDataX <- validationData[,-ncol(trainData)]
 # Let's also transform the validation data
 logValidationDataX <- log(validationDataX)
 validation.pca <- predict(train.pca, newdata=logValidationDataX)
-validationDataY <- validationData$Class
+validationDataY <- validationData$Species
 
 # no pca prediction
-#prediction = knn(trainDataX, validationDataX, trainDataY, k = 3)
+prediction = knn(trainDataX, validationDataX, trainDataY, k = 3)
 # So let's predict using only the 7 principal components
-prediction = knn(train.pca$x[,1:2], validation.pca[,1:2], trainDataY, k = 3)
+prediction_pca = knn(train.pca$x[,1:2], validation.pca[,1:2], trainDataY, k = 3)
 
 cat("Confusion matrix:\n")
-xtab = table(prediction, validationData$Class)
+xtab = table(prediction, validationData$Species)
 print(xtab)
 cat("\nEvaluation:\n\n")
-accuracy = sum(prediction == validationData$Class)/length(validationData$Class)
-precision = xtab[1,1]/sum(xtab[,1])
-recall = xtab[1,1]/sum(xtab[1,])
-f = 2 * (precision * recall) / (precision + recall)
+accuracy = sum(prediction == validationData$Species)/length(validationData$Species)
 cat(paste("Accuracy:\t", format(accuracy, digits=2), "\n",sep=" "))
-cat(paste("Precision:\t", format(precision, digits=2), "\n",sep=" "))
-cat(paste("Recall:\t\t", format(recall, digits=2), "\n",sep=" "))
-cat(paste("F-measure:\t", format(f, digits=2), "\n",sep=" ")) 
+
+cat("Confusion matrix PCA:\n")
+xtab = table(prediction_pca, validationData$Species)
+print(xtab)
+cat("\nEvaluation PCA:\n\n")
+accuracy = sum(prediction_pca == validationData$Species)/length(validationData$Species)
+cat(paste("Accuracy PCA:\t", format(accuracy, digits=2), "\n",sep=" "))
 ```
+
+## Plotting
+
+Using the PCA we can also plot in 2D high-dimensional data using just the first two components.
 
 ```{r}
-plot(train.pca$x[trainData$Class == 'benign',1:2], col="blue")
-points(train.pca$x[trainData$Class == 'malignant',1:2], pch = 3, col="red")
+plot(train.pca$x[trainData$Species == 'setosa',1:2], col="blue", ylim = c(-3, 3), xlim=c(-3,3), asp=1)
+points(train.pca$x[trainData$Species == 'versicolor',1:2], pch = 3, col="red")
+points(train.pca$x[trainData$Species == 'virginica',1:2], pch = 4, col="green")
 
 ```
+
+In this case the PCA is not the best method for dimensionality reduction to improve the accuracy. From the plot one cas observe that the `versicolor` and `virginica` species are intermixed in 2D and thus the k-NN algorithm will have trouble classifying between the two.

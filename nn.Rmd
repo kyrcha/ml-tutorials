@@ -1,0 +1,49 @@
+---
+title: "Neural Networks"
+author: "Kyriakos Chatzidimitriou"
+date: "12/17/2016"
+output: html_document
+---
+
+## Neural Networks
+```{r}
+#library(neuralnet)
+#data <- read.table('breast-cancer-wisconsin.data', na.strings = "?", sep=",")
+
+#data <- data[,-1]
+
+#names(data) <- c("ClumpThickness", 
+#                "UniformityCellSize", 
+#                "UniformityCellShape", 
+#                "MarginalAdhesion",
+#                "SingleEpithelialCellSize",
+#                "BareNuclei",
+#                "BlandChromatin",
+#                "NormalNucleoli",
+#                "Mitoses",
+#                "Class")
+#set.seed(1234)
+#ind <- sample(2, nrow(data), replace=TRUE, prob=c(0.7, 0.3))
+#trainData <- data[ind==1,]
+#validationData <- data[ind==2,]
+#trainData <- trainData[complete.cases(trainData),]
+#validationData <- validationData[complete.cases(validationData),]
+#nn.bp <- neuralnet(f, data=trainData, hidden=10, err.fct="ce", linear.output=FALSE, #learningrate=0.01)
+# get the predictions
+#output <- compute(nn.bp, subset(validationData, select=subset))$net.result
+# from numeric values between 0 and 1 make them T or F
+#output[output > 0.5] <- TRUE
+#output[output < 0.5] <- FALSE
+#cat("\nConfusion matrix:\n")    
+#xtab = table(output, validationData$Class)
+#print(xtab)
+#cat("\nEvaluation:\n\n")
+#accuracy = sum(output == validationData$Class)/length(validationData$Class)
+#precision = xtab[1,1]/sum(xtab[,1])
+#recall = xtab[1,1]/sum(xtab[1,])
+#f = 2 * (precision * recall) / (precision + recall)
+#cat(paste("Accuracy:\t", format(accuracy, digits=2), "\n",sep=" "))
+#cat(paste("Precision:\t", format(precision, digits=2), "\n",sep=" "))
+#cat(paste("Recall:\t\t", format(recall, digits=2), "\n",sep=" "))
+#cat(paste("F-measure:\t", format(f, digits=2), "\n",sep=" "))
+```

@@ -9,9 +9,11 @@
 <meta name="generator" content="pandoc" />
 
 
+<meta name="author" content="Kyriakos Chatzidimitriou" />
 
+<meta name="date" content="2016-11-28" />
 
-<title>Finder</title>
+<title>Wrapper Selection</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -205,35 +207,73 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Finder</h1>
+<h1 class="title toc-ignore">Wrapper Selection</h1>
+<h4 class="author"><em>Kyriakos Chatzidimitriou</em></h4>
+<h4 class="date"><em>November 28, 2016</em></h4>
 
 </div>
 
 
-<div id="algorithms" class="section level1">
-<h1>Algorithms</h1>
-<ul>
-<li>Decision Trees</li>
-<li>kNN</li>
-<li>Naive Bayes</li>
-</ul>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>We will apply a wrapper selection method using forward search and decision trees as a model in the breast cancer Wisconsin dataset. First we will split the dataset into training and validation datasets.</p>
+<pre class="r"><code>data &lt;- read.table(&#39;breast-cancer-wisconsin.data&#39;, na.strings = &quot;?&quot;, sep=&quot;,&quot;)
+data &lt;- data[,-1]
+names(data) &lt;- c(&quot;ClumpThickness&quot;, 
+                 &quot;UniformityCellSize&quot;, 
+                 &quot;UniformityCellShape&quot;, 
+                 &quot;MarginalAdhesion&quot;,
+                 &quot;SingleEpithelialCellSize&quot;,
+                 &quot;BareNuclei&quot;,
+                 &quot;BlandChromatin&quot;,
+                 &quot;NormalNucleoli&quot;,
+                 &quot;Mitoses&quot;,
+                 &quot;Class&quot;)
+data$Class &lt;- factor(data$Class, levels=c(2,4), labels=c(&quot;benign&quot;, &quot;malignant&quot;))
+set.seed(1234)
+ind &lt;- sample(2, nrow(data), replace=TRUE, prob=c(0.7, 0.3))
+trainData &lt;- data[ind==1,]
+validationData &lt;- data[ind==2,]
+# remove cases with missing data
+trainData &lt;- trainData[complete.cases(trainData),]
+validationData &lt;- validationData[complete.cases(validationData),]</code></pre>
 </div>
-<div id="model-evaluation" class="section level1">
-<h1>Model Evaluation</h1>
-<ul>
-<li>ROC Curves</li>
-<li>Cross Validation</li>
-</ul>
+<div id="forward-search" class="section level2">
+<h2>Forward-search</h2>
+<p>We will use the <code>forward.search</code> method of the <code>FSelector</code> package and the <code>rpart</code> decision trees training method of the homonymous package. The <code>forward.search</code> method needs an evaluation function that evaluates a subset of attributes. In our case the <code>evaluator</code> function performs 5-fold cross-validation on the training dataset.</p>
+<p>After the search we get the following formula, where 5 out of the 9 variables were kept.</p>
+<pre class="r"><code>f &lt;- as.simple.formula(subset, &quot;Class&quot;)
+print(f)</code></pre>
+<pre><code>## Class ~ ClumpThickness + UniformityCellShape + BareNuclei + BlandChromatin + 
+##     NormalNucleoli
+## &lt;environment: 0x12b6ce2e0&gt;</code></pre>
 </div>
-<div id="r" class="section level1">
-<h1>R</h1>
-<ul>
-<li>rpart</li>
-<li>party</li>
-<li>caret</li>
-<li>e1071</li>
-<li>class</li>
-</ul>
+<div id="naive-bayes" class="section level2">
+<h2>Naive Bayes</h2>
+<p>We can use the Naive Bayes algorithm to evaluate the forward selection algorithm both in the training and the validation datasets under the accuracy metric.</p>
+<pre class="r"><code>library(e1071)
+model &lt;- naiveBayes(Class ~ ., data=trainData, laplace = 1)
+simpler_model &lt;- naiveBayes(f, data=trainData, laplace = 1)
+
+pred &lt;- predict(model, validationData)
+simpler_pred &lt;- predict(simpler_model, validationData)
+
+library(MLmetrics)
+train_pred &lt;- predict(model, trainData)
+train_simpler_pred &lt;- predict(simpler_model, trainData)
+paste(&quot;Accuracy in training all attributes&quot;, Accuracy(train_pred, trainData$Class), sep=&quot; - &quot;)</code></pre>
+<pre><code>## [1] &quot;Accuracy in training all attributes - 0.957805907172996&quot;</code></pre>
+<pre class="r"><code>paste(&quot;Accuracy in training forward search attributes&quot;, Accuracy(train_simpler_pred, trainData$Class), sep=&quot; - &quot;)</code></pre>
+<pre><code>## [1] &quot;Accuracy in training forward search attributes - 0.953586497890295&quot;</code></pre>
+<pre class="r"><code>paste(&quot;Accuracy in validation all attributes&quot;, Accuracy(pred, validationData$Class), sep=&quot; - &quot;)</code></pre>
+<pre><code>## [1] &quot;Accuracy in validation all attributes - 0.976076555023923&quot;</code></pre>
+<pre class="r"><code>paste(&quot;Accuracy in validation forward search attributes&quot;, Accuracy(simpler_pred, validationData$Class), sep=&quot; - &quot;)</code></pre>
+<pre><code>## [1] &quot;Accuracy in validation forward search attributes - 0.971291866028708&quot;</code></pre>
+<p>In the breast cancer Wisconsin dataset, the feature selection algorithm did not outperform the use of all attributes. The obvious cause is that there 9 attributes are handpicked by domain experts and have indeed a predictive power all together. So removing some does not product better results.</p>
+</div>
+<div id="backward-search" class="section level2">
+<h2>Backward search</h2>
+<p>One can also alter the <code>forward.search</code> method with <code>backward.search</code> to perform the backward search wrapper selection method. In fact in the case of <code>backward.search</code> all attributes are kept.</p>
 </div>
 
 <h2>Acknowledgements</h2>

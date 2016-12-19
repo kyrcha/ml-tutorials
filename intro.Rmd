@@ -453,7 +453,7 @@ You can make decisions using the logical operators
 - less than or equal to (`<=`), 
 - and not equal to (`!=`).
 
-We can also combine tests. An ampersand, `&`, symbolizes “and”. A vertical bar, `|`, symbolizes “or”.
+We can also combine tests. An ampersand, `&`, symbolizes ???and???. A vertical bar, `|`, symbolizes ???or???.
 
 ## Datasets and statistics
 
@@ -523,7 +523,7 @@ levels(sex)
 nlevels(sex)
 ```
 
-Sometimes, the order of the factors does not matter, other times you might want to specify the order because it is meaningful (e.g., “low”, “medium”, “high”) or it is required by particular type of analysis. Additionally, specifying the order of the levels allows us to compare levels:
+Sometimes, the order of the factors does not matter, other times you might want to specify the order because it is meaningful (e.g., ???low???, ???medium???, ???high???) or it is required by particular type of analysis. Additionally, specifying the order of the levels allows us to compare levels:
 
 ```{r}
 food <- factor(c("low", "high", "medium", "high", "low", "medium", "high"))

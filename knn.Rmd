@@ -19,6 +19,7 @@ The goal of this notebook is to introduce the k-Nearest Neighbors instance-based
 the class package. For this example we are going to use the [Breast Cancer Wisconsin (Original) Data Set](http://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Original%29). The steps for loading and splitting the dataset to training and validation are the same as in the [decision trees notes](dt.html)
 
 ```{r include=FALSE}
+rm(list=ls())
 # download the dataset
 fileURL <- "http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data"
 download.file(fileURL, destfile="breast-cancer-wisconsin.data", method="curl")
@@ -55,7 +56,7 @@ There is a kNN algorithm in the class package.
 library(class)
 ```
 
-Because all the attributes are between 1 and 10 there is no need to do normalization between 0 and 1, since no attribute will dominate the others in the distance calculation of kNN. Because kNN accepts the training and testing datasets without the target column, which puts in a 3rd argument, we are going to do some data manipulation to have the data the way the `knn` function likes them (look the manual with ?knn). Also, because no missing values are allowed in kNN, let’s remove those too.
+Because all the attributes are between 1 and 10 there is no need to do normalization between 0 and 1, since no attribute will dominate the others in the distance calculation of kNN. Because kNN accepts the training and testing datasets without the target column, which puts in a 3rd argument, we are going to do some data manipulation to have the data the way the `knn` function likes them (look the manual with ?knn). Also, because no missing values are allowed in kNN, let???s remove those too.
 
 ```{r}
 trainData <- trainData[complete.cases(trainData),]
@@ -66,7 +67,7 @@ validationDataX <- validationData[,-ncol(trainData)]
 validationDataY <- validationData$Class
 ```
 
-Let’s predict, since there is no need to training when using kNN. The training instances are the model.
+Lets predict, since there is no need to training when using kNN. The training instances are the model.
 
 ```{r}
 prediction = knn(trainDataX, validationDataX, trainDataY, k = 1)
@@ -78,7 +79,7 @@ You can play with the values of k to look for a better model.
 
 Make the predictions for the validation dataset and print the confusion matrix:
 
-```{r}
+```{r eval}
 cat("Confusion matrix:\n")
 xtab = table(prediction, validationData$Class)
 print(xtab)
@@ -96,12 +97,6 @@ cat(paste("F-measure:\t", format(f, digits=2), "\n",sep=" "))
 ### Cross Validation
 
 For performing cross-validation we will use the `caret` package. [Here](https://cran.r-project.org/web/packages/caret/vignettes/caret.pdf) you can find a quick guide to caret.
-
-
-
-     Define sets of model
-     
-Write here the main caret stuff
 
 #### Split data in two groups
 

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Kyriakos Chatzidimitriou" />
+
+<meta name="date" content="2016-11-28" />
+
+<title>Principal Components Analysis</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">ML & R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="r.html">R</a>
+</li>
+<li>
+  <a href="classification.html">Classification</a>
+</li>
+<li>
+  <a href="uc.html">Clustering</a>
+</li>
+<li>
+  <a href="data-eng.html">Data Engineering</a>
+</li>
+<li>
+  <a href="finder.html">Finder</a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Principal Components Analysis</h1>
+<h4 class="author"><em>Kyriakos Chatzidimitriou</em></h4>
+<h4 class="date"><em>November 28, 2016</em></h4>
+
+</div>
+
+
+<div id="raw-principal-components-analysis" class="section level2">
+<h2>“Raw” Principal Components Analysis</h2>
+<p>First we will try to perform Principal Components analysis (PCA) without using a premade function.</p>
+<div id="step-1-data" class="section level3">
+<h3>Step 1: Data</h3>
+<p>Make the dataset and plot it</p>
+<pre class="r"><code>d &lt;- c(2.5, 2.4, 0.5, 0.7, 2.2, 2.9, 1.9, 2.2, 3.1, 3.0, 2.3, 
+       2.7, 2, 1.6, 1, 1.1, 1.5, 1.6, 1.1, 0.9)
+data &lt;- matrix(d, ncol=2, byrow = T)
+plot(data, xlab=&quot;x1&quot;, ylab=&quot;x2&quot;)</code></pre>
+<p><img src="pca_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+</div>
+<div id="step-2-subtract-the-mean" class="section level3">
+<h3>Step 2: Subtract the mean</h3>
+<p>We subtract the mean of each attribute (x1, x2) from the respective values (centering the data) using the function <code>scale</code>.</p>
+<pre class="r"><code>data_norm &lt;- scale(data, scale=F)
+plot(data_norm, xlab=&quot;x1&quot;, ylab=&quot;x2&quot;)</code></pre>
+<p><img src="pca_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="step-3-calculate-the-covariance-matrix" class="section level3">
+<h3>Step 3: Calculate the covariance matrix</h3>
+<pre class="r"><code>S &lt;- cov(data_norm)
+print(S)</code></pre>
+<pre><code>##              [,1]         [,2]
+## [1,] 0.6165555556 0.6154444444
+## [2,] 0.6154444444 0.7165555556</code></pre>
+</div>
+<div id="step-4-computer-the-eigenvectors-of-the-covariance-matrix" class="section level3">
+<h3>Step 4: Computer the eigenvectors of the covariance matrix</h3>
+<pre class="r"><code>udv &lt;- svd(S)
+print(udv)</code></pre>
+<pre><code>## $d
+## [1] 1.28402771217 0.04908339894
+## 
+## $u
+##               [,1]          [,2]
+## [1,] -0.6778733985 -0.7351786555
+## [2,] -0.7351786555  0.6778733985
+## 
+## $v
+##               [,1]          [,2]
+## [1,] -0.6778733985 -0.7351786555
+## [2,] -0.7351786555  0.6778733985</code></pre>
+<pre class="r"><code># asp=1 keep the aspect ratio to 1 so that the eigenvectors are perpendicular
+plot(data_norm, asp=1, xlab=&quot;x1&quot;, ylab=&quot;x2&quot;)
+arrows(0,0,udv$u[1,1],udv$u[2,1], lwd=1)
+arrows(0,0,udv$u[1,2],udv$u[2,2], lwd=0.5)</code></pre>
+<p><img src="pca_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="step-5-choosing-components" class="section level3">
+<h3>Step 5: Choosing components</h3>
+<pre class="r"><code>barplot(udv$d)</code></pre>
+<p><img src="pca_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>print(cumsum(udv$d)/sum(udv$d))</code></pre>
+<pre><code>## [1] 0.9631813143 1.0000000000</code></pre>
+<p>We can see that the 1st component accounts for more than 95% of the variance.</p>
+</div>
+<div id="step-6-picking-the-1st-component" class="section level3">
+<h3>Step 6: Picking the 1st component</h3>
+<p>We transform the 2D dataset into a 1D dataset using just the 1st PC.</p>
+<pre class="r"><code>data_new &lt;- t(udv$u[,1,drop=FALSE]) %*% t(data_norm)
+data_new</code></pre>
+<pre><code>##               [,1]        [,2]          [,3]         [,4]         [,5]
+## [1,] -0.8279701862 1.777580325 -0.9921974944 -0.274210416 -1.675801419
+##               [,6]         [,7]        [,8]         [,9]       [,10]
+## [1,] -0.9129491032 0.0991094375 1.144572164 0.4380461368 1.223820555</code></pre>
+<pre class="r"><code>plot(data_new,data_new,asp=1,xlab=&quot;x1&quot;, ylab=&quot;x2&quot;)</code></pre>
+<p><img src="pca_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+</div>
+<div id="pca-using-an-r-function" class="section level2">
+<h2>PCA using an R function</h2>
+<p>Next we will the <code>prcomp</code> function that performs PCA in one step. We will apply it on the Iris dataset.</p>
+<pre class="r"><code># download the file
+data = iris
+set.seed(1234)
+ind &lt;- sample(2, nrow(data), replace=TRUE, prob=c(0.7, 0.3))
+trainData &lt;- data[ind==1,]
+validationData &lt;- data[ind==2,]
+
+library(class)
+library(stats)
+
+trainData &lt;- trainData[complete.cases(trainData),]
+validationData &lt;- validationData[complete.cases(validationData),]
+
+trainDataX &lt;- trainData[,-ncol(trainData)]
+logTrainDataX &lt;- log(trainDataX)
+train.pca &lt;- prcomp(logTrainDataX, center = TRUE, scale. = TRUE)
+summary(train.pca)</code></pre>
+<pre><code>## Importance of components:
+##                             PC1       PC2       PC3       PC4
+## Standard deviation     1.722641 0.9312903 0.3648375 0.1791644
+## Proportion of Variance 0.741870 0.2168300 0.0332800 0.0080200
+## Cumulative Proportion  0.741870 0.9587000 0.9919800 1.0000000</code></pre>
+<p>From the summary, you can see that with 2 PCs, I can explain more than 95% of the variance.</p>
+<pre class="r"><code>trainDataY &lt;- trainData$Species
+validationDataX &lt;- validationData[,-ncol(trainData)]
+# Let&#39;s also transform the validation data
+logValidationDataX &lt;- log(validationDataX)
+validation.pca &lt;- predict(train.pca, newdata=logValidationDataX)
+validationDataY &lt;- validationData$Species
+
+# no pca prediction
+prediction = knn(trainDataX, validationDataX, trainDataY, k = 3)
+# So let&#39;s predict using only the 7 principal components
+prediction_pca = knn(train.pca$x[,1:2], validation.pca[,1:2], trainDataY, k = 3)
+
+cat(&quot;Confusion matrix:\n&quot;)</code></pre>
+<pre><code>## Confusion matrix:</code></pre>
+<pre class="r"><code>xtab = table(prediction, validationData$Species)
+print(xtab)</code></pre>
+<pre><code>##             
+## prediction   setosa versicolor virginica
+##   setosa         10          0         0
+##   versicolor      0         12         1
+##   virginica       0          0        15</code></pre>
+<pre class="r"><code>cat(&quot;\nEvaluation:\n\n&quot;)</code></pre>
+<pre><code>## 
+## Evaluation:</code></pre>
+<pre class="r"><code>accuracy = sum(prediction == validationData$Species)/length(validationData$Species)
+cat(paste(&quot;Accuracy:\t&quot;, format(accuracy, digits=2), &quot;\n&quot;,sep=&quot; &quot;))</code></pre>
+<pre><code>## Accuracy:     0.97</code></pre>
+<pre class="r"><code>cat(&quot;Confusion matrix PCA:\n&quot;)</code></pre>
+<pre><code>## Confusion matrix PCA:</code></pre>
+<pre class="r"><code>xtab = table(prediction_pca, validationData$Species)
+print(xtab)</code></pre>
+<pre><code>##               
+## prediction_pca setosa versicolor virginica
+##     setosa         10          0         0
+##     versicolor      0         10         3
+##     virginica       0          2        13</code></pre>
+<pre class="r"><code>cat(&quot;\nEvaluation PCA:\n\n&quot;)</code></pre>
+<pre><code>## 
+## Evaluation PCA:</code></pre>
+<pre class="r"><code>accuracy = sum(prediction_pca == validationData$Species)/length(validationData$Species)
+cat(paste(&quot;Accuracy PCA:\t&quot;, format(accuracy, digits=2), &quot;\n&quot;,sep=&quot; &quot;))</code></pre>
+<pre><code>## Accuracy PCA:     0.87</code></pre>
+</div>
+<div id="plotting" class="section level2">
+<h2>Plotting</h2>
+<p>Using the PCA we can also plot in 2D high-dimensional data using just the first two components.</p>
+<pre class="r"><code>plot(train.pca$x[trainData$Species == &#39;setosa&#39;,1:2], col=&quot;blue&quot;, ylim = c(-3, 3), xlim=c(-3,3), asp=1)
+points(train.pca$x[trainData$Species == &#39;versicolor&#39;,1:2], pch = 3, col=&quot;red&quot;)
+points(train.pca$x[trainData$Species == &#39;virginica&#39;,1:2], pch = 4, col=&quot;green&quot;)</code></pre>
+<p><img src="pca_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>In this case the PCA is not the best method for dimensionality reduction to improve the accuracy. From the plot one cas observe that the <code>versicolor</code> and <code>virginica</code> species are intermixed in 2D and thus the k-NN algorithm will have trouble classifying between the two.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

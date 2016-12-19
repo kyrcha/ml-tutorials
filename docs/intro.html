@@ -192,7 +192,7 @@ $(document).ready(function () {
   <a href="uc.html">Clustering</a>
 </li>
 <li>
-  <a href="uc.html">Dimensionality Reduction</a>
+  <a href="data-eng.html">Data Engineering</a>
 </li>
 <li>
   <a href="finder.html">Finder</a>
@@ -241,25 +241,26 @@ print(a)</code></pre>
 <pre><code>## [1] 42</code></pre>
 <p>With <code>ls()</code> one can check all the variables existing in the current R session.</p>
 <pre class="r"><code>ls()</code></pre>
-<pre><code>##  [1] &quot;a&quot;                        &quot;am&quot;                      
-##  [3] &quot;avg_day_inflammation&quot;     &quot;b&quot;                       
-##  [5] &quot;best_practice&quot;            &quot;bm&quot;                      
-##  [7] &quot;c&quot;                        &quot;ctree&quot;                   
-##  [9] &quot;d1&quot;                       &quot;d2&quot;                      
-## [11] &quot;d3&quot;                       &quot;data&quot;                    
-## [13] &quot;entTree&quot;                  &quot;evaluation&quot;              
-## [15] &quot;fahr_to_celsius&quot;          &quot;fahr_to_kelvin&quot;          
-## [17] &quot;fileURL&quot;                  &quot;food&quot;                    
-## [19] &quot;ind&quot;                      &quot;kelvin_to_celsius&quot;       
-## [21] &quot;len&quot;                      &quot;m&quot;                       
-## [23] &quot;m2&quot;                       &quot;max_day_inflammation&quot;    
-## [25] &quot;max_patient_inflammation&quot; &quot;min_day_inflammation&quot;    
-## [27] &quot;num&quot;                      &quot;patient_1&quot;               
-## [29] &quot;positives&quot;                &quot;print_words&quot;             
-## [31] &quot;sex&quot;                      &quot;sign&quot;                    
-## [33] &quot;trainData&quot;                &quot;tree&quot;                    
-## [35] &quot;tree_with_params&quot;         &quot;v&quot;                       
-## [37] &quot;validationData&quot;           &quot;vowels&quot;</code></pre>
+<pre><code>##  [1] &quot;PimaIndiansDiabetes&quot; &quot;ROCcurve&quot;            &quot;S&quot;                  
+##  [4] &quot;Sonar&quot;               &quot;a&quot;                   &quot;accuracy&quot;           
+##  [7] &quot;b&quot;                   &quot;control&quot;             &quot;ctree&quot;              
+## [10] &quot;ctrl&quot;                &quot;d&quot;                   &quot;data&quot;               
+## [13] &quot;data_new&quot;            &quot;data_norm&quot;           &quot;entTree&quot;            
+## [16] &quot;evaluation&quot;          &quot;evaluator&quot;           &quot;f&quot;                  
+## [19] &quot;fileURL&quot;             &quot;inTrain&quot;             &quot;ind&quot;                
+## [22] &quot;kNNFit&quot;              &quot;kNNFit1&quot;             &quot;kNNFit2&quot;            
+## [25] &quot;kNNFit4&quot;             &quot;knnFit5&quot;             &quot;knnPredict&quot;         
+## [28] &quot;knnPredict2&quot;         &quot;logTrainDataX&quot;       &quot;logValidationDataX&quot; 
+## [31] &quot;model&quot;               &quot;precision&quot;           &quot;pred&quot;               
+## [34] &quot;pred_obj&quot;            &quot;pred_prob&quot;           &quot;prediction&quot;         
+## [37] &quot;prediction_pca&quot;      &quot;recall&quot;              &quot;results&quot;            
+## [40] &quot;simpler_model&quot;       &quot;simpler_pred&quot;        &quot;subset&quot;             
+## [43] &quot;testing&quot;             &quot;train.pca&quot;           &quot;trainData&quot;          
+## [46] &quot;trainDataX&quot;          &quot;trainDataY&quot;          &quot;train_pred&quot;         
+## [49] &quot;train_simpler_pred&quot;  &quot;training&quot;            &quot;tree&quot;               
+## [52] &quot;tree_with_params&quot;    &quot;udv&quot;                 &quot;validation.pca&quot;     
+## [55] &quot;validationData&quot;      &quot;validationDataX&quot;     &quot;validationDataY&quot;    
+## [58] &quot;xtab&quot;                &quot;ytest&quot;</code></pre>
 <pre class="r"><code># while to delete all the variables in the current session you can use the call: 
 rm(list=ls())</code></pre>
 </div>
@@ -404,23 +405,25 @@ bm</code></pre>
 <pre class="r"><code>data &lt;- read.csv(file = &quot;data/inflammation-01.csv&quot;, header = FALSE)
 # Notice the use of the path including data/ since we previously set the working directory as the Desktop
 getwd()</code></pre>
-<pre><code>## [1] &quot;/home/kyrcha/Workspaces/github/ml-tutorials&quot;</code></pre>
+<pre><code>## [1] &quot;/Users/kyrcha/Workspaces/github/ml-tutorials&quot;</code></pre>
 <pre class="r"><code>dir()</code></pre>
-<pre><code>##  [1] &quot;breast-cancer-wisconsin.data&quot; &quot;classification.html&quot;         
-##  [3] &quot;classification.Rmd&quot;           &quot;CNAME&quot;                       
-##  [5] &quot;data&quot;                         &quot;docs&quot;                        
-##  [7] &quot;dt_files&quot;                     &quot;dt.html&quot;                     
-##  [9] &quot;dt.pdf&quot;                       &quot;dt.Rmd&quot;                      
-## [11] &quot;finder.html&quot;                  &quot;finder.Rmd&quot;                  
-## [13] &quot;footer.html&quot;                  &quot;footer.tex&quot;                  
-## [15] &quot;index.html&quot;                   &quot;index.Rmd&quot;                   
-## [17] &quot;intro.pdf&quot;                    &quot;intro.Rmd&quot;                   
-## [19] &quot;knn.pdf&quot;                      &quot;knn.Rmd&quot;                     
-## [21] &quot;ml-tutorials.Rproj&quot;           &quot;nb.pdf&quot;                      
-## [23] &quot;nb.Rmd&quot;                       &quot;README.md&quot;                   
-## [25] &quot;r.Rmd&quot;                        &quot;site_libs&quot;                   
-## [27] &quot;_site.yml&quot;                    &quot;style.css&quot;                   
-## [29] &quot;uc.Rmd&quot;</code></pre>
+<pre><code>##  [1] &quot;CNAME&quot;                        &quot;README.html&quot;                 
+##  [3] &quot;README.md&quot;                    &quot;_site.yml&quot;                   
+##  [5] &quot;breast-cancer-wisconsin.data&quot; &quot;cfs.Rmd&quot;                     
+##  [7] &quot;cfs.html&quot;                     &quot;classification.Rmd&quot;          
+##  [9] &quot;classification.html&quot;          &quot;data&quot;                        
+## [11] &quot;data-eng.Rmd&quot;                 &quot;data-eng.html&quot;               
+## [13] &quot;docs&quot;                         &quot;dt.Rmd&quot;                      
+## [15] &quot;dt.html&quot;                      &quot;dt_files&quot;                    
+## [17] &quot;finder.Rmd&quot;                   &quot;finder.html&quot;                 
+## [19] &quot;footer.html&quot;                  &quot;footer.tex&quot;                  
+## [21] &quot;index.Rmd&quot;                    &quot;index.html&quot;                  
+## [23] &quot;intro.Rmd&quot;                    &quot;knn.Rmd&quot;                     
+## [25] &quot;ml-tutorials.Rproj&quot;           &quot;nb.Rmd&quot;                      
+## [27] &quot;nn.Rmd&quot;                       &quot;pca.Rmd&quot;                     
+## [29] &quot;r.Rmd&quot;                        &quot;rfe.Rmd&quot;                     
+## [31] &quot;site_libs&quot;                    &quot;style.css&quot;                   
+## [33] &quot;uc.Rmd&quot;                       &quot;wrapper.Rmd&quot;</code></pre>
 <p>The <code>dir</code> function return the files and directories of the file system. The argument <code>header=FALSE</code> lets the <code>read.csv</code> function know that there is no header row to give the columns names.</p>
 <p>With <code>head(data)</code> I can check if the data are loaded correctly. It return the first few rows:</p>
 <pre class="r"><code>head(data)</code></pre>
@@ -497,76 +500,83 @@ str(data)</code></pre>
 ##  $ V40: int  0 1 1 1 1 1 1 1 0 0 ...</code></pre>
 <pre class="r"><code># statistical summarization of the data frame
 summary(data)</code></pre>
-<pre><code>##        V1          V2             V3              V4             V5       
-##  Min.   :0   Min.   :0.00   Min.   :0.000   Min.   :0.00   Min.   :1.000  
-##  1st Qu.:0   1st Qu.:0.00   1st Qu.:1.000   1st Qu.:1.00   1st Qu.:1.000  
-##  Median :0   Median :0.00   Median :1.000   Median :2.00   Median :2.000  
-##  Mean   :0   Mean   :0.45   Mean   :1.117   Mean   :1.75   Mean   :2.433  
-##  3rd Qu.:0   3rd Qu.:1.00   3rd Qu.:2.000   3rd Qu.:3.00   3rd Qu.:3.000  
-##  Max.   :0   Max.   :1.00   Max.   :2.000   Max.   :3.00   Max.   :4.000  
-##        V6             V7            V8              V9       
-##  Min.   :1.00   Min.   :1.0   Min.   :1.000   Min.   :2.000  
-##  1st Qu.:2.00   1st Qu.:2.0   1st Qu.:2.000   1st Qu.:4.000  
-##  Median :3.00   Median :4.0   Median :4.000   Median :5.000  
-##  Mean   :3.15   Mean   :3.8   Mean   :3.883   Mean   :5.233  
-##  3rd Qu.:4.00   3rd Qu.:5.0   3rd Qu.:5.250   3rd Qu.:7.000  
-##  Max.   :5.00   Max.   :6.0   Max.   :7.000   Max.   :8.000  
-##       V10             V11             V12             V13       
-##  Min.   :2.000   Min.   : 2.00   Min.   : 2.00   Min.   : 3.00  
-##  1st Qu.:3.750   1st Qu.: 4.00   1st Qu.: 3.75   1st Qu.: 5.00  
-##  Median :6.000   Median : 6.00   Median : 5.50   Median : 9.50  
-##  Mean   :5.517   Mean   : 5.95   Mean   : 5.90   Mean   : 8.35  
-##  3rd Qu.:7.000   3rd Qu.: 9.00   3rd Qu.: 8.00   3rd Qu.:11.00  
-##  Max.   :9.000   Max.   :10.00   Max.   :11.00   Max.   :12.00  
-##       V14              V15              V16            V17        
-##  Min.   : 3.000   Min.   : 3.000   Min.   : 3.0   Min.   : 4.000  
-##  1st Qu.: 5.000   1st Qu.: 5.000   1st Qu.: 6.0   1st Qu.: 6.750  
-##  Median : 8.000   Median : 8.000   Median :10.0   Median : 8.500  
-##  Mean   : 7.733   Mean   : 8.367   Mean   : 9.5   Mean   : 9.583  
-##  3rd Qu.:10.000   3rd Qu.:12.000   3rd Qu.:13.0   3rd Qu.:13.000  
-##  Max.   :13.000   Max.   :14.000   Max.   :15.0   Max.   :16.000  
-##       V18             V19             V20             V21       
-##  Min.   : 5.00   Min.   : 5.00   Min.   : 5.00   Min.   : 5.00  
-##  1st Qu.: 7.75   1st Qu.: 8.00   1st Qu.: 8.75   1st Qu.: 9.00  
-##  Median :11.00   Median :11.50   Median :13.00   Median :14.00  
-##  Mean   :10.63   Mean   :11.57   Mean   :12.35   Mean   :13.25  
-##  3rd Qu.:13.00   3rd Qu.:15.00   3rd Qu.:16.00   3rd Qu.:16.25  
-##  Max.   :17.00   Max.   :18.00   Max.   :19.00   Max.   :20.00  
-##       V22             V23             V24             V25      
-##  Min.   : 4.00   Min.   : 4.00   Min.   : 4.00   Min.   : 4.0  
-##  1st Qu.: 8.00   1st Qu.: 7.75   1st Qu.: 6.75   1st Qu.: 7.0  
-##  Median :13.00   Median :11.00   Median :10.00   Median :10.5  
-##  Mean   :11.97   Mean   :11.03   Mean   :10.17   Mean   :10.0  
-##  3rd Qu.:15.25   3rd Qu.:15.00   3rd Qu.:13.25   3rd Qu.:13.0  
-##  Max.   :19.00   Max.   :18.00   Max.   :17.00   Max.   :16.0  
-##       V26              V27             V28             V29        
-##  Min.   : 3.000   Min.   : 3.00   Min.   : 3.00   Min.   : 3.000  
-##  1st Qu.: 5.750   1st Qu.: 7.00   1st Qu.: 5.00   1st Qu.: 5.000  
-##  Median : 9.000   Median :10.00   Median : 7.00   Median : 7.000  
-##  Mean   : 8.667   Mean   : 9.15   Mean   : 7.25   Mean   : 7.333  
-##  3rd Qu.:12.000   3rd Qu.:12.00   3rd Qu.: 9.00   3rd Qu.:10.000  
-##  Max.   :15.000   Max.   :14.00   Max.   :13.00   Max.   :12.000  
-##       V30              V31              V32            V33       
-##  Min.   : 2.000   Min.   : 2.000   Min.   :2.00   Min.   :2.000  
-##  1st Qu.: 3.000   1st Qu.: 4.000   1st Qu.:4.00   1st Qu.:4.000  
-##  Median : 7.000   Median : 6.000   Median :6.00   Median :5.000  
-##  Mean   : 6.583   Mean   : 6.067   Mean   :5.95   Mean   :5.117  
-##  3rd Qu.:10.000   3rd Qu.: 8.000   3rd Qu.:8.00   3rd Qu.:6.000  
-##  Max.   :11.000   Max.   :10.000   Max.   :9.00   Max.   :8.000  
-##       V34           V35           V36             V37             V38     
-##  Min.   :1.0   Min.   :1.0   Min.   :1.000   Min.   :1.000   Min.   :0.0  
-##  1st Qu.:2.0   1st Qu.:2.0   1st Qu.:2.000   1st Qu.:2.000   1st Qu.:0.0  
-##  Median :4.0   Median :3.0   Median :4.000   Median :2.000   Median :1.0  
-##  Mean   :3.6   Mean   :3.3   Mean   :3.567   Mean   :2.483   Mean   :1.5  
-##  3rd Qu.:5.0   3rd Qu.:5.0   3rd Qu.:5.000   3rd Qu.:4.000   3rd Qu.:3.0  
-##  Max.   :7.0   Max.   :6.0   Max.   :5.000   Max.   :4.000   Max.   :3.0  
-##       V39             V40        
-##  Min.   :0.000   Min.   :0.0000  
-##  1st Qu.:0.000   1st Qu.:0.0000  
-##  Median :1.000   Median :1.0000  
-##  Mean   :1.133   Mean   :0.5667  
-##  3rd Qu.:2.000   3rd Qu.:1.0000  
-##  Max.   :2.000   Max.   :1.0000</code></pre>
+<pre><code>##        V1          V2             V3                 V4      
+##  Min.   :0   Min.   :0.00   Min.   :0.000000   Min.   :0.00  
+##  1st Qu.:0   1st Qu.:0.00   1st Qu.:1.000000   1st Qu.:1.00  
+##  Median :0   Median :0.00   Median :1.000000   Median :2.00  
+##  Mean   :0   Mean   :0.45   Mean   :1.116667   Mean   :1.75  
+##  3rd Qu.:0   3rd Qu.:1.00   3rd Qu.:2.000000   3rd Qu.:3.00  
+##  Max.   :0   Max.   :1.00   Max.   :2.000000   Max.   :3.00  
+##        V5                 V6             V7            V8          
+##  Min.   :1.000000   Min.   :1.00   Min.   :1.0   Min.   :1.000000  
+##  1st Qu.:1.000000   1st Qu.:2.00   1st Qu.:2.0   1st Qu.:2.000000  
+##  Median :2.000000   Median :3.00   Median :4.0   Median :4.000000  
+##  Mean   :2.433333   Mean   :3.15   Mean   :3.8   Mean   :3.883333  
+##  3rd Qu.:3.000000   3rd Qu.:4.00   3rd Qu.:5.0   3rd Qu.:5.250000  
+##  Max.   :4.000000   Max.   :5.00   Max.   :6.0   Max.   :7.000000  
+##        V9                V10                V11             V12       
+##  Min.   :2.000000   Min.   :2.000000   Min.   : 2.00   Min.   : 2.00  
+##  1st Qu.:4.000000   1st Qu.:3.750000   1st Qu.: 4.00   1st Qu.: 3.75  
+##  Median :5.000000   Median :6.000000   Median : 6.00   Median : 5.50  
+##  Mean   :5.233333   Mean   :5.516667   Mean   : 5.95   Mean   : 5.90  
+##  3rd Qu.:7.000000   3rd Qu.:7.000000   3rd Qu.: 9.00   3rd Qu.: 8.00  
+##  Max.   :8.000000   Max.   :9.000000   Max.   :10.00   Max.   :11.00  
+##       V13             V14                 V15                 V16      
+##  Min.   : 3.00   Min.   : 3.000000   Min.   : 3.000000   Min.   : 3.0  
+##  1st Qu.: 5.00   1st Qu.: 5.000000   1st Qu.: 5.000000   1st Qu.: 6.0  
+##  Median : 9.50   Median : 8.000000   Median : 8.000000   Median :10.0  
+##  Mean   : 8.35   Mean   : 7.733333   Mean   : 8.366667   Mean   : 9.5  
+##  3rd Qu.:11.00   3rd Qu.:10.000000   3rd Qu.:12.000000   3rd Qu.:13.0  
+##  Max.   :12.00   Max.   :13.000000   Max.   :14.000000   Max.   :15.0  
+##       V17                 V18                V19                V20       
+##  Min.   : 4.000000   Min.   : 5.00000   Min.   : 5.00000   Min.   : 5.00  
+##  1st Qu.: 6.750000   1st Qu.: 7.75000   1st Qu.: 8.00000   1st Qu.: 8.75  
+##  Median : 8.500000   Median :11.00000   Median :11.50000   Median :13.00  
+##  Mean   : 9.583333   Mean   :10.63333   Mean   :11.56667   Mean   :12.35  
+##  3rd Qu.:13.000000   3rd Qu.:13.00000   3rd Qu.:15.00000   3rd Qu.:16.00  
+##  Max.   :16.000000   Max.   :17.00000   Max.   :18.00000   Max.   :19.00  
+##       V21             V22                V23                V24          
+##  Min.   : 5.00   Min.   : 4.00000   Min.   : 4.00000   Min.   : 4.00000  
+##  1st Qu.: 9.00   1st Qu.: 8.00000   1st Qu.: 7.75000   1st Qu.: 6.75000  
+##  Median :14.00   Median :13.00000   Median :11.00000   Median :10.00000  
+##  Mean   :13.25   Mean   :11.96667   Mean   :11.03333   Mean   :10.16667  
+##  3rd Qu.:16.25   3rd Qu.:15.25000   3rd Qu.:15.00000   3rd Qu.:13.25000  
+##  Max.   :20.00   Max.   :19.00000   Max.   :18.00000   Max.   :17.00000  
+##       V25            V26                 V27             V28       
+##  Min.   : 4.0   Min.   : 3.000000   Min.   : 3.00   Min.   : 3.00  
+##  1st Qu.: 7.0   1st Qu.: 5.750000   1st Qu.: 7.00   1st Qu.: 5.00  
+##  Median :10.5   Median : 9.000000   Median :10.00   Median : 7.00  
+##  Mean   :10.0   Mean   : 8.666667   Mean   : 9.15   Mean   : 7.25  
+##  3rd Qu.:13.0   3rd Qu.:12.000000   3rd Qu.:12.00   3rd Qu.: 9.00  
+##  Max.   :16.0   Max.   :15.000000   Max.   :14.00   Max.   :13.00  
+##       V29                 V30                 V31           
+##  Min.   : 3.000000   Min.   : 2.000000   Min.   : 2.000000  
+##  1st Qu.: 5.000000   1st Qu.: 3.000000   1st Qu.: 4.000000  
+##  Median : 7.000000   Median : 7.000000   Median : 6.000000  
+##  Mean   : 7.333333   Mean   : 6.583333   Mean   : 6.066667  
+##  3rd Qu.:10.000000   3rd Qu.:10.000000   3rd Qu.: 8.000000  
+##  Max.   :12.000000   Max.   :11.000000   Max.   :10.000000  
+##       V32            V33                V34           V35     
+##  Min.   :2.00   Min.   :2.000000   Min.   :1.0   Min.   :1.0  
+##  1st Qu.:4.00   1st Qu.:4.000000   1st Qu.:2.0   1st Qu.:2.0  
+##  Median :6.00   Median :5.000000   Median :4.0   Median :3.0  
+##  Mean   :5.95   Mean   :5.116667   Mean   :3.6   Mean   :3.3  
+##  3rd Qu.:8.00   3rd Qu.:6.000000   3rd Qu.:5.0   3rd Qu.:5.0  
+##  Max.   :9.00   Max.   :8.000000   Max.   :7.0   Max.   :6.0  
+##       V36                V37                V38           V39          
+##  Min.   :1.000000   Min.   :1.000000   Min.   :0.0   Min.   :0.000000  
+##  1st Qu.:2.000000   1st Qu.:2.000000   1st Qu.:0.0   1st Qu.:0.000000  
+##  Median :4.000000   Median :2.000000   Median :1.0   Median :1.000000  
+##  Mean   :3.566667   Mean   :2.483333   Mean   :1.5   Mean   :1.133333  
+##  3rd Qu.:5.000000   3rd Qu.:4.000000   3rd Qu.:3.0   3rd Qu.:2.000000  
+##  Max.   :5.000000   Max.   :4.000000   Max.   :3.0   Max.   :2.000000  
+##       V40           
+##  Min.   :0.0000000  
+##  1st Qu.:0.0000000  
+##  Median :1.0000000  
+##  Mean   :0.5666667  
+##  3rd Qu.:1.0000000  
+##  Max.   :1.0000000</code></pre>
 <p>There are also different way I can select slices of data from the data frame</p>
 <pre class="r"><code># first value in data
 data[1, 1]</code></pre>
@@ -643,7 +653,7 @@ median(data[, 7])</code></pre>
 <pre><code>## [1] 4</code></pre>
 <pre class="r"><code># standard deviation of inflammation on day 7
 sd(data[, 7])</code></pre>
-<pre><code>## [1] 1.725187</code></pre>
+<pre><code>## [1] 1.72518729</code></pre>
 <p>To do more complex calculations like <code>the maximum inflammation for all patients, or the average for each day?</code> we need to apply the function <code>max</code> or <code>mean</code> per row or column respectivelly. Luckily there is the function <code>apply</code> that applies a function for each one of the “margins”, 1 for rows and 2 for columns:</p>
 <pre class="r"><code>args(apply) # args return NULL because it prints the information, but every function must return something!</code></pre>
 <pre><code>## function (X, MARGIN, FUN, ...) 
@@ -655,20 +665,22 @@ max_patient_inflammation</code></pre>
 ## [47] 19 15 16 18 14 20 17 15 17 16 17 19 18 18</code></pre>
 <pre class="r"><code>avg_day_inflammation &lt;- apply(data, 2, mean)
 avg_day_inflammation</code></pre>
-<pre><code>##         V1         V2         V3         V4         V5         V6 
-##  0.0000000  0.4500000  1.1166667  1.7500000  2.4333333  3.1500000 
-##         V7         V8         V9        V10        V11        V12 
-##  3.8000000  3.8833333  5.2333333  5.5166667  5.9500000  5.9000000 
-##        V13        V14        V15        V16        V17        V18 
-##  8.3500000  7.7333333  8.3666667  9.5000000  9.5833333 10.6333333 
-##        V19        V20        V21        V22        V23        V24 
-## 11.5666667 12.3500000 13.2500000 11.9666667 11.0333333 10.1666667 
-##        V25        V26        V27        V28        V29        V30 
-## 10.0000000  8.6666667  9.1500000  7.2500000  7.3333333  6.5833333 
-##        V31        V32        V33        V34        V35        V36 
-##  6.0666667  5.9500000  5.1166667  3.6000000  3.3000000  3.5666667 
-##        V37        V38        V39        V40 
-##  2.4833333  1.5000000  1.1333333  0.5666667</code></pre>
+<pre><code>##            V1            V2            V3            V4            V5 
+##  0.0000000000  0.4500000000  1.1166666667  1.7500000000  2.4333333333 
+##            V6            V7            V8            V9           V10 
+##  3.1500000000  3.8000000000  3.8833333333  5.2333333333  5.5166666667 
+##           V11           V12           V13           V14           V15 
+##  5.9500000000  5.9000000000  8.3500000000  7.7333333333  8.3666666667 
+##           V16           V17           V18           V19           V20 
+##  9.5000000000  9.5833333333 10.6333333333 11.5666666667 12.3500000000 
+##           V21           V22           V23           V24           V25 
+## 13.2500000000 11.9666666667 11.0333333333 10.1666666667 10.0000000000 
+##           V26           V27           V28           V29           V30 
+##  8.6666666667  9.1500000000  7.2500000000  7.3333333333  6.5833333333 
+##           V31           V32           V33           V34           V35 
+##  6.0666666667  5.9500000000  5.1166666667  3.6000000000  3.3000000000 
+##           V36           V37           V38           V39           V40 
+##  3.5666666667  2.4833333333  1.5000000000  1.1333333333  0.5666666667</code></pre>
 <p>Now let’s do some plotting</p>
 <pre class="r"><code>plot(avg_day_inflammation)</code></pre>
 <p><img src="intro_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
@@ -789,7 +801,7 @@ sign(-3)</code></pre>
 <li>less than or equal to (<code>&lt;=</code>),</li>
 <li>and not equal to (<code>!=</code>).</li>
 </ul>
-<p>We can also combine tests. An ampersand, <code>&amp;</code>, symbolizes “and”. A vertical bar, <code>|</code>, symbolizes “or”.</p>
+<p>We can also combine tests. An ampersand, <code>&amp;</code>, symbolizes ???and???. A vertical bar, <code>|</code>, symbolizes ???or???.</p>
 </div>
 <div id="datasets-and-statistics" class="section level2">
 <h2>Datasets and statistics</h2>
@@ -812,13 +824,13 @@ sign(-3)</code></pre>
 ##  $ Species     : Factor w/ 3 levels &quot;setosa&quot;,&quot;versicolor&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
 <p>For a statistical summary</p>
 <pre class="r"><code>summary(iris)</code></pre>
-<pre><code>##   Sepal.Length    Sepal.Width     Petal.Length    Petal.Width   
-##  Min.   :4.300   Min.   :2.000   Min.   :1.000   Min.   :0.100  
-##  1st Qu.:5.100   1st Qu.:2.800   1st Qu.:1.600   1st Qu.:0.300  
-##  Median :5.800   Median :3.000   Median :4.350   Median :1.300  
-##  Mean   :5.843   Mean   :3.057   Mean   :3.758   Mean   :1.199  
-##  3rd Qu.:6.400   3rd Qu.:3.300   3rd Qu.:5.100   3rd Qu.:1.800  
-##  Max.   :7.900   Max.   :4.400   Max.   :6.900   Max.   :2.500  
+<pre><code>##   Sepal.Length       Sepal.Width        Petal.Length    Petal.Width      
+##  Min.   :4.300000   Min.   :2.000000   Min.   :1.000   Min.   :0.100000  
+##  1st Qu.:5.100000   1st Qu.:2.800000   1st Qu.:1.600   1st Qu.:0.300000  
+##  Median :5.800000   Median :3.000000   Median :4.350   Median :1.300000  
+##  Mean   :5.843333   Mean   :3.057333   Mean   :3.758   Mean   :1.199333  
+##  3rd Qu.:6.400000   3rd Qu.:3.300000   3rd Qu.:5.100   3rd Qu.:1.800000  
+##  Max.   :7.900000   Max.   :4.400000   Max.   :6.900   Max.   :2.500000  
 ##        Species  
 ##  setosa    :50  
 ##  versicolor:50  
@@ -842,7 +854,7 @@ sign(-3)</code></pre>
 <pre class="r"><code>print(&quot;mean&quot;)</code></pre>
 <pre><code>## [1] &quot;mean&quot;</code></pre>
 <pre class="r"><code>mean(iris$Sepal.Length)</code></pre>
-<pre><code>## [1] 5.843333</code></pre>
+<pre><code>## [1] 5.843333333</code></pre>
 <pre class="r"><code>print(&quot;median&quot;)</code></pre>
 <pre><code>## [1] &quot;median&quot;</code></pre>
 <pre class="r"><code>median(iris$Sepal.Length)</code></pre>
@@ -858,11 +870,11 @@ sign(-3)</code></pre>
 <pre class="r"><code>print(&quot;sd&quot;)</code></pre>
 <pre><code>## [1] &quot;sd&quot;</code></pre>
 <pre class="r"><code>sd(iris$Sepal.Length)</code></pre>
-<pre><code>## [1] 0.8280661</code></pre>
+<pre><code>## [1] 0.828066128</code></pre>
 <pre class="r"><code>print(&quot;var&quot;)</code></pre>
 <pre><code>## [1] &quot;var&quot;</code></pre>
 <pre class="r"><code>var(iris$Sepal.Length)</code></pre>
-<pre><code>## [1] 0.6856935</code></pre>
+<pre><code>## [1] 0.6856935123</code></pre>
 <pre class="r"><code>print(&quot;range&quot;)</code></pre>
 <pre><code>## [1] &quot;range&quot;</code></pre>
 <pre class="r"><code>range(iris$Sepal.Length)</code></pre>
@@ -894,7 +906,7 @@ print(&quot;sort&quot;)</code></pre>
 <pre><code>## [1] &quot;female&quot; &quot;male&quot;</code></pre>
 <pre class="r"><code>nlevels(sex)</code></pre>
 <pre><code>## [1] 2</code></pre>
-<p>Sometimes, the order of the factors does not matter, other times you might want to specify the order because it is meaningful (e.g., “low”, “medium”, “high”) or it is required by particular type of analysis. Additionally, specifying the order of the levels allows us to compare levels:</p>
+<p>Sometimes, the order of the factors does not matter, other times you might want to specify the order because it is meaningful (e.g., ???low???, ???medium???, ???high???) or it is required by particular type of analysis. Additionally, specifying the order of the levels allows us to compare levels:</p>
 <pre class="r"><code>food &lt;- factor(c(&quot;low&quot;, &quot;high&quot;, &quot;medium&quot;, &quot;high&quot;, &quot;low&quot;, &quot;medium&quot;, &quot;high&quot;))
 levels(food)</code></pre>
 <pre><code>## [1] &quot;high&quot;   &quot;low&quot;    &quot;medium&quot;</code></pre>

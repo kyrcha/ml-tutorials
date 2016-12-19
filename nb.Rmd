@@ -73,7 +73,7 @@ In our case because we have numeric attributes the mean and standard deviations 
 
 Given the model we start making predictions
 
-```{r}
+```{r predict}
 predict(model, validationData)
 # To get the probabilities and not only the class.
 predict(model, validationData, type="raw")
@@ -99,7 +99,7 @@ F1_Score(ytest, pred)
 Given the results of the classifier as probabilities we can calculate the true positive rate (TPR) and the false positive rate (FPR) with the commands:
 
 ```{r}
-pred_obj = prediction(pred_prob[, 2], ytest,label.ordering=c("benign", "malignant"))
+pred_obj = ROCR::prediction(pred_prob[, 2], ytest, label.ordering=c("benign", "malignant"))
 ROCcurve <- performance(pred_obj, "tpr", "fpr")
 ```
 

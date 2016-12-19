@@ -5,18 +5,37 @@ date: "November 28, 2016"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+## Introduction
+
+In this tutorial, we will use the Recurrent Feature Elimination (RFE) method to select attributes in the Pima Indians Diabetes dataset. For this purpose the library `caret` will be used.
+
+First we will split the dataset in train and validation datasets.
+
+```{r include=FALSE}
 # ensure the results are repeatable
-set.seed(7)
+set.seed(1234)
 # load the library
 library(mlbench)
 library(caret)
 # load the data
 data(PimaIndiansDiabetes)
+data = PimaIndiansDiabetes
+# split into training and validation datasets
+set.seed(1234)
+ind <- sample(2, nrow(data), replace=TRUE, prob=c(0.7, 0.3))
+trainData <- data[ind==1,]
+validationData <- data[ind==2,]
+trainData <- trainData[complete.cases(trainData),]
+validationData <- validationData[complete.cases(validationData),]
+```
+
+Next we will use the `rfe` method of the `caret` package, setting up using the `rfeControl` method.
+
+```{r}
 # define the control using a random forest selection function
 control <- rfeControl(functions=nbFuncs, method="cv", number=10)
 # run the RFE algorithm
-results <- rfe(PimaIndiansDiabetes[,1:8], PimaIndiansDiabetes[,9], sizes=c(1:8), rfeControl=control)
+results <- rfe(trainData[,1:8], trainData[,9], sizes=c(1:8), rfeControl=control)
 # summarize the results
 print(results)
 # list the chosen features
@@ -24,3 +43,27 @@ predictors(results)
 # plot the results
 plot(results, type=c("g", "o"))
 ```
+
+## Naive Bayes
+
+We will use the 5 top variables that come out of RFE in the Naive Bayes algorithm.
+
+```{r}
+library(e1071)
+f <- as.simple.formula(results$optVariables, "diabetes")
+model <- naiveBayes(diabetes ~ ., data=trainData, laplace = 1)
+simpler_model <- naiveBayes(f, data=trainData, laplace = 1)
+
+pred <- predict(model, validationData)
+simpler_pred <- predict(simpler_model, validationData)
+
+library(MLmetrics)
+train_pred <- predict(model, trainData)
+train_simpler_pred <- predict(simpler_model, trainData)
+paste("Accuracy in training all attributes", Accuracy(train_pred, trainData$diabetes), sep=" - ")
+paste("Accuracy in training RFE attributes", Accuracy(train_simpler_pred, trainData$diabetes), sep=" - ")
+paste("Accuracy in validation all attributes", Accuracy(pred, validationData$diabetes), sep=" - ")
+paste("Accuracy in validation RFE attributes", Accuracy(simpler_pred, validationData$diabetes), sep=" - ")
+```
+
+Using a simpler formula with 5 out of 8 attibutes we were able to get better generalization results in the validation dataset.

@@ -2,86 +2,42 @@
 title: "Feature Selection"
 author: "Kyriakos Chatzidimitriou"
 date: "November 28, 2016"
-output: html_document
-#  html_document:
-#    highlight: textmate
-#    includes:
-#      after_body: footer.html
-#    css: style.css
-#  pdf_document:
-#    includes:
-#      after_body: footer.tex
+output:
+  html_document: default
+  pdf_document: default
 ---
 
-```{r}
-# download the file
-fileURL <- "http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data"
-download.file(fileURL, destfile="breast-cancer-wisconsin.data", method="curl")
-# read the data
-data <- read.table('breast-cancer-wisconsin.data', na.strings = "?", sep=",")
+## Introduction
 
-data <- data[,-1]
+In this section we will use the Correlation Feature Selection (CFS) method to select attributes to be used when training and testing the machine learning models. We will use the Iris dataset for this purpose.
 
-names(data) <- c("ClumpThickness", 
-                "UniformityCellSize", 
-                "UniformityCellShape", 
-                "MarginalAdhesion",
-                "SingleEpithelialCellSize",
-                "BareNuclei",
-                "BlandChromatin",
-                "NormalNucleoli",
-                "Mitoses",
-                "Class")
-
-data$Class <- factor(data$Class, levels=c(2,4), labels=c("benign", "malignant"))
-
-print(summary(data))
-
-set.seed(2345)
+```{r include=FALSE}
+data = iris
+# split into training and validation datasets
+set.seed(1234)
 ind <- sample(2, nrow(data), replace=TRUE, prob=c(0.7, 0.3))
 trainData <- data[ind==1,]
 validationData <- data[ind==2,]
 trainData <- trainData[complete.cases(trainData),]
 validationData <- validationData[complete.cases(validationData),]
-library(FSelector)
-subset <- cfs(Class ~ ., trainData)
-f <- as.simple.formula(subset, "Class")
-print(f)
-# sudo R CMD javareconf of help for setting up the FSlector li and its dependencies
 ```
 
-Now that we have the formula with the CFS filter method we can use it in various classification algorithms.
+## Using the CFS method
 
-## Naive Bayes
-```{r}
-library(e1071)
-model <- naiveBayes(Class ~ ., data=trainData, laplace = 1)
-simpler_model <- naiveBayes(f, data=trainData, laplace = 1)
-
-pred <- predict(model, validationData)
-simpler_pred <- predict(simpler_model, validationData)
-
-library(MLmetrics)
-train_pred <- predict(model, trainData)
-train_simpler_pred <- predict(simpler_model, trainData)
-Accuracy(train_pred, trainData$Class)
-Accuracy(train_simpler_pred, trainData$Class)
-Accuracy(pred, validationData$Class)
-Accuracy(simpler_pred, validationData$Class)
-```
-## Iris dataset
+The CFS method is found in the `FSelector` package and to use it we call the `cfs` method.
 
 ```{r}
-ind <- sample(2, nrow(iris), replace=TRUE, prob=c(0.7, 0.3))
-trainData <- iris[ind==1,]
-validationData <- iris[ind==2,]
-trainData <- trainData[complete.cases(trainData),]
-validationData <- validationData[complete.cases(validationData),]
 library(FSelector)
 subset <- cfs(Species ~ ., trainData)
 f <- as.simple.formula(subset, "Species")
 print(f)
 ```
+
+Now that we have the formula with the CFS filter method we can use it in various classification algorithms.
+
+## Naive Bayes
+
+For example in the Naive Bayes algorithm, we will use both the formula that includes all the attributes for predicting the Species and the formula derived from CFS.
 
 ```{r}
 library(e1071)
@@ -94,52 +50,10 @@ simpler_pred <- predict(simpler_model, validationData)
 library(MLmetrics)
 train_pred <- predict(model, trainData)
 train_simpler_pred <- predict(simpler_model, trainData)
-Accuracy(train_pred, trainData$Species)
-Accuracy(train_simpler_pred, trainData$Species)
-Accuracy(pred, validationData$Species)
-Accuracy(simpler_pred, validationData$Species)
-
+paste("Accuracy in training all attributes", Accuracy(train_pred, trainData$Species), sep=" - ")
+paste("Accuracy in training CFS attributes", Accuracy(train_simpler_pred, trainData$Species), sep=" - ")
+paste("Accuracy in validation all attributes", Accuracy(pred, validationData$Species), sep=" - ")
+paste("Accuracy in validation CFS attributes", Accuracy(simpler_pred, validationData$Species), sep=" - ")
 ```
 
-## Neural Networks
-```{r}
-library(neuralnet)
-data <- read.table('breast-cancer-wisconsin.data', na.strings = "?", sep=",")
-
-data <- data[,-1]
-
-names(data) <- c("ClumpThickness", 
-                "UniformityCellSize", 
-                "UniformityCellShape", 
-                "MarginalAdhesion",
-                "SingleEpithelialCellSize",
-                "BareNuclei",
-                "BlandChromatin",
-                "NormalNucleoli",
-                "Mitoses",
-                "Class")
-set.seed(1234)
-ind <- sample(2, nrow(data), replace=TRUE, prob=c(0.7, 0.3))
-trainData <- data[ind==1,]
-validationData <- data[ind==2,]
-trainData <- trainData[complete.cases(trainData),]
-validationData <- validationData[complete.cases(validationData),]
-nn.bp <- neuralnet(f, data=trainData, hidden=10, err.fct="ce", linear.output=FALSE, learningrate=0.01)
-# get the predictions
-output <- compute(nn.bp, subset(validationData, select=subset))$net.result
-# from numeric values between 0 and 1 make them T or F
-output[output > 0.5] <- TRUE
-output[output < 0.5] <- FALSE
-cat("\nConfusion matrix:\n")    
-xtab = table(output, validationData$Class)
-print(xtab)
-cat("\nEvaluation:\n\n")
-accuracy = sum(output == validationData$Class)/length(validationData$Class)
-precision = xtab[1,1]/sum(xtab[,1])
-recall = xtab[1,1]/sum(xtab[1,])
-f = 2 * (precision * recall) / (precision + recall)
-cat(paste("Accuracy:\t", format(accuracy, digits=2), "\n",sep=" "))
-cat(paste("Precision:\t", format(precision, digits=2), "\n",sep=" "))
-cat(paste("Recall:\t\t", format(recall, digits=2), "\n",sep=" "))
-cat(paste("F-measure:\t", format(f, digits=2), "\n",sep=" "))
-```
+The accuracy in the training set is increased when using all the attrbitues, but decreased in the validation set in relation to the simpler model that only used 2 attributes.

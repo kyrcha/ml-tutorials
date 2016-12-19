@@ -9,9 +9,11 @@
 <meta name="generator" content="pandoc" />
 
 
+<meta name="author" content="Kyriakos Chatzidimitriou" />
 
+<meta name="date" content="2016-11-28" />
 
-<title>Finder</title>
+<title>Feature Selection</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -22,7 +24,7 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet"
-      href="site_libs/highlight/textmate.css"
+      href="site_libs/highlight/default.css"
       type="text/css" />
 <script src="site_libs/highlight/highlight.js"></script>
 <style type="text/css">
@@ -67,7 +69,6 @@ h6 {
 }
 </style>
 
-<link rel="stylesheet" href="style.css" type="text/css" />
 
 </head>
 
@@ -205,53 +206,52 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Finder</h1>
+<h1 class="title toc-ignore">Feature Selection</h1>
+<h4 class="author"><em>Kyriakos Chatzidimitriou</em></h4>
+<h4 class="date"><em>November 28, 2016</em></h4>
 
 </div>
 
 
-<div id="algorithms" class="section level1">
-<h1>Algorithms</h1>
-<ul>
-<li>Decision Trees</li>
-<li>kNN</li>
-<li>Naive Bayes</li>
-</ul>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>In this section we will use the Correlation Feature Selection (CFS) method to select attributes to be used when training and testing the machine learning models. We will use the Iris dataset for this purpose.</p>
 </div>
-<div id="model-evaluation" class="section level1">
-<h1>Model Evaluation</h1>
-<ul>
-<li>ROC Curves</li>
-<li>Cross Validation</li>
-</ul>
+<div id="using-the-cfs-method" class="section level2">
+<h2>Using the CFS method</h2>
+<p>The CFS method is found in the <code>FSelector</code> package and to use it we call the <code>cfs</code> method.</p>
+<pre class="r"><code>library(FSelector)
+subset &lt;- cfs(Species ~ ., trainData)
+f &lt;- as.simple.formula(subset, &quot;Species&quot;)
+print(f)</code></pre>
+<pre><code>## Species ~ Petal.Length + Petal.Width
+## &lt;environment: 0x13b05d830&gt;</code></pre>
+<p>Now that we have the formula with the CFS filter method we can use it in various classification algorithms.</p>
 </div>
-<div id="r" class="section level1">
-<h1>R</h1>
-<ul>
-<li>rpart</li>
-<li>party</li>
-<li>caret</li>
-<li>e1071</li>
-<li>class</li>
-</ul>
+<div id="naive-bayes" class="section level2">
+<h2>Naive Bayes</h2>
+<p>For example in the Naive Bayes algorithm, we will use both the formula that includes all the attributes for predicting the Species and the formula derived from CFS.</p>
+<pre class="r"><code>library(e1071)
+model &lt;- naiveBayes(Species ~ ., data=trainData, laplace = 1)
+simpler_model &lt;- naiveBayes(f, data=trainData, laplace = 1)
+
+pred &lt;- predict(model, validationData)
+simpler_pred &lt;- predict(simpler_model, validationData)
+
+library(MLmetrics)
+train_pred &lt;- predict(model, trainData)
+train_simpler_pred &lt;- predict(simpler_model, trainData)
+paste(&quot;Accuracy in training all attributes&quot;, Accuracy(train_pred, trainData$Species), sep=&quot; - &quot;)</code></pre>
+<pre><code>## [1] &quot;Accuracy in training all attributes - 0.964285714285714&quot;</code></pre>
+<pre class="r"><code>paste(&quot;Accuracy in training CFS attributes&quot;, Accuracy(train_simpler_pred, trainData$Species), sep=&quot; - &quot;)</code></pre>
+<pre><code>## [1] &quot;Accuracy in training CFS attributes - 0.955357142857143&quot;</code></pre>
+<pre class="r"><code>paste(&quot;Accuracy in validation all attributes&quot;, Accuracy(pred, validationData$Species), sep=&quot; - &quot;)</code></pre>
+<pre><code>## [1] &quot;Accuracy in validation all attributes - 0.947368421052632&quot;</code></pre>
+<pre class="r"><code>paste(&quot;Accuracy in validation CFS attributes&quot;, Accuracy(simpler_pred, validationData$Species), sep=&quot; - &quot;)</code></pre>
+<pre><code>## [1] &quot;Accuracy in validation CFS attributes - 0.973684210526316&quot;</code></pre>
+<p>The accuracy in the training set is increased when using all the attrbitues, but decreased in the validation set in relation to the simpler model that only used 2 attributes.</p>
 </div>
 
-<h2>Acknowledgements</h2>
-
-<p>The tutorials, besides including the author's original contributions and knowledge of Machine Learning algorithms and R, also include contributions from other material and more specifically: 1) from an introductory R leaflet from the Pattern Recognition course leaflets of the Electrical and Computer Engineering Department of the Aristotle University of Thessaloniki (Fall semester 2016, authors: Themistoklis Diamantopoulos/Michalis Papamichail, professor: Andreas Symeonidis), 2) the leaflet from the course CS545 Machine Learnig (Fall 2008, author and professor: Charles W. Anderson) and 3) <a href="https://software-carpentry.org/">Software Caprentry</a> lessons like <a href="http://swcarpentry.github.io/r-novice-inflammation/">Programming in R</a> from which the inflammation data were also included.</p>
-
-<h2>License</h2>
-
-<p>This work is made available under the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution license</a>.</p>
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-2782275-11', 'auto');
-  ga('send', 'pageview');
-</script>
 
 
 
