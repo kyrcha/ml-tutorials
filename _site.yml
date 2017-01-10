@@ -11,6 +11,8 @@ navbar:
       href: clustering.html
     - text: "Data Engineering"
       href: data-eng.html
+    - text: "Other tasks"
+      href: other.html
     - text: "Finder"
       href: finder.html
     - text: "About"

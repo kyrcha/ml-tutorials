@@ -1,8 +1,17 @@
 ---
 title: "Neural Networks"
-author: "Kyriakos Chatzidimitriou"
-date: "12/17/2016"
-output: html_document
+author: "Kyriakos Chatzidimitriou (kyrcha@gmail.com)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    highlight: textmate
+    includes:
+      after_body: footer.html
+    css: style.css
+  pdf_document:
+    includes:
+      before_body: head.tex
+      after_body: footer.tex
 ---
 
 ## Neural Networks

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Kyriakos Chatzidimitriou (kyrcha@gmail.com)" />
+
+
+<title>kmeans</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">ML & R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="r.html">R</a>
+</li>
+<li>
+  <a href="classification.html">Classification</a>
+</li>
+<li>
+  <a href="clustering.html">Clustering</a>
+</li>
+<li>
+  <a href="data-eng.html">Data Engineering</a>
+</li>
+<li>
+  <a href="other.html">Other tasks</a>
+</li>
+<li>
+  <a href="finder.html">Finder</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">kmeans</h1>
+<h4 class="author"><em>Kyriakos Chatzidimitriou (<a href="mailto:kyrcha@gmail.com">kyrcha@gmail.com</a>)</em></h4>
+<h4 class="date"><em>10 January, 2017</em></h4>
+
+</div>
+
+
+<div id="k-means-in-a-toy-dataset" class="section level2">
+<h2>K-means in a “toy” dataset</h2>
+<p>Lets construct a more small but instructive example:</p>
+<pre class="r"><code>X = c(7, 3, 1, 5, 1, 7, 8, 5)
+Y = c(1, 4, 5, 8, 3, 8, 2, 9)
+rnames = c(&quot;x1&quot;, &quot;x2&quot;, &quot;x3&quot;, &quot;x4&quot;, &quot;x5&quot;, &quot;x6&quot;, &quot;x7&quot;, &quot;x8&quot;)
+kdata = data.frame(X, Y, row.names = rnames)</code></pre>
+<p>and plot the 2D dataset:</p>
+<pre class="r"><code>plot(kdata, pch = 15)
+text(kdata, labels = row.names(kdata), pos = 2)</code></pre>
+<p><img src="kmeans_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<div id="create-the-clustering" class="section level3">
+<h3>Create the clustering</h3>
+<pre class="r"><code># we take as initial centers the first 3 points and this implies also that k = 3
+clust = kmeans(kdata, centers=kdata[1:3,])
+clust$centers</code></pre>
+<pre><code>##          X        Y
+## 1 7.500000 1.500000
+## 2 5.666667 8.333333
+## 3 1.666667 4.000000</code></pre>
+<pre class="r"><code>clust$cluster</code></pre>
+<pre><code>## x1 x2 x3 x4 x5 x6 x7 x8 
+##  1  3  3  2  3  2  1  2</code></pre>
+<p>we can also easily retrieve metrics like <em>cohesion</em> and <em>separation</em>.</p>
+<pre class="r"><code>cohesion = clust$tot.withinss
+separation = clust$betweenss</code></pre>
+<p>and make a nice visualization</p>
+<pre class="r"><code>plot(kdata, col = clust$cluster, pch = 15)
+text(kdata, labels = row.names(kdata), pos = 2)
+points(clust$centers, col = 1:length(clust$centers), pch = &quot;+&quot;, cex = 2)</code></pre>
+<p><img src="kmeans_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+</div>
+<div id="k-means-for-the-iris-dataset" class="section level2">
+<h2>K-means for the iris dataset</h2>
+<p>Lets apply the k-means clustering algorithm to the iris dataset. To begin with, we will exclude the <code>Species</code> column.</p>
+<pre class="r"><code>data &lt;- iris[,-5]
+clustering = kmeans(data, centers = 3)
+clustering</code></pre>
+<pre><code>## K-means clustering with 3 clusters of sizes 62, 38, 50
+## 
+## Cluster means:
+##   Sepal.Length Sepal.Width Petal.Length Petal.Width
+## 1     5.901613    2.748387     4.393548    1.433871
+## 2     6.850000    3.073684     5.742105    2.071053
+## 3     5.006000    3.428000     1.462000    0.246000
+## 
+## Clustering vector:
+##   [1] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+##  [36] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+##  [71] 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 2 2 2
+## [106] 2 1 2 2 2 2 2 2 1 1 2 2 2 2 1 2 1 2 1 2 2 1 1 2 2 2 2 2 1 2 2 2 2 1 2
+## [141] 2 2 1 2 2 2 1 2 2 1
+## 
+## Within cluster sum of squares by cluster:
+## [1] 39.82097 23.87947 15.15100
+##  (between_SS / total_SS =  88.4 %)
+## 
+## Available components:
+## 
+## [1] &quot;cluster&quot;      &quot;centers&quot;      &quot;totss&quot;        &quot;withinss&quot;    
+## [5] &quot;tot.withinss&quot; &quot;betweenss&quot;    &quot;size&quot;         &quot;iter&quot;        
+## [9] &quot;ifault&quot;</code></pre>
+<p>The clustering object contains a lot of informations and components:</p>
+<ul>
+<li>The number of clusters (3) and their sizes</li>
+<li>The centers of the 3 clusters</li>
+<li>The clustering vector denoting which speciment (row) belongs to which cluster</li>
+<li>The sum of squares of the distance between points and their centers for every cluster
+<ul>
+<li><code>total_SS</code> is the sum of squared distances of each data point to the global sample mean</li>
+<li><code>between_SS</code> is the <code>total_SS</code> minus the the sum of the sum of square distances between points and their centers</li>
+<li>The ratio will be close to 0 (0%) if there is no discernible pattern and closer to 1 (100%) if there is.</li>
+</ul></li>
+<li>and other components like:</li>
+</ul>
+<pre class="r"><code># The centers
+clustering$centers</code></pre>
+<pre><code>##   Sepal.Length Sepal.Width Petal.Length Petal.Width
+## 1     5.901613    2.748387     4.393548    1.433871
+## 2     6.850000    3.073684     5.742105    2.071053
+## 3     5.006000    3.428000     1.462000    0.246000</code></pre>
+<pre class="r"><code># The clustering
+clustering$cluster</code></pre>
+<pre><code>##   [1] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+##  [36] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+##  [71] 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 2 2 2
+## [106] 2 1 2 2 2 2 2 2 1 1 2 2 2 2 1 2 1 2 1 2 2 1 1 2 2 2 2 2 1 2 2 2 2 1 2
+## [141] 2 2 1 2 2 2 1 2 2 1</code></pre>
+<pre class="r"><code># The total sum of squares (the sum of squared distances of each data point to the global sample mean)
+clustering$totss</code></pre>
+<pre><code>## [1] 681.3706</code></pre>
+<pre class="r"><code># The per cluster sum of squares
+clustering$withinss</code></pre>
+<pre><code>## [1] 39.82097 23.87947 15.15100</code></pre>
+<pre class="r"><code># The sum of per cluster sum of squares
+clustering$tot.withinss</code></pre>
+<pre><code>## [1] 78.85144</code></pre>
+<pre class="r"><code># The total sum of squares minus the sum of per cluster sum of squares
+clustering$betweenss</code></pre>
+<pre><code>## [1] 602.5192</code></pre>
+<pre class="r"><code># The sizes of the clusters
+clustering$size</code></pre>
+<pre><code>## [1] 62 38 50</code></pre>
+<pre class="r"><code># The number of iterations before conversion
+clustering$iter</code></pre>
+<pre><code>## [1] 2</code></pre>
+<pre class="r"><code># Integer indicating possible algorithm problem
+clustering$ifault</code></pre>
+<pre><code>## [1] 0</code></pre>
+<div id="comparing-cluster-to-classes" class="section level3">
+<h3>Comparing cluster to classes</h3>
+<p>For comparing the groupings provided by k-means with the actual classes we can use the <code>table</code> function:</p>
+<pre class="r"><code>table(iris$Species, clustering$cluster)</code></pre>
+<pre><code>##             
+##               1  2  3
+##   setosa      0  0 50
+##   versicolor 48  2  0
+##   virginica  14 36  0</code></pre>
+<p>With different initial centers in k-means one will get different values in the table above.</p>
+</div>
+<div id="plotting" class="section level3">
+<h3>Plotting</h3>
+<p>Lets also plot 2 dimensions of the iris dataset and visualize the clusters and their centers:</p>
+<pre class="r"><code>plot(iris[c(&quot;Sepal.Length&quot;, &quot;Sepal.Width&quot;)], col = clustering$cluster)
+points(clustering$centers[,c(&quot;Sepal.Length&quot;, &quot;Sepal.Width&quot;)], col = 1:3, pch = 8, cex=2)</code></pre>
+<p><img src="kmeans_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+<div id="selecting-number-of-clusters" class="section level3">
+<h3>Selecting number of clusters</h3>
+<p>Returning to the iris dataset, a technique to find the number of clusters that describe the data better we can calculate the SSE (Sum of Squared Errors) for different number of clusters, say k = 1, 2, …, 10 etc. We can do that with the following commands:</p>
+<pre class="r"><code># Calculate the totss (k = 1) 
+SSE &lt;- (nrow(data) - 1) * sum(apply(data, 2, var))
+for(i in 2:10) {
+  SSE[i] &lt;- kmeans(data, centers = i)$tot.withinss
+}
+plot(1:10, SSE, type=&quot;b&quot;, xlab=&quot;Number of Clusters&quot;, ylab=&quot;SSE&quot;)</code></pre>
+<p><img src="kmeans_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>We can see that k = 3 is a good pick and actually approximates the number of species available in the iris dataset.</p>
+</div>
+<div id="silhouette-coefficient" class="section level3">
+<h3>Silhouette coefficient</h3>
+<p>To calculate the <code>Silhouette coefficient</code> we have to install and load the library <code>cluster</code>:</p>
+<pre class="r"><code># Assuming cluster library is installed with: install.packages(&#39;cluster&#39;)
+library(cluster)
+silhouette = silhouette(clustering$cluster, dist(data))
+plot(silhouette)</code></pre>
+<p><img src="kmeans_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>The closer to 1 the better.</p>
+</div>
+</div>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2782275-11', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

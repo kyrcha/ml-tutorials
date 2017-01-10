@@ -1,11 +1,17 @@
 ---
 title: "Feature Selection"
-author: "Kyriakos Chatzidimitriou"
+author: "Kyriakos Chatzidimitriou (kyrcha@gmail.com)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
+  html_document:
+    highlight: textmate
+    includes:
+      after_body: footer.html
+    css: style.css
   pdf_document:
     includes:
+      before_body: head.tex
       after_body: footer.tex
-  html_document: default
 ---
 
 ## Introduction

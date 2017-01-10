@@ -1,11 +1,16 @@
 ---
 title: "Recursive Feature Elimination"
-author: "Kyriakos Chatzidimitriou"
-date: "November 28, 2016"
+author: "Kyriakos Chatzidimitriou (kyrcha@gmail.com)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  html_document: default
+  html_document:
+    highlight: textmate
+    includes:
+      after_body: footer.html
+    css: style.css
   pdf_document:
     includes:
+      before_body: head.tex
       after_body: footer.tex
 ---
 

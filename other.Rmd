@@ -1,0 +1,9 @@
+---
+title: "Other tasks"
+output: html_document
+---
+
+Notes on:
+
+  - [Association rules](ar.html) and Market Basket Analysis
+  - [Outlier detection](outlier.html) or Anomaly Detection

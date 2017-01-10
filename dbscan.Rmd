@@ -1,0 +1,68 @@
+---
+title: "DBSCAN"
+author: "Kyriakos Chatzidimitriou (kyrcha@gmail.com)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    highlight: textmate
+    includes:
+      after_body: footer.html
+    css: style.css
+  pdf_document:
+    includes:
+      before_body: head.tex
+      after_body: footer.tex
+---
+
+## DBSCAN
+
+DBSCAN is a density based clustering algorithm. To use it we install the library `dbscan` and load it:
+
+```{r}
+library(dbscan)
+data <- iris[,-5]
+clustering = dbscan(data, eps = 0.5, minPts = 5)
+clustering
+```
+
+The algorithm returns the clsuters and whether there are any noise points. The noise points are denoted with 0. To get the groupings:
+
+```{r}
+clustering$cluster
+```
+
+The classes and clusters comparison:
+
+```{r}
+table(clustering$cluster, iris$Species)
+```
+
+Another package that contains dbscan is the `fpc` package.
+
+## An example specialized for DBSCAN
+
+Lets create and plot the dataset
+
+```{r}
+x1 <- rnorm(1000,0,3)
+y1 <- rnorm(1000,-5,2)
+x2 <- runif(1000, -20, 20)
+y2 <- -0.05*x2^2 + 10 + runif(1000, -1, 1)
+y <- c(y1,y2)
+x <- c(x1,x2)
+plot(x,y)
+```
+
+### k-means vs. dbscan
+
+From theory we know that k-means will not be able to identify the two clusters.
+
+```{r}
+demo <- data.frame(x,y)
+kmeansClust <- kmeans(demo, 2)
+plot(demo, col = kmeansClust$cluster + 1, main="kmeans")
+dbscanClust <- dbscan(demo, eps = 1, minPts = 12)
+plot(demo, col = dbscanClust$cluster + 1, pch = ifelse(dbscanClust$cluster, 1, 4), main="dbscan")
+```
+
+

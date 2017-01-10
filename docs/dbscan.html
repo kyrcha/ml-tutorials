@@ -9,11 +9,10 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Kyriakos Chatzidimitriou" />
+<meta name="author" content="Kyriakos Chatzidimitriou (kyrcha@gmail.com)" />
 
-<meta name="date" content="2017-01-10" />
 
-<title>About</title>
+<title>DBSCAN</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -21,12 +20,11 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
-<link rel="stylesheet"
-      href="site_libs/highlight/textmate.css"
-      type="text/css" />
-<script src="site_libs/highlight/highlight.js"></script>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
@@ -154,7 +152,6 @@ $(document).ready(function () {
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
-<script src="site_libs/navigation-1.1/tabsets.js"></script>
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
@@ -196,6 +193,9 @@ $(document).ready(function () {
   <a href="data-eng.html">Data Engineering</a>
 </li>
 <li>
+  <a href="other.html">Other tasks</a>
+</li>
+<li>
   <a href="finder.html">Finder</a>
 </li>
 <li>
@@ -210,20 +210,66 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">About</h1>
-<h4 class="author"><em>Kyriakos Chatzidimitriou</em></h4>
-<h4 class="date"><em>January 10, 2017</em></h4>
+<h1 class="title toc-ignore">DBSCAN</h1>
+<h4 class="author"><em>Kyriakos Chatzidimitriou (<a href="mailto:kyrcha@gmail.com">kyrcha@gmail.com</a>)</em></h4>
+<h4 class="date"><em>10 January, 2017</em></h4>
 
 </div>
 
 
-<div id="acknowledgements" class="section level2">
-<h2>Acknowledgements</h2>
-<p>The tutorials, besides including the author’s original contributions and knowledge of Machine Learning algorithms and R, also include contributions from other material and more specifically: 1) from an introductory R leaflet from the Pattern Recognition course leaflets of the Electrical and Computer Engineering Department of the Aristotle University of Thessaloniki (Fall semester 2016, authors: Themistoklis Diamantopoulos/Michalis Papamichail, professor: Andreas Symeonidis), 2) the leaflet from the course CS545 Machine Learnig (Fall 2008, author and professor: Charles W. Anderson) and 3) <a href="https://software-carpentry.org/">Software Caprentry</a> lessons like <a href="http://swcarpentry.github.io/r-novice-inflammation/">Programming in R</a> from which the inflammation data were also included.</p>
+<div id="dbscan" class="section level2">
+<h2>DBSCAN</h2>
+<p>DBSCAN is a density based clustering algorithm. To use it we install the library <code>dbscan</code> and load it:</p>
+<pre class="r"><code>library(dbscan)
+data &lt;- iris[,-5]
+clustering = dbscan(data, eps = 0.5, minPts = 5)
+clustering</code></pre>
+<pre><code>## DBSCAN clustering for 150 objects.
+## Parameters: eps = 0.5, minPts = 5
+## The clustering contains 2 cluster(s) and 17 noise points.
+## 
+##  0  1  2 
+## 17 49 84 
+## 
+## Available fields: cluster, eps, minPts</code></pre>
+<p>The algorithm returns the clsuters and whether there are any noise points. The noise points are denoted with 0. To get the groupings:</p>
+<pre class="r"><code>clustering$cluster</code></pre>
+<pre><code>##   [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+##  [36] 1 1 1 1 1 1 0 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 0 2 2 0 2 2 2 2 2 2 2 0 2
+##  [71] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 0 2 2 2 2 2 0 2 2 2 2 0 2 2 2 2 2 2
+## [106] 0 0 2 0 0 2 2 2 2 2 2 2 0 0 2 2 2 0 2 2 2 2 2 2 2 2 0 2 2 0 0 2 2 2 2
+## [141] 2 2 2 2 2 2 2 2 2 2</code></pre>
+<p>The classes and clusters comparison:</p>
+<pre class="r"><code>table(clustering$cluster, iris$Species)</code></pre>
+<pre><code>##    
+##     setosa versicolor virginica
+##   0      1          6        10
+##   1     49          0         0
+##   2      0         44        40</code></pre>
+<p>Another package that contains dbscan is the <code>fpc</code> package.</p>
 </div>
-<div id="license" class="section level2">
-<h2>License</h2>
-<p>This work is made available under the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution license</a>.</p>
+<div id="an-example-specialized-for-dbscan" class="section level2">
+<h2>An example specialized for DBSCAN</h2>
+<p>Lets create and plot the dataset</p>
+<pre class="r"><code>x1 &lt;- rnorm(1000,0,3)
+y1 &lt;- rnorm(1000,-5,2)
+x2 &lt;- runif(1000, -20, 20)
+y2 &lt;- -0.05*x2^2 + 10 + runif(1000, -1, 1)
+y &lt;- c(y1,y2)
+x &lt;- c(x1,x2)
+plot(x,y)</code></pre>
+<p><img src="dbscan_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<div id="k-means-vs.dbscan" class="section level3">
+<h3>k-means vs. dbscan</h3>
+<p>From theory we know that k-means will not be able to identify the two clusters.</p>
+<pre class="r"><code>demo &lt;- data.frame(x,y)
+kmeansClust &lt;- kmeans(demo, 2)
+plot(demo, col = kmeansClust$cluster + 1, main=&quot;kmeans&quot;)</code></pre>
+<p><img src="dbscan_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>dbscanClust &lt;- dbscan(demo, eps = 1, minPts = 12)
+plot(demo, col = dbscanClust$cluster + 1, pch = ifelse(dbscanClust$cluster, 1, 4), main=&quot;dbscan&quot;)</code></pre>
+<p><img src="dbscan_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+</div>
 </div>
 
 <script>
@@ -242,8 +288,11 @@ $(document).ready(function () {
 <script>
 
 // add bootstrap table styles to pandoc tables
-$(document).ready(function () {
+function bootstrapStylePandocTables() {
   $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
 });
 
 

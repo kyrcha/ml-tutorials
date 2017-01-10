@@ -1,0 +1,103 @@
+---
+title: "Outlier Detection"
+author: "Kyriakos Chatzidimitriou (kyrcha@gmail.com)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    highlight: textmate
+    includes:
+      after_body: footer.html
+    css: style.css
+  pdf_document:
+    includes:
+      before_body: head.tex
+      after_body: footer.tex
+---
+
+## Univariate outlier detection
+
+For univariate outlier analysis we can use the `boxplot`:
+
+```{r}
+set.seed(1234)
+x <- rnorm(1000)
+summary(x)
+# get the outliers
+boxplot.stats(x)$out
+boxplot(x)
+```
+
+## Multivariate outlier detection - boxplot
+
+We can use again the boxplot separetely in every dimension and get the union or the intersect of the points that have been identified as outliers in at least one dimension by boxplot.
+
+```{r}
+y <- rnorm(1000)
+df <- data.frame(x,y)
+rm(x,y)
+head(df)
+attach(df)
+(a <- which(x %in% boxplot.stats(x)$out))
+(b <- which(y %in% boxplot.stats(y)$out))
+detach(df)
+```
+ 
+### Union
+```{r}
+(outlier.list1 <- union(a,b))
+plot(df)
+points(df[outlier.list1,], col="blue", pch="+", cex=2.5)
+```
+### Intersect
+```{r}
+(outlier.list2 <- intersect(a,b))
+plot(df)
+points(df[outlier.list2,], col="red", pch="+", cex=2.5)
+```
+
+## Multivariate outlier detection - LOF
+
+[Local Outlier Factor](https://en.wikipedia.org/wiki/Local_outlier_factor) anomaly detection algorithm can be found in package `DMwR`. The `k` argument denotes the number of neighbors that will be used in the calculation of the LOFs.
+
+```{r}
+library(DMwR)
+fulldata <- iris[,-5]
+outlier.scores <- lofactor(fulldata, k=5)
+plot(density(outlier.scores))
+```
+
+Now lets print the top-5 outliers based on their LOF score:
+
+```{r}
+outliers <- order(outlier.scores, decreasing = T)[1:5]
+print(outliers)
+```
+
+And plot them:
+
+```{r}
+pch <- rep(".", nrow(fulldata))
+pch[outliers] <- "+"
+col <- rep("black", nrow(fulldata))
+col[outliers] <- "red"
+pairs(fulldata, col=col, pch=pch)
+```
+
+## Multivariate outlier detection - kmeans
+
+One more thing we can do is do a k-means clustering and define as outliers the top *n* points that are the most distant from their center.
+
+```{r}
+clustering <- kmeans(fulldata, centers=3)
+centers.matrix <- clustering$centers[clustering$cluster, ]
+distances <- sqrt(rowSums((fulldata - centers.matrix)^2))
+# pick top 2 largest distances
+outliers <- order(distances, decreasing=T)[1:2]
+# print the outliers
+print(outliers)
+```
+
+## Multivariate outlier detection - dbscan
+
+The DBSCAN method identifies outliers as an end result of running the algorithm in the dataset.
+

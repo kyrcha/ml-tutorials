@@ -1,16 +1,17 @@
 ---
 title: "k-Nearest Neighbors"
-author: "Kyriakos Chatzidimitriou"
-date: "November 7, 2016"
-output: html_document
-#  html_document:
-#    highlight: textmate
-#    includes:
-#      after_body: footer.html
-#    css: style.css
-#  pdf_document:
-#    includes:
-#      after_body: footer.tex
+author: "Kyriakos Chatzidimitriou (kyrcha@gmail.com)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+    highlight: textmate
+    includes:
+      after_body: footer.html
+    css: style.css
+  pdf_document:
+    includes:
+      before_body: head.tex
+      after_body: footer.tex
 ---
 
 ## Introduction

@@ -1,9 +1,62 @@
 ---
 title: "kmeans"
-author: "Kyriakos Chatzidimitriou"
-date: "January 10, 2017"
-output: html_document
+author: "Kyriakos Chatzidimitriou (kyrcha@gmail.com)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+    highlight: textmate
+    includes:
+      after_body: footer.html
+    css: style.css
+  pdf_document:
+    includes:
+      before_body: head.tex
+      after_body: footer.tex
 ---
+
+## K-means in a "toy" dataset
+
+Lets construct a more small but instructive example:
+
+```{r}
+X = c(7, 3, 1, 5, 1, 7, 8, 5)
+Y = c(1, 4, 5, 8, 3, 8, 2, 9)
+rnames = c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8")
+kdata = data.frame(X, Y, row.names = rnames)
+```
+
+and plot the 2D dataset:
+
+```{r}
+plot(kdata, pch = 15)
+text(kdata, labels = row.names(kdata), pos = 2)
+```
+
+### Create the clustering
+
+```{r}
+# we take as initial centers the first 3 points and this implies also that k = 3
+clust = kmeans(kdata, centers=kdata[1:3,])
+clust$centers
+clust$cluster
+```
+
+we can also easily retrieve metrics like *cohesion* and *separation*.
+
+```{r}
+cohesion = clust$tot.withinss
+separation = clust$betweenss
+```
+
+and make a nice visualization
+
+```{r}
+plot(kdata, col = clust$cluster, pch = 15)
+text(kdata, labels = row.names(kdata), pos = 2)
+points(clust$centers, col = 1:length(clust$centers), pch = "+", cex = 2)
+```
+
+## K-means for the iris dataset
 
 Lets apply the k-means clustering algorithm to the iris dataset. To begin with, we will exclude the `Species` column.
 
@@ -45,49 +98,26 @@ clustering$iter
 clustering$ifault
 ```
 
-## A more visual example
+### Comparing cluster to classes
 
-Lets construct a more small but instructive example:
-
-```{r}
-X = c(7, 3, 1, 5, 1, 7, 8, 5)
-Y = c(1, 4, 5, 8, 3, 8, 2, 9)
-rnames = c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8")
-kdata = data.frame(X, Y, row.names = rnames)
-```
-
-and plot the 2D dataset:
+For comparing the groupings provided by k-means with the actual classes we can use the `table` function:
 
 ```{r}
-plot(kdata, pch = 15)
-text(kdata, labels = row.names(kdata), pos = 2)
+table(iris$Species, clustering$cluster)
 ```
 
-### Create the clustering
+With different initial centers in k-means one will get different values in the table above.
+
+### Plotting
+
+Lets also plot 2 dimensions of the iris dataset and visualize the clusters and their centers:
 
 ```{r}
-# we take as initial centers the first 3 points and this implies also that k = 3
-clust = kmeans(kdata, centers=kdata[1:3,])
-clust$centers
-clust$cluster
+plot(iris[c("Sepal.Length", "Sepal.Width")], col = clustering$cluster)
+points(clustering$centers[,c("Sepal.Length", "Sepal.Width")], col = 1:3, pch = 8, cex=2)
 ```
 
-we can also easily retrieve metrics like *cohesion* and *separation*.
-
-```{r}
-cohesion = clust$tot.withinss
-separation = model$betweenss
-```
-
-and make a nice visualization
-
-```{r}
-plot(kdata, col = clust$cluster, pch = 15)
-text(kdata, labels = row.names(kdata), pos = 2)
-points(clust$centers, col = 1:length(clust$centers), pch = "+", cex = 2)
-```
-
-## Selecting number of clusters
+### Selecting number of clusters
 
 Returning to the iris dataset, a technique to find the number of clusters that describe the data better we can calculate the SSE (Sum of Squared Errors) for different number of clusters, say k = 1, 2, ..., 10 etc. We can do that with the following commands:
 

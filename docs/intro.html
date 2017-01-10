@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Kyriakos Chatzidimitriou" />
+<meta name="author" content="Kyriakos Chatzidimitriou (kyrcha@gmail.com)" />
 
 
 <title>Introduction to R</title>
@@ -20,12 +20,11 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
-<link rel="stylesheet"
-      href="site_libs/highlight/textmate.css"
-      type="text/css" />
-<script src="site_libs/highlight/highlight.js"></script>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
@@ -153,7 +152,6 @@ $(document).ready(function () {
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
-<script src="site_libs/navigation-1.1/tabsets.js"></script>
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
@@ -189,13 +187,19 @@ $(document).ready(function () {
   <a href="classification.html">Classification</a>
 </li>
 <li>
-  <a href="uc.html">Clustering</a>
+  <a href="clustering.html">Clustering</a>
 </li>
 <li>
   <a href="data-eng.html">Data Engineering</a>
 </li>
 <li>
+  <a href="other.html">Other tasks</a>
+</li>
+<li>
   <a href="finder.html">Finder</a>
+</li>
+<li>
+  <a href="about.html">About</a>
 </li>
       </ul>
     </div><!--/.nav-collapse -->
@@ -207,8 +211,8 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Introduction to R</h1>
-<h4 class="author"><em>Kyriakos Chatzidimitriou</em></h4>
-<h4 class="date"><em>November 7, 2016</em></h4>
+<h4 class="author"><em>Kyriakos Chatzidimitriou (<a href="mailto:kyrcha@gmail.com">kyrcha@gmail.com</a>)</em></h4>
+<h4 class="date"><em>10 January, 2017</em></h4>
 
 </div>
 
@@ -241,13 +245,34 @@ print(a)</code></pre>
 <pre><code>## [1] 42</code></pre>
 <p>With <code>ls()</code> one can check all the variables existing in the current R session.</p>
 <pre class="r"><code>ls()</code></pre>
-<pre><code>##  [1] &quot;GCtorture&quot;          &quot;a&quot;                  &quot;b&quot;                 
-##  [4] &quot;ctree&quot;              &quot;data&quot;               &quot;entTree&quot;           
-##  [7] &quot;evaluation&quot;         &quot;f&quot;                  &quot;fileURL&quot;           
-## [10] &quot;ind&quot;                &quot;model&quot;              &quot;pred&quot;              
-## [13] &quot;simpler_model&quot;      &quot;simpler_pred&quot;       &quot;subset&quot;            
-## [16] &quot;trainData&quot;          &quot;train_pred&quot;         &quot;train_simpler_pred&quot;
-## [19] &quot;tree&quot;               &quot;tree_with_params&quot;   &quot;validationData&quot;</code></pre>
+<pre><code>##  [1] &quot;a&quot;                   &quot;accuracy&quot;            &quot;b&quot;                  
+##  [4] &quot;centers.matrix&quot;      &quot;clustering&quot;          &quot;col&quot;                
+##  [7] &quot;control&quot;             &quot;ctree&quot;               &quot;ctrl&quot;               
+## [10] &quot;d&quot;                   &quot;data&quot;                &quot;data_new&quot;           
+## [13] &quot;data_norm&quot;           &quot;dataset&quot;             &quot;dbscanClust&quot;        
+## [16] &quot;demo&quot;                &quot;df&quot;                  &quot;distances&quot;          
+## [19] &quot;entTree&quot;             &quot;evaluation&quot;          &quot;f&quot;                  
+## [22] &quot;fileURL&quot;             &quot;fulldata&quot;            &quot;groups&quot;             
+## [25] &quot;hc&quot;                  &quot;ind&quot;                 &quot;indices&quot;            
+## [28] &quot;inTrain&quot;             &quot;kmeansClust&quot;         &quot;kNNFit&quot;             
+## [31] &quot;kNNFit1&quot;             &quot;kNNFit2&quot;             &quot;kNNFit4&quot;            
+## [34] &quot;knnFit5&quot;             &quot;knnPredict&quot;          &quot;knnPredict2&quot;        
+## [37] &quot;logTrainDataX&quot;       &quot;logValidationDataX&quot;  &quot;model&quot;              
+## [40] &quot;outlier.list1&quot;       &quot;outlier.list2&quot;       &quot;outlier.scores&quot;     
+## [43] &quot;outliers&quot;            &quot;pch&quot;                 &quot;PimaIndiansDiabetes&quot;
+## [46] &quot;precision&quot;           &quot;pred&quot;                &quot;pred_obj&quot;           
+## [49] &quot;pred_prob&quot;           &quot;prediction&quot;          &quot;prediction_pca&quot;     
+## [52] &quot;recall&quot;              &quot;ROCcurve&quot;            &quot;rules&quot;              
+## [55] &quot;S&quot;                   &quot;simpler_model&quot;       &quot;simpler_pred&quot;       
+## [58] &quot;Sonar&quot;               &quot;subset&quot;              &quot;testing&quot;            
+## [61] &quot;train_pred&quot;          &quot;train_simpler_pred&quot;  &quot;train.pca&quot;          
+## [64] &quot;trainData&quot;           &quot;trainDataX&quot;          &quot;trainDataY&quot;         
+## [67] &quot;training&quot;            &quot;trans&quot;               &quot;tree&quot;               
+## [70] &quot;tree_with_params&quot;    &quot;udv&quot;                 &quot;validation.pca&quot;     
+## [73] &quot;validationData&quot;      &quot;validationDataX&quot;     &quot;validationDataY&quot;    
+## [76] &quot;x&quot;                   &quot;x1&quot;                  &quot;x2&quot;                 
+## [79] &quot;xtab&quot;                &quot;y&quot;                   &quot;y1&quot;                 
+## [82] &quot;y2&quot;                  &quot;ytest&quot;</code></pre>
 <pre class="r"><code># while to delete all the variables in the current session you can use the call: 
 rm(list=ls())</code></pre>
 </div>
@@ -394,25 +419,39 @@ bm</code></pre>
 getwd()</code></pre>
 <pre><code>## [1] &quot;/Users/kyrcha/Workspaces/github/ml-tutorials&quot;</code></pre>
 <pre class="r"><code>dir()</code></pre>
-<pre><code>##  [1] &quot;CNAME&quot;                        &quot;README.html&quot;                 
-##  [3] &quot;README.md&quot;                    &quot;_site.yml&quot;                   
-##  [5] &quot;breast-cancer-wisconsin.data&quot; &quot;cfs.Rmd&quot;                     
-##  [7] &quot;cfs.html&quot;                     &quot;cfs.pdf&quot;                     
-##  [9] &quot;classification.Rmd&quot;           &quot;classification.html&quot;         
-## [11] &quot;data&quot;                         &quot;data-eng.Rmd&quot;                
-## [13] &quot;data-eng.html&quot;                &quot;docs&quot;                        
-## [15] &quot;dt.Rmd&quot;                       &quot;dt.html&quot;                     
-## [17] &quot;dt_files&quot;                     &quot;finder.Rmd&quot;                  
-## [19] &quot;finder.html&quot;                  &quot;footer.html&quot;                 
-## [21] &quot;footer.tex&quot;                   &quot;index.Rmd&quot;                   
-## [23] &quot;index.html&quot;                   &quot;intro.Rmd&quot;                   
-## [25] &quot;knn.Rmd&quot;                      &quot;ml-tutorials.Rproj&quot;          
-## [27] &quot;nb.Rmd&quot;                       &quot;nn.Rmd&quot;                      
-## [29] &quot;pca.Rmd&quot;                      &quot;pca.pdf&quot;                     
-## [31] &quot;r.Rmd&quot;                        &quot;rfe.Rmd&quot;                     
-## [33] &quot;rfe.pdf&quot;                      &quot;site_libs&quot;                   
-## [35] &quot;style.css&quot;                    &quot;uc.Rmd&quot;                      
-## [37] &quot;wrapper.Rmd&quot;                  &quot;wrapper.pdf&quot;</code></pre>
+<pre><code>##  [1] &quot;_site.yml&quot;                    &quot;ar.html&quot;                     
+##  [3] &quot;ar.Rmd&quot;                       &quot;breast-cancer-wisconsin.data&quot;
+##  [5] &quot;cfs.html&quot;                     &quot;cfs.Rmd&quot;                     
+##  [7] &quot;classification.html&quot;          &quot;classification.Rmd&quot;          
+##  [9] &quot;clustering.html&quot;              &quot;clustering.Rmd&quot;              
+## [11] &quot;CNAME&quot;                        &quot;data&quot;                        
+## [13] &quot;data-eng.html&quot;                &quot;data-eng.Rmd&quot;                
+## [15] &quot;dbscan_files&quot;                 &quot;dbscan.html&quot;                 
+## [17] &quot;dbscan.Rmd&quot;                   &quot;docs&quot;                        
+## [19] &quot;dt_files&quot;                     &quot;dt.html&quot;                     
+## [21] &quot;dt.Rmd&quot;                       &quot;finder.html&quot;                 
+## [23] &quot;finder.Rmd&quot;                   &quot;footer.html&quot;                 
+## [25] &quot;footer.tex&quot;                   &quot;head.tex&quot;                    
+## [27] &quot;hierarchical_files&quot;           &quot;hierarchical.html&quot;           
+## [29] &quot;hierarchical.Rmd&quot;             &quot;index.html&quot;                  
+## [31] &quot;index.Rmd&quot;                    &quot;intro_files&quot;                 
+## [33] &quot;intro.html&quot;                   &quot;intro.Rmd&quot;                   
+## [35] &quot;kmeans_files&quot;                 &quot;kmeans.html&quot;                 
+## [37] &quot;kmeans.Rmd&quot;                   &quot;knn_files&quot;                   
+## [39] &quot;knn.html&quot;                     &quot;knn.Rmd&quot;                     
+## [41] &quot;ml-tutorials.Rproj&quot;           &quot;nb_files&quot;                    
+## [43] &quot;nb.html&quot;                      &quot;nb.Rmd&quot;                      
+## [45] &quot;nn.html&quot;                      &quot;nn.Rmd&quot;                      
+## [47] &quot;other.html&quot;                   &quot;other.Rmd&quot;                   
+## [49] &quot;outlier_files&quot;                &quot;outlier.html&quot;                
+## [51] &quot;outlier.Rmd&quot;                  &quot;pca_files&quot;                   
+## [53] &quot;pca.html&quot;                     &quot;pca.Rmd&quot;                     
+## [55] &quot;r.html&quot;                       &quot;r.Rmd&quot;                       
+## [57] &quot;README.html&quot;                  &quot;README.md&quot;                   
+## [59] &quot;render.sh&quot;                    &quot;retail.data.gz&quot;              
+## [61] &quot;rfe.Rmd&quot;                      &quot;site_libs&quot;                   
+## [63] &quot;style.css&quot;                    &quot;uc.Rmd&quot;                      
+## [65] &quot;wrapper.Rmd&quot;</code></pre>
 <p>The <code>dir</code> function return the files and directories of the file system. The argument <code>header=FALSE</code> lets the <code>read.csv</code> function know that there is no header row to give the columns names.</p>
 <p>With <code>head(data)</code> I can check if the data are loaded correctly. It return the first few rows:</p>
 <pre class="r"><code>head(data)</code></pre>
@@ -920,14 +959,6 @@ air = as.data.frame(t(airmat))</code></pre>
 <p><em>Tip: to transform a row of the data frame to a vector you can use <code>unlist</code> (e.g. <code>unlist(air[&quot;Jan&quot;,]</code>)</em></p>
 </div>
 
-<h2>Acknowledgements</h2>
-
-<p>The tutorials, besides including the author's original contributions and knowledge of Machine Learning algorithms and R, also include contributions from other material and more specifically: 1) from an introductory R leaflet from the Pattern Recognition course leaflets of the Electrical and Computer Engineering Department of the Aristotle University of Thessaloniki (Fall semester 2016, authors: Themistoklis Diamantopoulos/Michalis Papamichail, professor: Andreas Symeonidis), 2) the leaflet from the course CS545 Machine Learnig (Fall 2008, author and professor: Charles W. Anderson) and 3) <a href="https://software-carpentry.org/">Software Caprentry</a> lessons like <a href="http://swcarpentry.github.io/r-novice-inflammation/">Programming in R</a> from which the inflammation data were also included.</p>
-
-<h2>License</h2>
-
-<p>This work is made available under the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution license</a>.</p>
-
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -944,8 +975,11 @@ air = as.data.frame(t(airmat))</code></pre>
 <script>
 
 // add bootstrap table styles to pandoc tables
-$(document).ready(function () {
+function bootstrapStylePandocTables() {
   $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
 });
 
 

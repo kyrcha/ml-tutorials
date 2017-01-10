@@ -36,6 +36,7 @@ vignettes/*.pdf
 # Holding data temporary not to upload to GitHub
 temp_data/*
 *.data
+*.gz
 
 # PDF documents
 *.pdf

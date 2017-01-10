@@ -1,0 +1,48 @@
+---
+ztitle: "Association Rules"
+author: "Kyriakos Chatzidimitriou (kyrcha@gmail.com)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    highlight: textmate
+    includes:
+      after_body: footer.html
+    css: style.css
+  pdf_document:
+    includes:
+      before_body: head.tex
+      after_body: footer.tex
+---
+
+## Association Rules
+
+The association rules extraction algorithm is included in the `arules` library. The supermarkt transaction data to be used for executing market basket analysis can be found in the Grocery Shopping datasets page of ACM RecSys. More specifically we will use the Belgium retail market dataset.
+
+```{r}
+library(arules)
+fileURL <- "http://fimi.ua.ac.be/data/retail.dat.gz"
+download.file(fileURL, destfile="retail.data.gz", method="curl")
+# Read the data in basket format
+trans = read.transactions("retail.data.gz", format = "basket", sep=" ");
+inspect(trans[1:10])
+summary(trans)
+```
+
+After reading succesfully the transaction we go ahead with our analysis:
+
+```{r}
+rules <- apriori(trans, parameter = list(support = 0.01, confidence = 0.6))
+```
+
+```{r}
+quality(rules) <- round(quality(rules), digits=3)
+rules
+```
+
+84 rules were generated. To see them use `inspect`.
+
+```{r}
+inspect(rules)
+```
+
+For a lot more information check the  [Introduction to arules](https://mran.revolutionanalytics.com/web/packages/arules/vignettes/arules.pdf) vignette.

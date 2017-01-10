@@ -19,12 +19,11 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
-<link rel="stylesheet"
-      href="site_libs/highlight/textmate.css"
-      type="text/css" />
-<script src="site_libs/highlight/highlight.js"></script>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
@@ -152,7 +151,6 @@ $(document).ready(function () {
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
-<script src="site_libs/navigation-1.1/tabsets.js"></script>
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
@@ -188,13 +186,19 @@ $(document).ready(function () {
   <a href="classification.html">Classification</a>
 </li>
 <li>
-  <a href="uc.html">Clustering</a>
+  <a href="clustering.html">Clustering</a>
 </li>
 <li>
   <a href="data-eng.html">Data Engineering</a>
 </li>
 <li>
+  <a href="other.html">Other tasks</a>
+</li>
+<li>
   <a href="finder.html">Finder</a>
+</li>
+<li>
+  <a href="about.html">About</a>
 </li>
       </ul>
     </div><!--/.nav-collapse -->
@@ -215,20 +219,17 @@ $(document).ready(function () {
 <div id="instructions" class="section level2">
 <h2>Instructions</h2>
 <p>To render the site:</p>
-<pre><code> rmarkdown::render_site()
+<pre><code> rmarkdown::render_site(output_format = &quot;html_document&quot;)</code></pre>
+<p>or from the shell:</p>
+<pre><code>sh render.sh
  </code></pre>
 <p>To render specific pages to pdf:</p>
-<pre><code> rmarkdown::render(&quot;knn.Rmd&quot;, output_format=&quot;pdf_document&quot;)</code></pre>
+<pre><code> rmarkdown::render(&quot;knn.Rmd&quot;, output_format=&quot;pdf_document&quot;)
+ </code></pre>
+<p>To cleanup:</p>
+<pre><code> rmarkdown::clean_site()</code></pre>
 </div>
 </div>
-
-<h2>Acknowledgements</h2>
-
-<p>The tutorials, besides including the author's original contributions and knowledge of Machine Learning algorithms and R, also include contributions from other material and more specifically: 1) from an introductory R leaflet from the Pattern Recognition course leaflets of the Electrical and Computer Engineering Department of the Aristotle University of Thessaloniki (Fall semester 2016, authors: Themistoklis Diamantopoulos/Michalis Papamichail, professor: Andreas Symeonidis), 2) the leaflet from the course CS545 Machine Learnig (Fall 2008, author and professor: Charles W. Anderson) and 3) <a href="https://software-carpentry.org/">Software Caprentry</a> lessons like <a href="http://swcarpentry.github.io/r-novice-inflammation/">Programming in R</a> from which the inflammation data were also included.</p>
-
-<h2>License</h2>
-
-<p>This work is made available under the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution license</a>.</p>
 
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -246,8 +247,11 @@ $(document).ready(function () {
 <script>
 
 // add bootstrap table styles to pandoc tables
-$(document).ready(function () {
+function bootstrapStylePandocTables() {
   $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
 });
 
 
