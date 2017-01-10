@@ -1,7 +1,6 @@
 ---
 title: "Feature Selection"
 author: "Kyriakos Chatzidimitriou"
-date: "November 28, 2016"
 output:
   pdf_document:
     includes:

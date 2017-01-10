@@ -1,0 +1,18 @@
+---
+title: "Clustering"
+output: html_document
+#  html_document:
+#    highlight: textmate
+#    includes:
+#      after_body: footer.html
+#    css: style.css
+#  pdf_document:
+#    includes:
+#      after_body: footer.tex
+---
+
+Notes on:
+
+  - [k-means](kmeans.html)
+  - [Hierarchical](hierarchical.html)
+  - [DBSCAN](dbscan.html)

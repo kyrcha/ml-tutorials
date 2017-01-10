@@ -1,0 +1,117 @@
+---
+title: "kmeans"
+author: "Kyriakos Chatzidimitriou"
+date: "January 10, 2017"
+output: html_document
+---
+
+Lets apply the k-means clustering algorithm to the iris dataset. To begin with, we will exclude the `Species` column.
+
+```{r iris}
+data <- iris[,-5]
+clustering = kmeans(data, centers = 3)
+clustering
+```
+
+The clustering object contains a lot of informations and components:
+
+  - The number of clusters (3) and their sizes
+  - The centers of the 3 clusters
+  - The clustering vector denoting which speciment (row) belongs to which cluster
+  - The sum of squares of the distance between points and their centers for every cluster
+    - `total_SS` is the sum of squared distances of each data point to the global sample mean
+    - `between_SS` is the `total_SS` minus the the sum of the sum of square distances between points and their centers
+    - The ratio will be close to 0 (0%) if there is no discernible pattern and closer to 1 (100%) if there is.
+  - and other components like:
+  
+```{r}
+# The centers
+clustering$centers
+# The clustering
+clustering$cluster
+# The total sum of squares (the sum of squared distances of each data point to the global sample mean)
+clustering$totss
+# The per cluster sum of squares
+clustering$withinss
+# The sum of per cluster sum of squares
+clustering$tot.withinss
+# The total sum of squares minus the sum of per cluster sum of squares
+clustering$betweenss
+# The sizes of the clusters
+clustering$size
+# The number of iterations before conversion
+clustering$iter
+# Integer indicating possible algorithm problem
+clustering$ifault
+```
+
+## A more visual example
+
+Lets construct a more small but instructive example:
+
+```{r}
+X = c(7, 3, 1, 5, 1, 7, 8, 5)
+Y = c(1, 4, 5, 8, 3, 8, 2, 9)
+rnames = c("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8")
+kdata = data.frame(X, Y, row.names = rnames)
+```
+
+and plot the 2D dataset:
+
+```{r}
+plot(kdata, pch = 15)
+text(kdata, labels = row.names(kdata), pos = 2)
+```
+
+### Create the clustering
+
+```{r}
+# we take as initial centers the first 3 points and this implies also that k = 3
+clust = kmeans(kdata, centers=kdata[1:3,])
+clust$centers
+clust$cluster
+```
+
+we can also easily retrieve metrics like *cohesion* and *separation*.
+
+```{r}
+cohesion = clust$tot.withinss
+separation = model$betweenss
+```
+
+and make a nice visualization
+
+```{r}
+plot(kdata, col = clust$cluster, pch = 15)
+text(kdata, labels = row.names(kdata), pos = 2)
+points(clust$centers, col = 1:length(clust$centers), pch = "+", cex = 2)
+```
+
+## Selecting number of clusters
+
+Returning to the iris dataset, a technique to find the number of clusters that describe the data better we can calculate the SSE (Sum of Squared Errors) for different number of clusters, say k = 1, 2, ..., 10 etc. We can do that with the following commands:
+
+```{r}
+# Calculate the totss (k = 1) 
+SSE <- (nrow(data) - 1) * sum(apply(data, 2, var))
+for(i in 2:10) {
+  SSE[i] <- kmeans(data, centers = i)$tot.withinss
+}
+plot(1:10, SSE, type="b", xlab="Number of Clusters", ylab="SSE")
+```
+
+We can see that k = 3 is a good pick and actually approximates the number of species available in the iris dataset.
+
+### Silhouette coefficient
+
+To calculate the `Silhouette coefficient` we have to install and load the library `cluster`:
+
+```{r}
+# Assuming cluster library is installed with: install.packages('cluster')
+library(cluster)
+silhouette = silhouette(clustering$cluster, dist(data))
+plot(silhouette)
+```
+
+The closer to 1 the better.
+
