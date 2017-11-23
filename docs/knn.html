@@ -268,15 +268,8 @@ cat(paste(&quot;Accuracy:\t&quot;, format(accuracy, digits=2), &quot;\n&quot;,se
 <div id="split-data-in-two-groups" class="section level4">
 <h4>Split data in two groups</h4>
 <p>The function <code>createDataParitiion</code> does a stratified random split of the data. Similar to what we did above ourselves (not stratified though). Then we will use the <code>train</code> function to build the kNN model.</p>
-<pre class="r"><code>library(caret)</code></pre>
-<pre><code>## Loading required package: lattice</code></pre>
-<pre><code>## Loading required package: ggplot2</code></pre>
-<pre><code>## 
-## Attaching package: &#39;caret&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:MLmetrics&#39;:
-## 
-##     MAE, RMSE</code></pre>
-<pre class="r"><code>library(mlbench)
+<pre class="r"><code>library(caret)
+library(mlbench)
 data(Sonar)
 set.seed(107)
 inTrain &lt;- createDataPartition(y = Sonar$Class, p = .75, list = FALSE)

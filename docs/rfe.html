@@ -272,10 +272,11 @@ plot(results, type=c(&quot;g&quot;, &quot;o&quot;))</code></pre>
 </div>
 <div id="naive-bayes" class="section level2">
 <h2>Naive Bayes</h2>
-<p>We will use the 5 top variables that come out of RFE in the Naive Bayes algorithm.</p>
+<p>We will use the 3 top variables that come out of RFE in the Naive Bayes algorithm:</p>
 <pre class="r"><code>library(e1071)
-f &lt;- as.simple.formula(results$optVariables, &quot;diabetes&quot;)
-model &lt;- naiveBayes(diabetes ~ ., data=trainData, laplace = 1)
+(f &lt;- as.formula(paste(&quot;diabetes&quot;, paste(results$optVariables, collapse=&quot; + &quot;), sep=&quot; ~ &quot;)))</code></pre>
+<pre><code>## diabetes ~ glucose + age + mass</code></pre>
+<pre class="r"><code>model &lt;- naiveBayes(diabetes ~ ., data=trainData, laplace = 1)
 simpler_model &lt;- naiveBayes(f, data=trainData, laplace = 1)
 
 pred &lt;- predict(model, validationData)

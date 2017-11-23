@@ -271,13 +271,8 @@ points(df[outlier.list2,], col=&quot;red&quot;, pch=&quot;+&quot;, cex=2.5)</cod
 <div id="multivariate-outlier-detection---lof" class="section level2">
 <h2>Multivariate outlier detection - LOF</h2>
 <p><a href="https://en.wikipedia.org/wiki/Local_outlier_factor">Local Outlier Factor</a> anomaly detection algorithm can be found in package <code>DMwR</code>. The <code>k</code> argument denotes the number of neighbors that will be used in the calculation of the LOFs.</p>
-<pre class="r"><code>library(DMwR)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;DMwR&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:dbscan&#39;:
-## 
-##     kNN</code></pre>
-<pre class="r"><code>fulldata &lt;- iris[,-5]
+<pre class="r"><code>library(DMwR)
+fulldata &lt;- iris[,-5]
 outlier.scores &lt;- lofactor(fulldata, k=5)
 plot(density(outlier.scores))</code></pre>
 <p><img src="outlier_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>

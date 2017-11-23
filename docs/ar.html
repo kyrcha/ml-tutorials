@@ -217,17 +217,8 @@ $(document).ready(function () {
 <div id="association-rules" class="section level2">
 <h2>Association Rules</h2>
 <p>The association rules extraction algorithm is included in the <code>arules</code> library. The supermarkt transaction data to be used for executing market basket analysis can be found in the Grocery Shopping datasets page of ACM RecSys. More specifically we will use the Belgium retail market dataset.</p>
-<pre class="r"><code>library(arules)</code></pre>
-<pre><code>## Loading required package: Matrix</code></pre>
-<pre><code>## 
-## Attaching package: &#39;arules&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:modeltools&#39;:
-## 
-##     info</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     abbreviate, write</code></pre>
-<pre class="r"><code>fileURL &lt;- &quot;http://fimi.ua.ac.be/data/retail.dat.gz&quot;
+<pre class="r"><code>library(arules)
+fileURL &lt;- &quot;http://fimi.ua.ac.be/data/retail.dat.gz&quot;
 download.file(fileURL, destfile=&quot;retail.data.gz&quot;, method=&quot;curl&quot;)
 # Read the data in basket format
 trans = read.transactions(&quot;retail.data.gz&quot;, format = &quot;basket&quot;, sep=&quot; &quot;);
@@ -361,12 +352,12 @@ inspect(trans[1:10])</code></pre>
 ## Absolute minimum support count: 881 
 ## 
 ## set item appearances ...[0 item(s)] done [0.00s].
-## set transactions ...[16470 item(s), 88162 transaction(s)] done [0.13s].
+## set transactions ...[16470 item(s), 88162 transaction(s)] done [0.22s].
 ## sorting and recoding items ... [70 item(s)] done [0.01s].
-## creating transaction tree ... done [0.04s].
+## creating transaction tree ... done [0.06s].
 ## checking subsets of size 1 2 3 4 done [0.01s].
 ## writing ... [84 rule(s)] done [0.00s].
-## creating S4 object  ... done [0.02s].</code></pre>
+## creating S4 object  ... done [0.03s].</code></pre>
 <pre class="r"><code>quality(rules) &lt;- round(quality(rules), digits=3)
 rules</code></pre>
 <pre><code>## set of 84 rules</code></pre>
