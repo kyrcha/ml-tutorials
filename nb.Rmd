@@ -88,7 +88,7 @@ To evaluate the model we use the `MLmetrics` and the `ROCR` packages.
 ytest <- validationData$Class
 pred <- predict(model, validationData)
 pred_prob <- predict(model, validationData, type="raw")
-ConfusionMatrix(ytest, pred)
+ConfusionMatrix(pred, ytest)
 Accuracy(pred, ytest)
 Precision(ytest, pred)
 Recall(ytest, pred)

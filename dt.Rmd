@@ -51,13 +51,13 @@ names(data) <- c("ClumpThickness",
 "Class")
 ```
 
-Also let???s make the Class column a categorical value, aka a factor in R
+Also let's make the Class column a categorical value, aka a factor in R
 
 ```{r}
 data$Class <- factor(data$Class, levels=c(2,4), labels=c("benign", "malignant"))
 ```
 
-Now let???s see a summary of the data:
+Now let's see a summary of the data:
 
 ```{r}
 print(summary(data))
@@ -84,7 +84,7 @@ library(party)
 
 ### rpart
 
-Let???s product a decision tree by training the induction algorithm on the train dataset. Check out the options of rpart with the command `?rpart`.
+Let's product a decision tree by training the induction algorithm on the train dataset. Check out the options of rpart with the command `?rpart`.
 
 ```{r}
 tree = rpart(Class ~ ., data=trainData, method="class")
@@ -135,7 +135,7 @@ rpart.plot(tree_with_params, extra = 104, nn = TRUE)
 
 ### party
 
-Let???s also try the `party` library and the `ctree` function:
+Let's also try the `party` library and the `ctree` function:
 
 ```{r}
 library(party)

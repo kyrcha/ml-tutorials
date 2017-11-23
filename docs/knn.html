@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -212,7 +212,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">k-Nearest Neighbors</h1>
 <h4 class="author"><em>Kyriakos Chatzidimitriou (<a href="mailto:kyrcha@gmail.com">kyrcha@gmail.com</a>)</em></h4>
-<h4 class="date"><em>10 January, 2017</em></h4>
+<h4 class="date"><em>23 November, 2017</em></h4>
 
 </div>
 
@@ -268,8 +268,15 @@ cat(paste(&quot;Accuracy:\t&quot;, format(accuracy, digits=2), &quot;\n&quot;,se
 <div id="split-data-in-two-groups" class="section level4">
 <h4>Split data in two groups</h4>
 <p>The function <code>createDataParitiion</code> does a stratified random split of the data. Similar to what we did above ourselves (not stratified though). Then we will use the <code>train</code> function to build the kNN model.</p>
-<pre class="r"><code>library(caret)
-library(mlbench)
+<pre class="r"><code>library(caret)</code></pre>
+<pre><code>## Loading required package: lattice</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## 
+## Attaching package: &#39;caret&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:MLmetrics&#39;:
+## 
+##     MAE, RMSE</code></pre>
+<pre class="r"><code>library(mlbench)
 data(Sonar)
 set.seed(107)
 inTrain &lt;- createDataPartition(y = Sonar$Class, p = .75, list = FALSE)
@@ -296,9 +303,9 @@ print(kNNFit)</code></pre>
 ## Resampling results across tuning parameters:
 ## 
 ##   k  Accuracy   Kappa    
-##   5  0.7491044  0.4919467
-##   7  0.7484501  0.4889733
-##   9  0.7458334  0.4834793
+##   5  0.7683412  0.5331399
+##   7  0.7559100  0.5053696
+##   9  0.7378175  0.4715006
 ## 
 ## Accuracy was used to select the optimal model using  the largest value.
 ## The final value used for the model was k = 5.</code></pre>
@@ -321,21 +328,21 @@ print(kNNFit1)</code></pre>
 ## Resampling results across tuning parameters:
 ## 
 ##   k   Accuracy   Kappa    
-##    5  0.7519389  0.4939164
-##    7  0.7322399  0.4542330
-##    9  0.7319090  0.4535786
-##   11  0.7194588  0.4291185
-##   13  0.7122780  0.4179368
-##   15  0.7023943  0.3983259
-##   17  0.6944156  0.3790000
-##   19  0.6906744  0.3745708
-##   21  0.6853736  0.3624348
-##   23  0.6858047  0.3634749
-##   25  0.6857580  0.3637183
-##   27  0.6766956  0.3468449
-##   29  0.6673992  0.3300591
-##   31  0.6747242  0.3454882
-##   33  0.6760502  0.3493651
+##    5  0.7477453  0.4840235
+##    7  0.7189901  0.4225515
+##    9  0.7211797  0.4275156
+##   11  0.7140987  0.4150135
+##   13  0.7031182  0.3932055
+##   15  0.7034819  0.3945755
+##   17  0.6914316  0.3698916
+##   19  0.6855830  0.3588189
+##   21  0.6847459  0.3619330
+##   23  0.6821917  0.3571894
+##   25  0.6626137  0.3186673
+##   27  0.6551801  0.3042504
+##   29  0.6660760  0.3291024
+##   31  0.6643681  0.3273283
+##   33  0.6697744  0.3389183
 ## 
 ## Accuracy was used to select the optimal model using  the largest value.
 ## The final value used for the model was k = 5.</code></pre>
@@ -356,25 +363,25 @@ print(kNNFit2)</code></pre>
 ## 
 ## Pre-processing: centered (60), scaled (60) 
 ## Resampling: Cross-Validated (10 fold, repeated 3 times) 
-## Summary of sample sizes: 141, 141, 140, 141, 142, 142, ... 
+## Summary of sample sizes: 142, 142, 142, 142, 141, 142, ... 
 ## Resampling results across tuning parameters:
 ## 
 ##   k   Accuracy   Kappa    
-##    5  0.7878758  0.5687596
-##    7  0.7792647  0.5498864
-##    9  0.7725817  0.5355201
-##   11  0.7598203  0.5104632
-##   13  0.7289379  0.4461774
-##   15  0.6903268  0.3671681
-##   17  0.6878105  0.3605085
-##   19  0.6956373  0.3761905
-##   21  0.6977533  0.3821736
-##   23  0.6920098  0.3717322
-##   25  0.7082925  0.4060242
-##   27  0.7039869  0.3964805
-##   29  0.7295425  0.4482189
-##   31  0.7170261  0.4242971
-##   33  0.7294036  0.4494976
+##    5  0.7820261  0.5548350
+##    7  0.7709314  0.5321546
+##    9  0.7605147  0.5111479
+##   11  0.7504657  0.4924263
+##   13  0.7396324  0.4705332
+##   15  0.7247386  0.4401370
+##   17  0.7058170  0.4006357
+##   19  0.7179330  0.4246010
+##   21  0.7055229  0.4003491
+##   23  0.6930065  0.3779050
+##   25  0.6933742  0.3791319
+##   27  0.7052451  0.4028364
+##   29  0.7163562  0.4277789
+##   31  0.7332108  0.4629731
+##   33  0.7176389  0.4335254
 ## 
 ## Accuracy was used to select the optimal model using  the largest value.
 ## The final value used for the model was k = 5.</code></pre>
@@ -429,25 +436,25 @@ kNNFit4 &lt;- train(Class ~ .,
 ## 
 ## Pre-processing: centered (60), scaled (60) 
 ## Resampling: Cross-Validated (10 fold, repeated 3 times) 
-## Summary of sample sizes: 142, 140, 141, 142, 142, 142, ... 
+## Summary of sample sizes: 142, 142, 142, 141, 141, 141, ... 
 ## Resampling results across tuning parameters:
 ## 
 ##   k   ROC        Sens       Spec     
-##    5  0.8953208  0.8722222  0.7011905
-##    7  0.8816014  0.8722222  0.6767857
-##    9  0.8748388  0.8638889  0.6535714
-##   11  0.8678902  0.8564815  0.6321429
-##   13  0.8588004  0.8324074  0.6196429
-##   15  0.8485656  0.8162037  0.5821429
-##   17  0.8406250  0.8162037  0.5779762
-##   19  0.8310475  0.8166667  0.5910714
-##   21  0.8233838  0.8166667  0.5904762
-##   23  0.8290179  0.7833333  0.6053571
-##   25  0.8253886  0.7990741  0.6375000
-##   27  0.8177125  0.7930556  0.6369048
-##   29  0.8109210  0.7958333  0.6458333
-##   31  0.8064856  0.7768519  0.6553571
-##   33  0.8054687  0.7611111  0.6714286
+##    5  0.8846768  0.8773148  0.6988095
+##    7  0.8613467  0.8726852  0.6678571
+##    9  0.8642361  0.8601852  0.6500000
+##   11  0.8592634  0.8518519  0.6494048
+##   13  0.8527364  0.8282407  0.6250000
+##   15  0.8384011  0.8009259  0.5994048
+##   17  0.8389550  0.8004630  0.5904762
+##   19  0.8246280  0.8087963  0.5988095
+##   21  0.8219783  0.8125000  0.6125000
+##   23  0.8125951  0.8055556  0.6125000
+##   25  0.8139716  0.7898148  0.6351190
+##   27  0.8118676  0.7893519  0.6535714
+##   29  0.8090112  0.7842593  0.6577381
+##   31  0.8090939  0.7958333  0.6625000
+##   33  0.7983300  0.7606481  0.6815476
 ## 
 ## ROC was used to select the optimal model using  the largest value.
 ## The final value used for the model was k = 5.</code></pre>
@@ -525,7 +532,7 @@ $(document).ready(function () {
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>
