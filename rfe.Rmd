@@ -84,4 +84,4 @@ paste("Accuracy in validation RFE attributes",
       Accuracy(simpler_pred, validationData$diabetes), sep=" - ")
 ```
 
-Using a simpler formula with 5 out of 8 attibutes we were able to get better generalization results in the validation dataset.
+Using a simpler formula with 3 out of 8 attibutes we were able to get better generalization results in the validation dataset.
