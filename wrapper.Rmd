@@ -101,8 +101,7 @@ paste("Accuracy in validation all attributes",
 paste("Accuracy in validation forward search attributes", 
       Accuracy(simpler_pred, validationData$Class), sep=" - ")
 ```
-
-In the breast cancer Wisconsin dataset, the feature selection algorithm did not outperform the use of all attributes. The obvious cause is that there 9 attributes are handpicked by domain experts and have indeed a predictive power all together. So removing some does not product better results. 
+In the breast cancer Wisconsin dataset, the feature selection algorithm did not outperform the use of all attributes. The obvious cause for this is that in the dataset we have 9 attributes, handpicked by domain experts and have indeed a combined predictive power that cannot outperform any subset of them. So removing features in this case some does not produce better results.
 
 ## Backward search
 
